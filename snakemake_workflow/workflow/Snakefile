@@ -1,0 +1,8 @@
+
+# load configuration
+# -----------------------------------------------------
+configfile: "config/config.yaml"
+
+# load rules
+# -----------------------------------------------------
+include: "rules/boolean_models_mutations.smk"
