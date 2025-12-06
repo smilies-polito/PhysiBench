@@ -1,12 +1,11 @@
+from boolean_model_mutation.py import *
+from run_simulation import *
+from distances import CorrelationDistances, EuclideanDistance
+from utils import print_and_log, set_log_Path
+
 import numpy as np
 import sys
 import os
-from protocol_mutations import *
-from MaBoSS_trajectory import *
-from run_simulation import *
-import matplotlib.pyplot as plt
-from distances import CorrelationDistances, EuclideanDistance
-from utils import print_and_log, set_log_Path
 
 
 MIN_DIST = 0.15
@@ -30,7 +29,6 @@ MAX_MUTATIONS = 2000
 def mutate(file, temp_dir, N_ITER, created_nodes=0):
     n_added = 0
     print(f"Mutating {file}")
-    #try:
     with open(f"{file}.bnd", 'r') as bnd_file:
         with open(f"{file}.cfg", 'r') as cfg_file:
             protocol = Protocol()
@@ -49,9 +47,6 @@ def mutate(file, temp_dir, N_ITER, created_nodes=0):
                 operation()
             save_to_file(protocol, temp_dir + "/tmp_protocol")
     return n_added
-    """except FileNotFoundError:
-        print(f"File not found: {file}")
-        sys.exit(1)"""
 
 class OpenedProtocol:
     def __init__(self, name, out_dir):
@@ -175,14 +170,14 @@ def restore(target_path):
                 protocols_pool[base_pool].append(protocol)
     return protocols_pool
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         print("Usage: python create_variants.py <target_directory> <pool_directory> <target_number_protocols>")
         sys.exit(1)
+
     target_path = sys.argv[1]
-    target_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), target_path)
     pool_path = sys.argv[2]
-    pool_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), pool_path)
     target = int(sys.argv[3])
 
     if (os.path.exists(target_path)):
