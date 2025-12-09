@@ -2,6 +2,11 @@ import numpy as np
 import re
 import sys
 
+
+"""
+Classes in this file are used to parse, manipulate and export Boolean models in PhysiBoSS .bnd/.cfg format.
+"""
+
 class Operator:
     def __init__(self, node_1, node_2, operator):
         self.node_1 = node_1
@@ -265,7 +270,7 @@ class Parser:
             raise SyntaxError(f"Unexpected token: {token}")
 
 
-class Protocol:
+class BooleanModel:
     def __init__(self):
         self.nodes = {}
         self.variables = {}
@@ -510,7 +515,7 @@ class Protocol:
             expressions += f"\tLogic: {node.logic}\n"
             expressions += f"\tUp: {node.up}\n"
             expressions += f"\tDown: {node.down}\n"
-        return f"""Protocol:\n{nodes}\n{variables}\n{expressions}"""
+        return f"""Model:\n{nodes}\n{variables}\n{expressions}"""
 
     def make_generic(self):
         remove_nodes = max(0, len(self.nodes.values())-63)
@@ -672,9 +677,9 @@ class Protocol:
                 candidate.node_3 = negate(candidate.node_3)
         
 
-def save_to_file(protocol, filename):
+def save_to_file(model, filename):
     with open(f"{filename}.bnd", 'w') as file:
-        file.write(protocol.export())
+        file.write(model.export())
     with open(f"{filename}.cfg", 'w') as file:
-        file.write(protocol.export_cfg())
+        file.write(model.export_cfg())
 

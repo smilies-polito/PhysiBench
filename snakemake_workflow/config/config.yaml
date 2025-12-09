@@ -4,5 +4,23 @@
 #--------------------------------------------------#
 
 source_boolean_models_dir: "source_data/base_boolean_models_v1"
-mutated_boolean_models_dir: "results/boolean_models/mutated_models_v1"
+base_pool_dir: "results/boolean_models/base_pool"
+mutated_boolean_models_dir: "results/boolean_models/mutated"
 target_number_of_models: 2400
+
+MIN_DISTANCE: 0.15 # Min. distance threshold to the closest existing model
+MAX_TESTED: 200000 # Quit after testing this number of mutations
+
+MUTATION_P: [
+    0.15,  #Switch nodes logic
+    0.26,   #Replace logical operator
+    0.228,  #Replace node inside logic
+    0.25,   #Negate subexpression
+    0.01,   #add_input_to_logic 
+    0.002,    #Add node
+    0.1,     #randomize_node_logic
+    0.00    #randomize parameter
+]
+MAX_CREATED_NODES: 45 # Max number of new nodes in the mutated model. It prevents models from growing too much.
+MIN_MUTATIONS: 10
+MAX_MUTATIONS: 2000
