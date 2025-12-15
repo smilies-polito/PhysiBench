@@ -1,0 +1,11 @@
+name: bidms
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.13
+  - scikit-learn
+  - numpy
+  - snakemake=9.14.3
+prefix: /home/marco/miniconda3/envs/bidms

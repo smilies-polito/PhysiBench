@@ -55,6 +55,17 @@ class Protocols:
     initial_positions: InitialPosition
 
 
+
+    def get_random():
+        return Protocols(
+            treatment_duration=random.uniform(0, 1),
+            treatment_period=random.uniform(0, 0.5),
+            xmin=random.uniform(0, 10),
+            xmax=random.uniform(0, 10),
+            ymin=random.uniform(0, 10),
+            ymax=random.uniform(0, 10),
+            initial_positions=InitialPosition.get_random()
+        )
     def test(self):
         if not (0 <= self.treatment_duration <= 1):
             raise ValueError("treatment_duration must be between 0 and 1")

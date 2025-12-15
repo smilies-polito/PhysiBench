@@ -2,31 +2,61 @@ import numpy as np
 import sys
 import os
 from boolean_model_mutation import *
-#from MaBoSS_trajectory import *
-from run_simulation import *
 from distances import CorrelationDistances, EuclideanDistance
 from utils import print_and_log, set_log_Path
-
+from physiboss import LocalPhysiboss
+from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
 MAX_ERRORS = 10
 
+POOL_OF_PROTOCOLS = [
+    Protocols.get_random() for _ in range(16)
+]
+
+def alive_cells(output_folder):
+    # Creating a MCDS reader
+    reader = multicellds.MultiCellDS(output_folder=output_folder)
+    # Creating an iterator to load a cell DataFrame for each stored simulation time step
+    df_iterator = reader.cells_as_frames_iterator()
+    step_alive = []
+    time_steps = []
+
+    for (t, df_cells) in df_iterator:
+        alive = (df_cells.current_phase==14).sum()
+        step_alive.append(alive)
+        time_steps.append(t)
+    return step_alive
+
 def run_simulation_(cfg_filename, bnd_filename, out_dir):
+    config_results = np.array([])
     with open(cfg_filename, 'r') as cfg_file:
         with open(bnd_filename, 'r') as bnd_file:
             boolean_model = BooleanModel()
             boolean_model.import_from_bnd(bnd_file, cfg_file)
             boolean_model.make_generic()
-            temp_dir = out_dir + "temp_boolean_model"
+            temp_dir = out_dir + "/_temp_boolean_model"
             save_to_file(boolean_model, temp_dir)
             try:
-                states = run_simulation(temp_dir, "temp_boolean_model")
+                for protocol in POOL_OF_PROTOCOLS:
+                    # Run the simulation
+                    model = ModelParameters(
+                        out_dir.split("/")[-1],
+                        "_temp_boolean_model"
+                    )
+                    sim_params = SimulationParameters.get_defaults()
+                    pool_path = os.path.dirname(out_dir)
+                    output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
+                    alive = alive_cells(output_dir)
+                    alive = np.array(alive)
+                    alive = alive[-20:]
+                    config_results.append(al)
+
             except Exception as e:
+                print(e)
+                raise e
+            finally:
                 os.remove(temp_dir + ".bnd")
                 os.remove(temp_dir + ".cfg")
-                raise e
-            os.remove(temp_dir + ".bnd")
-            os.remove(temp_dir + ".cfg")
-            
-            return boolean_model, states
+            return boolean_model, config_results
 
 def create_generics(cfg_filename, bnd_filename, out_dir, target):
     distances = CorrelationDistances()
@@ -43,8 +73,9 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
             boolean_model, states = run_simulation_(cfg_filename, bnd_filename, out_dir)
         except KeyboardInterrupt:
             exit()
-        except:
+        except Exception as e:
             print_and_log("Error during simulation")
+            print(e)
             errors += 1
             if errors > MAX_ERRORS:
                 print_and_log("Too many errors, giving up.")

@@ -361,7 +361,7 @@ class BooleanModel:
                 node.logic = recursive_to_conjunctive(node.logic)
                 node.logic = remove_not_chain(node.logic)
     
-        #Goal: logic is flat sequence of ANDs and NOTs. No nexted expressions inside NOT
+        #Goal: logic is flat sequence of ANDs and NOTs. No nested expressions inside NOT
         # Es A and B and not C ... is allowed. 
         # A and NOT (B and C) is not allowed
         created = dict()

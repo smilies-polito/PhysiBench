@@ -1,0 +1,422 @@
+node wg1
+{
+	logic = (EN2 + (NODE_58 + (! (NODE_61 * (wg3 & (CI3 * (! (WG2 - (! (CIA4 - (! wg3)))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node WG1
+{
+	logic = (! (CI2 * ((! CI4) - (WG2 / (! (SLP4 + (HH3 | (en1 * (NODE_56 + (! ((! hh4) & (! (hh3 / (! (WG3 & (en3 / (CI1 - (! (! (Apoptosis & (! (Survival - (CIA3 * (EN4 / (ptc1 - hh3)))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node en1
+{
+	logic = (! (CIR2 * (CIR1 - (! (PTC1 - (en3 * (EN3 | (WG4 & (HH2 / (EN4 & (ci4 & (CIA4 * (! (NODE_58 / (! (en4 - (! (! (NODE_53 * (! (SLP4 * (PTC3 * (HH3 * (! (en2 | (SLP1 / (en4 * (ci1 - (ptc2 | (hh1 + (WG2 * (! (hh3 * (CI3 / (! (EN1 * (WG3 + en1)))))))))))))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node EN1
+{
+	logic = (SLP1 - (! (PTC4 | (NODE_52 * (EN3 + (CIR2 / (hh1 + (CIA1 - (NonACD * (wg2 - (CIR3 * (NODE_61 + (PTC1 | (! (CI1 / (! (Survival / (HH1 / (! (HH3 + (! (WG3 + (! (CIA3 - (wg1 * (CI4 - (WG1 * (ci1 | (ci4 + (ptc1 + (! (NODE_58 * (SLP4 | (HH2 | (wg4 & (CIR4 / NODE_60))))))))))))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node hh1
+{
+	logic = (ptc2 * (CIR1 | (! ((! hh1) - (CIA4 * (ci1 & (! (WG1 & (WG2 & (! (CIR4 & (ptc4 | (NODE_60 / (NODE_58 + CIA4))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node HH1
+{
+	logic = (EN1 - (NODE_56 - (! (en2 - (! (WG3 | (NODE_54 * (NODE_52 - (hh2 / (! (NonACD + (en3 / (EN2 - (! (ptc3 / (CI2 | (CI4 / (Apoptosis | (! (NODE_53 | (! (sec_activator + (HH3 | (EN3 | (! (SLP1 - (! (CIR3 * (! (en4 - (ptc2 * (! NODE_54))))))))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node ptc1
+{
+	logic = (NODE_61 | (HH3 & (EN4 & (! CIA3))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node PTC1
+{
+	logic = (NODE_60 * (hh4 * (! (ptc2 | ((! (! NODE_61)) + (ptc1 / (wg4 / EN4)))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node ci1
+{
+	logic = (NODE_55 & ((! NODE_59) + (NODE_56 * (en4 * ((! en1) - (ptc1 & (en3 * ci3)))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node CI1
+{
+	logic = (! (en2 * (! (NODE_61 + (hh4 | (HH3 - (SLP4 - (! (hh1 / ((! en3) + (! ((! ci4) - (! (CI2 + (CI3 & (en4 / (EN4 | (hh1 - NODE_59))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIA1
+{
+	logic = (Apoptosis | (CIR1 & (en4 + (hh4 - NODE_53))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIR1
+{
+	logic = (CI1 / (! (en3 * (! (WG2 | (ptc2 * (! NODE_59)))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node wg2
+{
+	logic = (! (wg2 - (WG1 / (ptc4 + (ci3 & (CI2 + (ci4 | (! (ptc2 * (HH3 | (CI4 + (CI1 / (hh3 - (Survival - (! (EN2 / (! wg1)))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node WG2
+{
+	logic = (! (en2 | (CI2 | (! ((! en4) - (NonACD * (! NODE_59)))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node en2
+{
+	logic = (SLP1 & (TNF - (! (PTC4 & (HH1 & (! HH2))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node EN2
+{
+	logic = (wg3 | (! (PTC4 | (! (hh2 / (! (CI1 / ptc3)))))));
+}
+
+node hh2
+{
+	logic = (PTC4 - (hh3 * (NODE_53 / (CI4 & (ci2 * (EN2 * (NODE_58 + (PTC1 & (! (TNF / (! (ci1 * (! (NODE_54 + (NODE_57 & (EN1 / (CI2 + (en3 * (! (WG4 / (! (SLP4 / (PTC3 * NODE_61)))))))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node HH2
+{
+	logic = (wg4 & (ptc2 & (ci4 | (WG1 & (! (SLP4 * (hh4 + (PTC4 | (! (en2 * (PTC1 * (WG3 - ((! WG4) & (ptc1 | (wg1 & (! (ci4 - (HH3 / (NODE_55 / NODE_60)))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node ptc2
+{
+	logic = (! (hh3 + en1));
+}
+
+node ci2
+{
+	logic = (CIR4 + (CI2 + (! (CI4 | (ptc4 & (WG2 / (NODE_56 / NODE_61)))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node CI2
+{
+	logic = (ci2 + (Survival - (ci4 + (hh1 + (hh2 + (CI2 * (HH2 - (EN2 & (! (CI3 * (TNF / en2)))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIR2
+{
+	logic = (CIR4 + ((! ptc4) - (! NODE_61)));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node wg3
+{
+	logic = (CI2 / (! (EN2 - (hh1 - (CI3 / ((! NODE_56) | (hh2 * EN4)))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node WG3
+{
+	logic = (! (HH1 - CI3));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node en3
+{
+	logic = (en3 + (! (wg1 * (ptc4 + (CI2 * (WG2 / (CIA1 / EN2)))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node EN3
+{
+	logic = (NODE_52 / (HH1 / (WG1 * (CIA3 | (CIA4 | (SLP4 / (PTC1 * (HH3 | (! (WG2 - (! (EN1 | (PTC4 - (NODE_59 & (EN3 - (CI4 + (ptc1 & (CIA1 / (NODE_60 * (NODE_54 + (EN4 | (NODE_55 | (ptc2 - CI1)))))))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node hh3
+{
+	logic = (CIR1 * (PTC4 + (! (ptc2 - (! HH1)))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node HH3
+{
+	logic = (EN3 & (NODE_54 & (hh3 / hh4)));
+}
+
+node ptc3
+{
+	logic = (NODE_55 & (! (! (! (CIA1 - (CIA3 + HH3))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node PTC3
+{
+	logic = (ci3 | (EN1 & (! (NonACD * (ci4 + (ptc1 & (CIR4 * (CI1 * (SLP1 & wg1)))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node ci3
+{
+	logic = (CI2 * (SLP1 | (hh2 / (CIA4 / (! (wg3 + (PTC4 & (EN2 - (! (NODE_61 - (ci4 & (! (CI1 - (HH2 * (HH3 & (wg4 & (wg1 & (ci2 + (hh3 * (! (WG2 & (ptc3 * (! ((! WG3) - (CIR3 - (CI3 | (Survival * (hh1 & (NODE_53 | NODE_54)))))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node CI3
+{
+	logic = (CI4 | (PTC3 + (NODE_54 / (NODE_53 * ((! WG1) * ci1)))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIA3
+{
+	logic = (! (CIR4 | (SLP4 | (NODE_59 / (! (CI2 & (! (CIA4 & (! (ptc1 - (WG1 * (PTC3 + (! NODE_57)))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIR3
+{
+	logic = (! (CIR4 * (sec_activator + (HH3 / (NODE_58 + (CI4 | (en1 - ((! EN1) + (ci2 | (! (NODE_54 & (NODE_59 - (ptc4 / (! (! (NODE_55 - (hh1 + (SLP4 * CI3))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node wg4
+{
+	logic = (en2 + (ci2 & (NonACD * (WG1 * (en3 * (Apoptosis | (NODE_56 | (en1 | (! (CIR1 * (WG2 + (en4 + (CI2 / (WG4 * (ptc1 / (! (wg4 * (wg3 - (CI4 + (! (CIR3 * (hh4 + (SLP1 + (Survival & (HH2 & (! (NODE_52 / (CI3 / (! wg2)))))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node WG4
+{
+	logic = (Survival / (! ((! ci4) & (PTC4 / WG3))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node en4
+{
+	logic = (ptc1 / (hh2 & (! (wg2 + (ptc2 * (CIR2 / (WG1 * (! (HH1 / (ci2 - (! (ptc3 + (NODE_58 | (NODE_52 * (CI2 / (HH2 + (en3 + (WG2 & (PTC4 - (CIR3 | (! (wg4 + (hh3 | (NODE_60 - (hh4 + (TNF / (NonACD & (en4 & (! (wg3 / (PTC3 * (! (WG3 / (hh1 + (NODE_59 / NODE_61)))))))))))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node EN4
+{
+	logic = (WG4 * (CI2 - ((! Apoptosis) | (CIR2 + (! (hh4 * (PTC3 - (en2 + (EN3 + (wg2 - (! (ptc4 + (! (hh3 * ((! HH2) - (EN2 & (NonACD - (CI3 | (en1 + (NODE_57 * (ptc3 + ((! wg3) + NODE_58))))))))))))))))))))));
+}
+
+node hh4
+{
+	logic = (wg2 & (EN1 / ((! ci2) | (! (ptc3 & (Apoptosis - (CI2 & (NODE_53 + (ci4 * (wg1 & (! (HH2 - (WG4 * (! (Survival & EN4)))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node ptc4
+{
+	logic = (WG2 / (ptc3 | (NODE_61 + (! (hh2 * (! (ptc4 / (CIR2 - (CIA4 + (Apoptosis + (CIA3 * (CIR4 / (hh1 | (TNF / (ci1 - (! (HH3 * (SLP1 * wg2))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node PTC4
+{
+	logic = (CIR3 + (en3 * (hh2 + (! (sec_activator * (hh4 | (PTC4 + (CI3 | (WG3 | (CIA3 | (en4 * (! (Apoptosis + (! (HH2 & (SLP4 * (! (WG2 - (! (wg4 / (hh3 - (NODE_52 + (EN2 & (! (CIR4 | (ci1 / ci4))))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node ci4
+{
+	logic = (PTC4 + (! (TNF + (CIA1 - (CIA3 * (EN4 & (! (NODE_60 & (! (wg3 / (NODE_55 / (! (PTC3 * (CI4 | (EN3 + (WG2 * (! (CIR1 & (Apoptosis - (ci4 | (sec_activator * (WG3 * (hh3 + (CI3 * (CIR2 * hh4)))))))))))))))))))))))));
+	rate_up = (@logic ? $rate_RNA : $noise);
+	rate_down = ((! @logic) ? $rate_RNA : $noise);
+}
+
+node CI4
+{
+	logic = (WG3 * (ptc4 * (CIR2 + (! (CI2 | (EN1 & (PTC1 / (ci4 & (en3 + (NODE_58 & (! CIR1)))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIA4
+{
+	logic = (WG2 - (ci1 / (HH1 + (NODE_59 - (ci4 / (hh4 - (PTC3 & (WG1 * (NODE_58 / (PTC4 / NODE_52))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node CIR4
+{
+	logic = (NODE_59 * ((! (! WG1)) / (! (! WG4))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node SLP1
+{
+	rate_up = 0;
+	rate_down = 0;
+}
+
+node SLP4
+{
+	rate_up = 0;
+	rate_down = 0;
+}
+
+node TNF
+{
+	logic = (! (en2 & (EN1 | (! (PTC4 + (PTC1 - (hh4 / (sec_activator | (! ((! HH3) & (hh1 * NODE_61)))))))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node Survival
+{
+	rate_up = 0;
+	rate_down = 0;
+}
+
+node sec_activator
+{
+	logic = (HH2 | (! CIR2));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node NonACD
+{
+	rate_up = 0;
+	rate_down = 0;
+}
+
+node Apoptosis
+{
+	logic = (NODE_57 - (SLP4 & (wg2 & (! ((! ptc2) | (Survival | ((! (! NODE_57)) & en4)))))));
+	rate_up = (@logic ? $rate_protein : $noise);
+	rate_down = ((! @logic) ? $rate_protein : $noise);
+}
+
+node NODE_52
+{
+	logic = (hh2 * (sec_activator / (SLP4 / (! (ci1 - (SLP1 * (TNF | NODE_58)))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_53
+{
+	logic = (ci2 / (! (NODE_56 & (! (! (CI4 / CIR3))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_54
+{
+	logic = (TNF / (NODE_61 & (NODE_53 + (! (NonACD - (CIR2 - (NODE_54 * (hh4 / (ptc1 + (! (! (NODE_59 * (PTC1 | (CI3 - (Survival & (ptc4 & (! (CIR1 & (HH2 + (HH3 + ((! en4) & (EN2 / hh3))))))))))))))))))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_55
+{
+	logic = (en4 - (CIA1 | (! (NODE_56 & (wg4 & (en2 - (en3 | (ptc3 & (CIA4 + (WG2 - (SLP1 / (hh2 & (hh4 / (Apoptosis / (NonACD * (TNF & (EN4 / (PTC4 / (CIR2 * (ci4 & (! (CI4 | (PTC3 - en1)))))))))))))))))))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_56
+{
+	logic = (en3 | (CI4 | CIA4));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_57
+{
+	logic = (sec_activator - (NODE_55 - (HH2 & (HH1 - (ci3 - (! (hh3 & ((! WG3) + (! (en1 * (ptc4 - (! (EN2 | (! (NODE_53 + (ptc2 / (NODE_54 / (NODE_60 * (! (wg2 - (CIA4 & (CIR2 / (en2 & NODE_55)))))))))))))))))))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_58
+{
+	logic = (hh4 * (WG1 / (! ((! hh1) + (! NODE_54)))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_59
+{
+	logic = (ci3 - ((! NODE_59) - (CIR4 & (PTC4 * (PTC3 & (wg3 * (sec_activator - (ci1 - (Apoptosis / (en4 | (hh3 * (WG4 - (hh2 & ptc2)))))))))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_60
+{
+	logic = (ptc2 | (! NODE_55));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
+node NODE_61
+{
+	logic = (CIA4 - (ci4 + (WG1 / (! (NODE_54 - (en1 | (NODE_61 + (en4 / (CIR2 - hh4)))))))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
+}
+
