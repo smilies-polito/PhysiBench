@@ -1,20 +1,22 @@
 from dataclasses import dataclass
 import os
+import sys
 import pickle
 import random
 import time
+import argparse
 from simulation_parameters_optimization import SimulationParameters
 from fitness_functions import AliveCellsFitness, CircularFitness, SpatialFitnessType, SquaredFitness
 from initial_positions import InitialPosition
-from physiboss import ModelParameters, Protocols, Physiboss
+from physiboss import ModelParameters, Protocols, RemotePhysiboss, LocalPhysiboss
 import subprocess
 import numpy as np
 import time
 ### Produce a pool of << Subject of analysis; Context>, Fitness>
-
 MAX_REMOTE_JOBS_STOPS_AT = 160*3
 MAX_REMOTE_JOBS_RESUME_AT = 70*3
 
+# Sampling Subject - Model + Initial Positions to be tested
 @dataclass
 class Subjects:
     initial_positions: InitialPosition
@@ -91,6 +93,7 @@ class Subjects:
         return ",".join(map(str, x))
         
 
+# Sampling Context - Protocol to be tested with the Subject
 @dataclass
 class Context:
     #protocol.initial position is ignored and replaced by the one in the Subject 
@@ -146,18 +149,44 @@ class Context:
             )
         )
 
-def run_sampling(N_CONTEXT, N_SUBJECT, fName):
+
+
+class RemotePhysibossInterface:
+    def run_job(self, model: ModelParameters, protocol: Protocols, job_name: str, sim_params: SimulationParameters):
+        RemotePhysiboss.run_remote(
+            model, protocol, job_name, sim_params
+            )
+    def get_job_list(self):
+        return Physiboss.get_remote_job_list()
+    
+    def retrieve_job_results(self, destination_folder: str):
+        subprocess.run(["rsync", "-avz", '--no-owner',  '--no-group', "rsmeriglio@hpc-lb.polito.it:/home/rsmeriglio/masera/results", destination_folder])   
+
+class LocalPhysibossInterface:
+    def __init__(self, pool_path):
+        self.pool_path = pool_path
+
+    def run_job(self, model: ModelParameters, protocol: Protocols, job_name: str, sim_params: SimulationParameters):
+        pass
+    def get_job_list(self):
+        pass
+    
+    def retrieve_job_results(self, destination_folder: str):
+        pass
+
+def run_sampling(N_CONTEXT, N_SUBJECT, work_path, physiboss, max_jobs_stop=None, max_jobs_resume=None):
     """
     Run the sampling process.
     """
-    output_dir = f"../{fName}"
-    result_dir = f"../{fName}/results"
+    # Setup output directories
+    output_dir = work_path
+    result_dir = os.path.join(work_path, "results")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
-    output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), output_dir))
-    print(f"Output directory: {output_dir}")
+    
+    # Define fitness functions
     fitnesses = [
         AliveCellsFitness(),
         CircularFitness(center=(0, 0), radius=100, fitness_type=SpatialFitnessType.LINEAR),
@@ -181,21 +210,22 @@ def run_sampling(N_CONTEXT, N_SUBJECT, fName):
         "SquaredFitness_2_WT_DISTRIBUTION"
     ]
 
-    if (N_CONTEXT is None or N_SUBJECT is None):
-        print("Loading existing subjects and contexts...")
-        #load the context
+    # Load or generate subjects and contexts
+    if (os.path.exists(f"{output_dir}/subjects.csv") and os.path.exists(f"{output_dir}/contexts.pickle")):
         with open(f"{output_dir}/contexts.pickle", "rb") as f:
             contexts = pickle.load(f)
-        #load the subjects
         subjects = []
         with open(f"{output_dir}/subjects.csv", "r") as f:
             for line in f:
                 parts = line.strip().split(",")
                 subjects.append(Subjects.fromCSV(parts))
         num_sent = len(os.listdir(result_dir))
-        simulation_start_time = None
-        results = Physiboss.get_job_list()
+        results = physiboss.get_job_list()
         num_received = len(results)
+        if len(subjects) != N_SUBJECT or len(contexts) != N_CONTEXT:
+            exit("The number of subjects or contexts in the existing files does not match the requested number. Please delete the existing files to regenerate them.")
+        print(f"Restoring sampling procedure. Sent {num_sent} jobs, received {num_received} results.")
+
     else:
         subjects = Subjects.get_random_vector(N_SUBJECT)
         contexts = Context.get_random_vector(N_CONTEXT)
@@ -206,28 +236,14 @@ def run_sampling(N_CONTEXT, N_SUBJECT, fName):
         # Save the context
         with open(f"{output_dir}/contexts.pickle", "wb") as f:
             pickle.dump(contexts, f)
-
         num_sent = 0
-        simulation_start_time = time.time()
+        results = []
+        num_received = 0
 
-    simulationParameters = SimulationParameters(
-        domain_size=206,
-        max_time=1700,
-        dt_diffusion=0.256,
-        dt_mechanics=0.152,
-        dt_phenotype=5.718,
-        num_threads=3,
-        diffusion_coefficient=1070.0,
-        speed=3.3,
-        intracellular_dt=518
-    )
 
-    results = Physiboss.get_job_list()
-    num_received = len(results)
-    num_sent = num_received
+    simulationParameters = SimulationParameters.get_defaults()
 
-    #Compute the raw simulation putputs
-    print("Computing raw simulation outputs...")
+    #Compute the raw simulation putouts
     for i, subject in enumerate(subjects):
         with open(f"{output_dir}/{i}_fitness.csv", "a") as f:
             f.write(",".join(fitnesses_names) + "\n")
@@ -240,29 +256,22 @@ def run_sampling(N_CONTEXT, N_SUBJECT, fName):
                     print(f"Skipping job {job_name} as result already exists.")
                     continue
 
-                Physiboss.run_remote_wt_settings(model=subject.model, protocol=context.protocol, job_name=job_name, sim_params=simulationParameters)
+                physiboss.run_job(model=subject.model, protocol=context.protocol, job_name=job_name, sim_params=simulationParameters)
                 num_sent += 1
 
-                if (num_sent - num_received) >= MAX_REMOTE_JOBS_STOPS_AT:
-                    while (num_sent - num_received) >= MAX_REMOTE_JOBS_RESUME_AT:
-                        print(f"Sent {num_sent} jobs, received {num_received} results. Waiting for results...")
-                        results = Physiboss.get_job_list()
-                        num_received = len(results)
-                        time.sleep(30)
+                if max_jobs_stop and max_jobs_resume:
+                    if (num_sent - num_received) >= max_jobs_stop:
+                        while (num_sent - num_received) >= max_jobs_resume:
+                            print(f"Sent {num_sent} jobs, received {num_received} results. Waiting for results...")
+                            results = physiboss.get_job_list()
+                            num_received = len(results)
+                            time.sleep(30)
             except KeyboardInterrupt:
                 print("Process interrupted by user. Exiting...")
-                exit()
+                return
             except Exception as e:
-                print(f"Error: {e}")
+                print(f"Error: {e} - Skipping subject {i}, context {context_index}.")
 
-    if (simulation_start_time is not None):
-        simulation_end_time = time.time()
-        delta_time_seconds = simulation_end_time - simulation_start_time
-        with open(f"{output_dir}/simulation_time.txt", "w") as f:
-            f.write(f"Received {num_received} results out of {num_sent} sent jobs.\n")
-            f.write(f"Simulation time: {delta_time_seconds} seconds\n")
-            f.write(f"Simulation time: {delta_time_seconds / 60} minutes\n")
-            f.write(f"Simulation time: {delta_time_seconds / 3600} hours\n")
 
     while (num_sent != num_received):
         print("Waiting for all jobs to complete...")
@@ -270,9 +279,10 @@ def run_sampling(N_CONTEXT, N_SUBJECT, fName):
         time.sleep(30)
         results = Physiboss.get_job_list()
         num_received = len(results)
+    
     #Compute the fitness
     print("Computing fitness scores...")
-    subprocess.run(["rsync", "-avz", '--no-owner',  '--no-group', "rsmeriglio@hpc-lb.polito.it:/home/rsmeriglio/masera/results", f"/boolean/src/{fName}"])   
+    physiboss.retrieve_job_results(destination_folder=result_dir)
     MAX_STEP = 10
 
     for step in range(0, MAX_STEP + 1):
@@ -309,19 +319,52 @@ def run_sampling(N_CONTEXT, N_SUBJECT, fName):
 
 
 if __name__ == "__main__":
-    # Run the sampling process
-    print("Loading existing subjects and contexts...")
-    #load the context
-    with open(f"{output_dir}/contexts.pickle", "rb") as f:
-        contexts = pickle.load(f)
-    with open("contexts.csv", "w") as f:
-        for i, context in enumerate(contexts):
-            protocol = context.protocol
-            f.write(f"{i},{protocol.treatment_duration},{protocol.treatment_period},{protocol.xmin},{protocol.xmax},{protocol.ymin},{protocol.ymax}\n")
-
-    import sys
-    N_Context = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    N_Subject = int(sys.argv[3]) if len(sys.argv) > 3 else None
-    Name = sys.argv[1] 
-    run_sampling(N_Context, N_Subject, Name)
+    parser = argparse.ArgumentParser(description='Run sensitivity analysis for PhysiBoSS simulations')
     
+    parser.add_argument('N_Context', type=int, help='Number of contexts to sample')
+    parser.add_argument('N_Subject', type=int, help='Number of subjects to sample')
+    parser.add_argument('pool_path', type=str, help='Path to the pool of boolean models')
+    parser.add_argument('work_path', type=str, help='Working directory path for output files')
+    parser.add_argument('--use-remote', action='store_true', help='Enable remote execution')
+    parser.add_argument('--remote-url', type=str, default=None, 
+                        help='Remote URL for job submission (required if --use-remote is set)')
+    parser.add_argument('--remote-results-path', type=str, default=None,
+                        help='Remote HPC results path (required if --use-remote is set)')
+    parser.add_argument('--remote-failed-path', type=str, default=None,
+                        help='Remote HPC failed jobs path (required if --use-remote is set)')
+    parser.add_argument('--remote-temp-path', type=str, default=None,
+                        help='Remote HPC temporary path (required if --use-remote is set)')
+    parser.add_argument('--max-jobs-stop', type=int, default=480,
+                        help='Maximum number of concurrent remote jobs before stopping (default: 480)')
+    parser.add_argument('--max-jobs-resume', type=int, default=210,
+                        help='Resume submitting jobs when count drops below this (default: 210)')
+    
+    args = parser.parse_args()
+    
+    # Validate that all remote parameters are provided if use_remote is True
+    if args.use_remote:
+        if not args.remote_url:
+            parser.error("--remote-url is required when --use-remote is set")
+        if not args.remote_results_path:
+            parser.error("--remote-results-path is required when --use-remote is set")
+        if not args.remote_failed_path:
+            parser.error("--remote-failed-path is required when --use-remote is set")
+        if not args.remote_temp_path:
+            parser.error("--remote-temp-path is required when --use-remote is set")
+
+    #Initialize the physiboss interface
+    if args.use_remote:
+        RemotePhysiboss.BOOLEAN_MODEL_POOL = args.pool_path
+        RemotePhysiboss.HPC_LOGIN = args.remote_url
+        RemotePhysiboss.REMOTE_HPC_RESULTS_PATH = args.remote_results_path
+        RemotePhysiboss.REMOTE_HPC_FAILED_PATH = args.remote_failed_path
+        RemotePhysiboss.HPC_TEMP_PATH = args.remote_temp_path
+        physiboss = RemotePhysibossInterface()
+        max_jobs_stop = args.max_jobs_stop
+        max_jobs_resume = args.max_jobs_resume
+    else:
+        physiboss = LocalPhysibossInterface(args.pool_path)
+        max_jobs_stop = None
+        max_jobs_resume = None
+    
+    run_sampling(args.N_Context, args.N_Subject, args.work_path, physiboss, max_jobs_stop, max_jobs_resume)

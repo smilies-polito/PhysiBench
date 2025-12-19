@@ -1,5 +1,4 @@
-from boolean_model_mutation.py import *
-from run_simulation import *
+from boolean_model_mutation import *
 from distances import CorrelationDistances, EuclideanDistance
 from utils import print_and_log, set_log_Path
 import numpy as np
@@ -7,6 +6,27 @@ import sys
 import os
 import argparse
 import subprocess
+from pctk import multicellds
+from physiboss import LocalPhysiboss
+from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
+
+POOL_OF_PROTOCOLS = [
+    Protocols.get_random() for _ in range(16)
+]
+
+def alive_cells(output_folder):
+    # Creating a MCDS reader
+    reader = multicellds.MultiCellDS(output_folder=output_folder)
+    # Creating an iterator to load a cell DataFrame for each stored simulation time step
+    df_iterator = reader.cells_as_frames_iterator()
+    step_alive = []
+    time_steps = []
+
+    for (t, df_cells) in df_iterator:
+        alive = (df_cells.current_phase==14).sum()
+        step_alive.append(alive)
+        time_steps.append(t)
+    return step_alive
 
 """
 This script creates new Boolean model variants by mutating existing models.
@@ -38,23 +58,41 @@ def mutate(file, temp_dir, N_ITER, created_nodes=0, max_created_nodes=45):
     return n_added
 
 class OpenedModel:
-    def __init__(self, name, out_dir):
+    def __init__(self, name, out_dir, max_created_nodes):
         self.name = name
         self.out_dir = out_dir
         self.simulation_states = None
         self.created_nodes = 0
-        self.max_created_nodes = MAX_CREATED_NODES
+        self.max_created_nodes = max_created_nodes
     
     def get_mutated_boolean_model(self, N_ITER):
         temp_path = os.path.join(self.out_dir, "temp")
         n_added = mutate(os.path.join(self.out_dir, self.name), temp_path, N_ITER, self.created_nodes, self.max_created_nodes)
-        p = OpenedModel("tmp_boolean_model", temp_path)
+        p = OpenedModel("tmp_boolean_model", temp_path, self.max_created_nodes)
         p.created_nodes = self.created_nodes + n_added
         p.max_created_nodes = self.max_created_nodes
         return p
     
     def get_physiboss_states(self):
-        self.simulation_states = run_simulation(self.out_dir, self.name)
+        states = []
+        for protocol in POOL_OF_PROTOCOLS:
+            try:
+                # Run the simulation
+                model = ModelParameters(
+                    self.out_dir.split("/")[-1],
+                    self.name
+                )
+                sim_params = SimulationParameters.get_defaults()
+                pool_path = os.path.dirname(self.out_dir)
+                output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
+                alive = alive_cells(output_dir)
+                alive = np.array(alive)
+                alive = alive[-20:]
+                states.append(alive)
+            except Exception as e:
+                print(e)
+                states.append(np.array([0]*20))
+        self.simulation_states = states
     
     def rename(self, base_path, name):
         os.system(f"mv {self.out_dir}/{self.name}.cfg {base_path}/{name}.cfg")
@@ -64,10 +102,6 @@ class OpenedModel:
     
     def export_simulation_states(self):
         np.savetxt(os.path.join(self.out_dir, self.name + "_states.csv"), self.simulation_states, delimiter="\t")
-    
-    def get_maboss_states(self):
-        assert False #Not used for now
-        #run_maboss_and_get_states(directory + "/temp/tmp_boolean_model", directory + "/temp")
 
 #Linear distance measure
 def linear_distance_single_step(p1, p2):
@@ -125,6 +159,9 @@ def init_new(target_path, pool_path, max_created_nodes=45):
     pool = {}
     #Create directories corresponding to base pools
     for base_pool in base_pools:
+        if not (os.path.isdir(os.path.join(pool_path, base_pool))):
+            print(f"Skipping {base_pool}, not a directory")
+            continue
         os.makedirs(os.path.join(target_path, base_pool))
         os.makedirs(os.path.join(target_path, base_pool, "temp"))
         i = 0
@@ -137,7 +174,7 @@ def init_new(target_path, pool_path, max_created_nodes=45):
                 bnd_file = os.path.join(pool_path, base_pool, boolean_model_basename+".bnd")
                 os.system(f"cp {cfg_file} {target_path}/{base_pool}/V{i}.cfg")
                 os.system(f"cp {bnd_file} {target_path}/{base_pool}/V{i}.bnd")
-                boolean_model = OpenedModel(f"V{i}", os.path.join(target_path, base_pool))
+                boolean_model = OpenedModel(f"V{i}", os.path.join(target_path, base_pool), max_created_nodes)
                 boolean_model.max_created_nodes = max_created_nodes
                 boolean_model.get_physiboss_states()
                 boolean_model.export_simulation_states()
@@ -156,7 +193,7 @@ def restore(target_path, max_created_nodes=45):
                 file_path = os.path.join(target_path, base_pool, boolean_model_basename + ".bnd")
                 process_result = subprocess.run(f"cat {file_path} | grep -c 'NODE_[0-9]\\+'", shell=True, capture_output=True, text=True)
                 number_created_nodes = int(process_result.stdout.strip())
-                boolean_model = OpenedModel(boolean_model_basename, os.path.join(target_path, base_pool))
+                boolean_model = OpenedModel(boolean_model_basename, os.path.join(target_path, base_pool),max_created_nodes)
                 boolean_model.created_nodes = number_created_nodes
                 boolean_model.max_created_nodes = max_created_nodes
                 boolean_model.simulation_states = np.loadtxt(os.path.join(target_path, base_pool, boolean_model_basename + "_states.csv"), delimiter="\t")
@@ -208,7 +245,6 @@ if __name__ == "__main__":
         args.mutation_probs = [p / prob_sum for p in args.mutation_probs]
     
     # Set global MUTATION_P (used by mutate function)
-    global MUTATION_P
     MUTATION_P = args.mutation_probs
 
     if os.path.exists(args.target_directory):

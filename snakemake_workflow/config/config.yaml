@@ -1,4 +1,3 @@
-
 #--------------------------------------------------#
 # Generation of boolean models                     #
 #--------------------------------------------------#
@@ -24,3 +23,20 @@ MUTATION_P: [
 MAX_CREATED_NODES: 45 # Max number of new nodes in the mutated model. It prevents models from growing too much.
 MIN_MUTATIONS: 10
 MAX_MUTATIONS: 2000
+
+#--------------------------------------------------#
+# Sensitivity Analysis / Sampling                  #
+#--------------------------------------------------#
+
+sampling_dir: "results/sampling"
+sampling_number_of_contexts: 2
+sampling_number_of_subjects: 2
+
+# Remote execution settings (set use_remote to true to enable)
+use_remote: false
+remote_url: null  # e.g., "user@hpc-server.domain"
+remote_results_path: null  # e.g., "/home/user/results"
+remote_failed_path: null  # e.g., "/home/user/failed"
+remote_temp_path: null  # e.g., "/home/user/temp"
+max_jobs_stop: 480
+max_jobs_resume: 210

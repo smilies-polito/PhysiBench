@@ -17,6 +17,7 @@ def normalize_vector_2D(vec):
     return np.array([normalize_vector_1D(vec[i]) for i in range(vec.shape[0])])
 
 def normalize_vector_flattened(vec):
+    vec = np.asarray(vec)
     return normalize_vector_1D(vec.flatten())
 def correlation_nn_1d(a, b):
     a = np.ravel(a)

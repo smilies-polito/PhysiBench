@@ -124,7 +124,7 @@ class LocalPhysiboss:
 
 class RemotePhysiboss:
     BOOLEAN_MODEL_POOL = "../protocols/v1/pool"
-    PHYSIBOSS_PATH = f"../bin/PhysiCell/"
+    PHYSIBOSS_PATH = f"../physiboss/PhysiCell/"
     CONFIG_PATH = os.path.join(PHYSIBOSS_PATH, "config")
     NETWORK_PATH = os.path.join(CONFIG_PATH, "simple_tnf", "boolean_network")
     BIN_NAME = "project"

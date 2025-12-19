@@ -6,6 +6,7 @@ from distances import CorrelationDistances, EuclideanDistance
 from utils import print_and_log, set_log_Path
 from physiboss import LocalPhysiboss
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
+from pctk import multicellds
 MAX_ERRORS = 10
 
 POOL_OF_PROTOCOLS = [
@@ -27,7 +28,7 @@ def alive_cells(output_folder):
     return step_alive
 
 def run_simulation_(cfg_filename, bnd_filename, out_dir):
-    config_results = np.array([])
+    config_results = []
     with open(cfg_filename, 'r') as cfg_file:
         with open(bnd_filename, 'r') as bnd_file:
             boolean_model = BooleanModel()
@@ -48,7 +49,7 @@ def run_simulation_(cfg_filename, bnd_filename, out_dir):
                     alive = alive_cells(output_dir)
                     alive = np.array(alive)
                     alive = alive[-20:]
-                    config_results.append(al)
+                    config_results.append(alive)
 
             except Exception as e:
                 print(e)
@@ -56,6 +57,7 @@ def run_simulation_(cfg_filename, bnd_filename, out_dir):
             finally:
                 os.remove(temp_dir + ".bnd")
                 os.remove(temp_dir + ".cfg")
+            config_results = np.array(config_results)
             return boolean_model, config_results
 
 def create_generics(cfg_filename, bnd_filename, out_dir, target):
@@ -89,13 +91,13 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
 
         if pool == 0:
             distances.add_element(states)
-            save_to_file(boolean_model, out_dir + f"P{pool}")
+            save_to_file(boolean_model, out_dir + f"/P{pool}")
             pool += 1
             continue
 
         dist = distances.test_element(states)
         if dist >= 0.2:
-            save_to_file(boolean_model, out_dir + f"P{pool}")
+            save_to_file(boolean_model, out_dir + f"/P{pool}")
             pool += 1
             distances.add_element(states)
 
