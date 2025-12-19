@@ -5,3 +5,6 @@ configfile: "config/config.yaml"
 # -----------------------------------------------------
 include: "rules/boolean_models_mutations.smk"
 
+# Sensitivity Analysis and model filtering rules
+# -----------------------------------------------------
+include: "rules/boolean_models_filtering.smk"

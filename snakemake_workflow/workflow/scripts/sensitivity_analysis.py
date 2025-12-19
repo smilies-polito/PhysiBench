@@ -5,7 +5,7 @@ import pickle
 import random
 import time
 import argparse
-from simulation_parameters_optimization import SimulationParameters
+from simulation_model_protocol import SimulationParameters
 from fitness_functions import AliveCellsFitness, CircularFitness, SpatialFitnessType, SquaredFitness
 from initial_positions import InitialPosition
 from physiboss import ModelParameters, Protocols, RemotePhysiboss, LocalPhysiboss
@@ -21,10 +21,12 @@ MAX_REMOTE_JOBS_RESUME_AT = 70*3
 class Subjects:
     initial_positions: InitialPosition
     model: ModelParameters
-    def get_random_vector(multiplicator):
+    def get_random_vector(multiplicator, pool_path):
         subjects = []
-        for boolean_family in ["EGFTNF", "drosophila","prostate_cancer", "tnf_cell_fate", "cell_cycle", "gastric_cancer", "macrophage"]:
-            all_choices = os.listdir(f"../protocols/v1/pool/{boolean_family}")
+        families = os.listdir(pool_path)
+        families = [x for x in families if os.path.isdir(f"{pool_path}/{x}")]
+        for boolean_family in families:
+            all_choices = os.listdir(f"{pool_path}/{boolean_family}")
             all_choices = [x for x in all_choices if x.endswith(".bnd")]
             for boolean_model in all_choices:
                 boolean_model = boolean_model.replace(".bnd", "")
@@ -163,18 +165,25 @@ class RemotePhysibossInterface:
         subprocess.run(["rsync", "-avz", '--no-owner',  '--no-group', "rsmeriglio@hpc-lb.polito.it:/home/rsmeriglio/masera/results", destination_folder])   
 
 class LocalPhysibossInterface:
-    def __init__(self, pool_path):
+    def __init__(self, pool_path, results_path):
         self.pool_path = pool_path
+        self.results_path = results_path
 
     def run_job(self, model: ModelParameters, protocol: Protocols, job_name: str, sim_params: SimulationParameters):
-        pass
+        out = LocalPhysiboss.run_local(
+            model, protocol, sim_params, self.pool_path
+        )
+        os.system(f"mkdir -p {self.results_path}/{job_name}")
+        os.system(f"mv {out} {self.results_path}/{job_name}")
+
+
     def get_job_list(self):
-        pass
+        return os.listdir(self.results_path)
     
     def retrieve_job_results(self, destination_folder: str):
         pass
 
-def run_sampling(N_CONTEXT, N_SUBJECT, work_path, physiboss, max_jobs_stop=None, max_jobs_resume=None):
+def run_sampling(N_CONTEXT, N_SUBJECT, work_path, pool_path, physiboss, max_jobs_stop=None, max_jobs_resume=None):
     """
     Run the sampling process.
     """
@@ -227,7 +236,7 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, physiboss, max_jobs_stop=None,
         print(f"Restoring sampling procedure. Sent {num_sent} jobs, received {num_received} results.")
 
     else:
-        subjects = Subjects.get_random_vector(N_SUBJECT)
+        subjects = Subjects.get_random_vector(N_SUBJECT, pool_path)
         contexts = Context.get_random_vector(N_CONTEXT)
         # Save the subject
         with open(f"{output_dir}/subjects.csv", "w") as f:
@@ -277,7 +286,7 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, physiboss, max_jobs_stop=None,
         print("Waiting for all jobs to complete...")
         print(f"Sent {num_sent} jobs, received {num_received} results. Waiting for results...")
         time.sleep(30)
-        results = Physiboss.get_job_list()
+        results = physiboss.get_job_list()
         num_received = len(results)
     
     #Compute the fitness
@@ -363,8 +372,9 @@ if __name__ == "__main__":
         max_jobs_stop = args.max_jobs_stop
         max_jobs_resume = args.max_jobs_resume
     else:
-        physiboss = LocalPhysibossInterface(args.pool_path)
+        physiboss = LocalPhysibossInterface(args.pool_path, args.work_path + "/results")
         max_jobs_stop = None
         max_jobs_resume = None
     
-    run_sampling(args.N_Context, args.N_Subject, args.work_path, physiboss, max_jobs_stop, max_jobs_resume)
+    run_sampling(args.N_Context, args.N_Subject, args.work_path, args.pool_path, physiboss, max_jobs_stop, max_jobs_resume)
+
