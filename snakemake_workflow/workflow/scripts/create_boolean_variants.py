@@ -74,6 +74,7 @@ class OpenedModel:
         return p
     
     def get_physiboss_states(self):
+        has_errors = False
         states = []
         for protocol in POOL_OF_PROTOCOLS:
             try:
@@ -90,9 +91,11 @@ class OpenedModel:
                 alive = alive[-20:]
                 states.append(alive)
             except Exception as e:
-                print(e)
+                print("Failed simulation")
                 states.append(np.array([0]*20))
+                has_errors = True
         self.simulation_states = states
+        return has_errors
     
     def rename(self, base_path, name):
         os.system(f"mv {self.out_dir}/{self.name}.cfg {base_path}/{name}.cfg")
@@ -126,17 +129,21 @@ def run(directory, target, boolean_models_pool, min_dist=0.15, max_tested=200000
         candidate = np.random.choice(boolean_models_pool[candidate_pool])
         boolean_model = candidate.get_mutated_boolean_model(n_iter)
         try:
-            boolean_model.get_physiboss_states()
+            has_errors = boolean_model.get_physiboss_states()
+            if has_errors:
+                print(f"Simulation errors - num_tested: {num_tested}, target: {target}")
+                continue
         except KeyboardInterrupt:
             exit()
         except:
             print_and_log("Error during simulation")
             continue
+        
         min_dist_val = distances.test_element(boolean_model.simulation_states)
         print_and_log("Min correlation distance: " + str(min_dist_val))
         #euclidean_distances = EuclideanDistance.test_element([p.simulation_states for p in boolean_models_pool], boolean_model.simulation_states)
         #print_and_log("Euclidean distances: " + str(euclidean_distances))
-        if (min_dist_val > min_dist):
+        if (not has_errors and min_dist_val > min_dist):
             n_iter = max(int(n_iter*0.75), min_mutations)
             print_and_log("Adding to pool")
             boolean_model.rename(os.path.join(directory, candidate_pool), f"V{len(boolean_models_pool[candidate_pool])}")
@@ -176,7 +183,10 @@ def init_new(target_path, pool_path, max_created_nodes=45):
                 os.system(f"cp {bnd_file} {target_path}/{base_pool}/V{i}.bnd")
                 boolean_model = OpenedModel(f"V{i}", os.path.join(target_path, base_pool), max_created_nodes)
                 boolean_model.max_created_nodes = max_created_nodes
-                boolean_model.get_physiboss_states()
+                has_errors = boolean_model.get_physiboss_states()
+                if (has_errors):
+                    print(f"Simulation errors in base model {boolean_model_basename}, file {file}, skipping.")
+                    raise Exception("Simulation errors in base model.")
                 boolean_model.export_simulation_states()
                 pool[base_pool].append(boolean_model)
                 i += 1

@@ -66,6 +66,7 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
     errors = 0
     tries = 0
     while(pool < target):
+        print(f"Creating generic boolean model {pool+1}/{target} - tries {tries}")
         tries += 1
         if tries > target * 100:
             print_and_log("Too many tries without success, giving up.")
@@ -76,8 +77,7 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
         except KeyboardInterrupt:
             exit()
         except Exception as e:
-            print_and_log("Error during simulation")
-            print(e)
+            print_and_log("Error during simulation - retrying.")
             errors += 1
             if errors > MAX_ERRORS:
                 print_and_log("Too many errors, giving up.")
@@ -100,6 +100,8 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
             save_to_file(boolean_model, out_dir + f"/P{pool}")
             pool += 1
             distances.add_element(states)
+            continue 
+        print("Distance too small, retrying.")
 
 
 

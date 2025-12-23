@@ -16,7 +16,7 @@ rule base_pool:
 # 2- From the base pool, create a pool of mutated boolean models
 rule pool:
     input:
-        source_boolean_models = config["source_boolean_models_dir"]
+        source_boolean_models = config["base_pool_dir"]
     output:
         mutated_boolean_models = directory(config["mutated_boolean_models_dir"]),
         tmp = temp(directory(f"{config['mutated_boolean_models_dir']}.tmp"))

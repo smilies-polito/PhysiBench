@@ -20,7 +20,7 @@ import subprocess
 import subprocess
 
 
-def run_command(command, path=None):
+def run_command(command, path=None, silent=True):
     if path is None:
         path = os.getcwd()
     completed = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=path)
@@ -28,10 +28,11 @@ def run_command(command, path=None):
         return None
     # On failure, print stdout and stderr then raise
     print("Command failed:", command)
-    if completed.stdout:
-        print(completed.stdout)
-    if completed.stderr:
-        print(completed.stderr)
+    if not silent:
+        if completed.stdout:
+            print(completed.stdout)
+        if completed.stderr:
+            print(completed.stderr)
     raise RuntimeError(f"Command failed with exit code {completed.returncode}")
 
 

@@ -29,7 +29,7 @@ MAX_MUTATIONS: 2000
 #--------------------------------------------------#
 
 sampling_dir: "results/sampling"
-sampling_number_of_contexts: 2
+sampling_number_of_contexts: 2 #TODO: adjust
 sampling_number_of_subjects: 2
 
 # Remote execution settings (set use_remote to true to enable)
@@ -40,3 +40,11 @@ remote_failed_path: null  # e.g., "/home/user/failed"
 remote_temp_path: null  # e.g., "/home/user/temp"
 max_jobs_stop: 480
 max_jobs_resume: 210
+
+#--------------------------------------------------#
+# Filtering of models                              #
+#--------------------------------------------------#
+filtering_output_dir: "results/filtering"
+mean_threshold: 0.0
+abs_std_threshold: 30.0
+norm_std_threshold: 0.2
