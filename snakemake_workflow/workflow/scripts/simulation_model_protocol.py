@@ -126,6 +126,19 @@ class SimulationParameters:
             intracellular_dt=518
         )
 
+    def get_test_defaults():
+        return SimulationParameters(
+            domain_size=206,
+            max_time=17000,
+            dt_diffusion=0.256,
+            dt_mechanics=0.152,
+            dt_phenotype=5.718,
+            num_threads=3,
+            diffusion_coefficient=1070.0,
+            speed=3.3,
+            intracellular_dt=260
+        )
+
     def to_hash(self):
         def to_two_decimals(x):
             return f"{x:.1f}"

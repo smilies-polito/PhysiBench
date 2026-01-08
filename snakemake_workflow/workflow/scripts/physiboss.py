@@ -20,7 +20,7 @@ import subprocess
 import subprocess
 
 
-def run_command(command, path=None, silent=True):
+def run_command(command, path=None, silent=False):
     if path is None:
         path = os.getcwd()
     completed = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=path)

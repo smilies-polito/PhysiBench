@@ -47,5 +47,10 @@ rule filtering:
         export MEAN_THRESHOLD={params.mean_threshold} && \
         export ABS_STD_THRESHOLD={params.abs_std_threshold} && \
         export NORM_STD_THRESHOLD={params.norm_std_threshold} && \
-        jupyter nbconvert --to notebook --execute scripts/sensitivity_analysis.ipynb
-        """
+        jupyter nbconvert --to notebook --execute \
+        --allow-errors \
+        --ExecutePreprocessor.timeout=-1 \
+        --output-dir=results/filtering \
+        --output=sensitivity_analysis_debug.ipynb \
+        workflow/scripts/sensitivity_analysis.ipynb
+                """

@@ -11,7 +11,7 @@ from physiboss import LocalPhysiboss
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
 
 POOL_OF_PROTOCOLS = [
-    Protocols.get_random() for _ in range(16)
+    Protocols.get_random() for _ in range(36)
 ]
 
 def alive_cells(output_folder):
@@ -88,7 +88,7 @@ class OpenedModel:
                 output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
                 alive = alive_cells(output_dir)
                 alive = np.array(alive)
-                alive = alive[-20:]
+                alive = alive[-1:]
                 states.append(alive)
             except Exception as e:
                 print("Failed simulation")
@@ -115,14 +115,19 @@ def linear_distance_flattened(p1, p2):
     return linear_distance_single_step(p1.flatten(), p2.flatten()) / p1.shape[0]
 
 def run(directory, target, boolean_models_pool, min_dist=0.15, max_tested=200000, min_mutations=10, max_mutations=2000):
+    print("RUN")
+    print(f"Starting run: target={target}, min_dist={min_dist}, max_tested={max_tested}, max tested={max_tested}")
     distances = CorrelationDistances()
     for base_pool in boolean_models_pool.keys():
+        print(f"Adding base pool {base_pool} to distances. {len(boolean_models_pool[base_pool])} models.")
         for boolean_model in boolean_models_pool[base_pool]:
             distances.add_element(boolean_model.simulation_states)
             target -= 1
     num_tested = 0
     n_iter = min_mutations
+    print(f"Starting run: target={target}, min_dist={min_dist}, max_tested={max_tested}, max tested={max_tested}")
     while(target > 0 and num_tested < max_tested):
+        print(f"Num tested: {num_tested}, Target remaining: {target}")
         num_tested += 1
         print_and_log("Testing new boolean_model - " + str(target) + f" - {n_iter} iterations")
         candidate_pool = np.random.choice(list(boolean_models_pool.keys()))
@@ -130,6 +135,7 @@ def run(directory, target, boolean_models_pool, min_dist=0.15, max_tested=200000
         boolean_model = candidate.get_mutated_boolean_model(n_iter)
         try:
             has_errors = boolean_model.get_physiboss_states()
+            print(f"Has errors: {has_errors}")
             if has_errors:
                 print(f"Simulation errors - num_tested: {num_tested}, target: {target}")
                 continue
@@ -175,40 +181,32 @@ def init_new(target_path, pool_path, max_created_nodes=45):
         pool[base_pool] = []
         for file in os.listdir(os.path.join(pool_path, base_pool)):
             if file.endswith(".cfg"):
-                boolean_model_basename = file[:-4]
-                #Copy base_name.cfg and base_name.bnd to OUT directory
-                cfg_file = os.path.join(pool_path, base_pool, boolean_model_basename+".cfg")
-                bnd_file = os.path.join(pool_path, base_pool, boolean_model_basename+".bnd")
-                os.system(f"cp {cfg_file} {target_path}/{base_pool}/V{i}.cfg")
-                os.system(f"cp {bnd_file} {target_path}/{base_pool}/V{i}.bnd")
-                boolean_model = OpenedModel(f"V{i}", os.path.join(target_path, base_pool), max_created_nodes)
-                boolean_model.max_created_nodes = max_created_nodes
-                has_errors = boolean_model.get_physiboss_states()
-                if (has_errors):
-                    print(f"Simulation errors in base model {boolean_model_basename}, file {file}, skipping.")
-                    raise Exception("Simulation errors in base model.")
+                n_errors = 0
+                while(True):
+                    boolean_model_basename = file[:-4]
+                    #Copy base_name.cfg and base_name.bnd to OUT directory
+                    print(f"Simulating: {boolean_model_basename}, {file}")
+                    cfg_file = os.path.join(pool_path, base_pool, boolean_model_basename+".cfg")
+                    bnd_file = os.path.join(pool_path, base_pool, boolean_model_basename+".bnd")
+                    os.system(f"cp {cfg_file} {target_path}/{base_pool}/V{i}.cfg")
+                    os.system(f"cp {bnd_file} {target_path}/{base_pool}/V{i}.bnd")
+                    print(f"Created base model {boolean_model_basename}, file {file}, copied in {target_path}/{base_pool}/V{i}.cfg")
+                    boolean_model = OpenedModel(f"V{i}", os.path.join(target_path, base_pool), max_created_nodes)
+                    boolean_model.max_created_nodes = max_created_nodes
+                    has_errors = boolean_model.get_physiboss_states()
+                    if (has_errors):
+                        n_errors += 1
+                        if n_errors < 3:
+                            print(f"Simulation errors in base model {boolean_model_basename}, file {file}, re-trying...")
+                        else:
+                            print(f"Too many errors with base model {boolean_model_basename}, file {file}")
+                            raise Exception("Simulation errors in base model.")
+                    else:
+                        break
                 boolean_model.export_simulation_states()
                 pool[base_pool].append(boolean_model)
                 i += 1
     return pool 
-
-
-def restore(target_path, max_created_nodes=45):
-    boolean_models_pool = {}
-    for base_pool in os.listdir(target_path):
-        boolean_models_pool[base_pool] = []
-        for file in os.listdir(os.path.join(target_path, base_pool)):
-            if file.endswith(".cfg"):
-                boolean_model_basename = file[:-4]
-                file_path = os.path.join(target_path, base_pool, boolean_model_basename + ".bnd")
-                process_result = subprocess.run(f"cat {file_path} | grep -c 'NODE_[0-9]\\+'", shell=True, capture_output=True, text=True)
-                number_created_nodes = int(process_result.stdout.strip())
-                boolean_model = OpenedModel(boolean_model_basename, os.path.join(target_path, base_pool),max_created_nodes)
-                boolean_model.created_nodes = number_created_nodes
-                boolean_model.max_created_nodes = max_created_nodes
-                boolean_model.simulation_states = np.loadtxt(os.path.join(target_path, base_pool, boolean_model_basename + "_states.csv"), delimiter="\t")
-                boolean_models_pool[base_pool].append(boolean_model)
-    return boolean_models_pool
 
 
 if __name__ == "__main__":
@@ -258,13 +256,19 @@ if __name__ == "__main__":
     MUTATION_P = args.mutation_probs
 
     if os.path.exists(args.target_directory):
-        pool = restore(args.target_directory, args.max_created_nodes)
-        set_log_Path(os.path.join(args.target_directory, "logs.txt"))
+        print("Directory exists already")
+        exit()
     else:
+        print("Creating new pool")
         pool = init_new(args.target_directory, args.pool_directory, args.max_created_nodes)
         set_log_Path(os.path.join(args.target_directory, "logs.txt"))
         print_and_log(f"Starting new process.")
     
+    print(
+        "Starting process with:\n",
+        "* Target dir:", args.target_directory,
+        "\n * Target number: ", args.target_number
+    )
     run(args.target_directory, args.target_number, pool, 
         min_dist=args.min_dist, max_tested=args.max_tested,
         min_mutations=args.min_mutations, max_mutations=args.max_mutations)

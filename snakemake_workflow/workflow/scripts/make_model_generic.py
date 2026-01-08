@@ -10,7 +10,7 @@ from pctk import multicellds
 MAX_ERRORS = 10
 
 POOL_OF_PROTOCOLS = [
-    Protocols.get_random() for _ in range(16)
+    Protocols.get_random() for _ in range(36)
 ]
 
 def alive_cells(output_folder):
@@ -36,21 +36,31 @@ def run_simulation_(cfg_filename, bnd_filename, out_dir):
             boolean_model.make_generic()
             temp_dir = out_dir + "/_temp_boolean_model"
             save_to_file(boolean_model, temp_dir)
+            
             try:
                 for protocol in POOL_OF_PROTOCOLS:
-                    # Run the simulation
-                    model = ModelParameters(
-                        out_dir.split("/")[-1],
-                        "_temp_boolean_model"
-                    )
-                    sim_params = SimulationParameters.get_defaults()
-                    pool_path = os.path.dirname(out_dir)
-                    output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
-                    alive = alive_cells(output_dir)
-                    alive = np.array(alive)
-                    alive = alive[-20:]
-                    config_results.append(alive)
+                    n_tries = 0
+                    while(True):
+                        try:
+                            # Run the simulation
+                            model = ModelParameters(
+                                out_dir.split("/")[-1],
+                                "_temp_boolean_model"
+                            )
+                            sim_params = SimulationParameters.get_defaults()
+                            pool_path = os.path.dirname(out_dir)
+                            output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
+                            alive = alive_cells(output_dir)
+                            alive = np.array(alive)
+                            alive = alive[-1:]
+                            config_results.append(alive)
+                            break
 
+                        except Exception as e:
+                            print(f"Exception at try: {n_tries}")
+                            n_tries += 1
+                            if n_tries > 3:
+                                raise e
             except Exception as e:
                 print(e)
                 raise e
