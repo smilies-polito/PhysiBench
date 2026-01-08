@@ -1,18 +1,19 @@
 import multiprocessing.pool
 import multiprocessing.shared_memory
-from protocol_mutations import *
+from boolean_model_mutation import *
 import networkx as nx
 import numpy as np
 import netrd
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, shared_memory
+import argparse
 
 NUM_PROCESSES = None
 
 def get_matrix_from_path(file_path):
     with open(f"{file_path}.bnd", 'r') as bnd_file:
         with open(f"{file_path}.cfg", 'r') as cfg_file:
-            protocol = Protocol()
+            protocol = BooleanModel()
             protocol.import_from_bnd(bnd_file, cfg_file)
             protocol.to_conjunctive_form()
             m = protocol.to_graph_matrix()
@@ -111,18 +112,88 @@ def get_lambda(type):
         raise ValueError(f"Unknown distance type: {type}")
     
 
+def test_shuffle(files, type, n_shuffles=8):
+    family = []
+    matrices = []
+    for index, f in enumerate(files):
+        for _ in range(n_shuffles):
+            with open(f"{f}.bnd", 'r') as bnd_file:
+                with open(f"{f}.cfg", 'r') as cfg_file:
+                    protocol = BooleanModel()
+                    protocol.import_from_bnd(bnd_file, cfg_file)
+                    protocol.to_conjunctive_form()
+                    m = protocol.to_graph_matrix(shuffle_nodes=True)
+                    matrices.append(m)
+        family.append(index*n_shuffles)
+
+    distances = pairwise_distance(matrices, type, None)
+    return distances, family
+
+def plot_from_results(path, type):
+    distances = np.load(os.path.join(path, f"distances_{type}.npy"))
+    family = []
+    current_f = None; count=0
+    f_names = []
+    with open(os.path.join(path, f"distances_order_{type}.txt"), 'r') as f:
+        for line in f:
+            family_name = "/".join(line.split("/")[:-1])
+            if (current_f != family_name):
+                family.append(count)
+                current_f = family_name
+                f_names.append(current_f.split("/")[-1])
+            count += 1
+    f_names.append(current_f.split("/")[-1])
+    family = family[1:]
+    plot_heatmap(distances, None, family, type, (8, 6), f_names)
+    return distances, family, f_names
+
+
 def main():
-    import sys 
     import os
     import random
-    import copy
     global NUM_PROCESSES
-    path = sys.argv[1]
-    path = os.path.abspath(path)
-    NUM_PROCESSES = int(sys.argv[2])
-    num_params = len(sys.argv)
-    MAX_GRAPHS_PER_TYPE = int(sys.argv[3])
-    USE_GLOBAL = int(sys.argv[4])!=0
+    
+    parser = argparse.ArgumentParser(
+        description='Calculate pairwise distances between protocol graph matrices'
+    )
+    parser.add_argument(
+        'path',
+        type=str,
+        help='Path to directory containing protocol subdirectories'
+    )
+    parser.add_argument(
+        'output_directory',
+        type=str,
+        help='Directory to save output distance matrices and heatmaps'
+    )
+    parser.add_argument(
+        'num_processes',
+        type=int,
+        help='Number of processes to use for parallel computation'
+    )
+    parser.add_argument(
+        'max_graphs',
+        type=int,
+        help='Maximum number of graphs per protocol type'
+    )
+    parser.add_argument(
+        'use_global',
+        type=int,
+        choices=[0, 1],
+        help='Use global maximum length (1) or individual lengths (0)'
+    )
+    parser.add_argument(
+        'distance_types',
+        nargs='+',
+        help='Distance metric types to calculate (e.g., JaccardDistance, IpsenMikhailov)'
+    )
+    
+    args = parser.parse_args()
+    
+    path = os.path.abspath(args.path)
+    NUM_PROCESSES = args.num_processes
+    MAX_GRAPHS_PER_TYPE = args.max_graphs
+    USE_GLOBAL = args.use_global != 0
 
     dirs_in_path = [
         d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))
@@ -130,12 +201,17 @@ def main():
     files = []
     family = []
 
-    out_dir_name = "static_distance"
-    if (USE_GLOBAL):
-        out_dir_name = "static_distance_global"
-    out_dir = os.path.join(path, out_dir_name)
+    out_dir = args.output_directory
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+
+    print(
+        "Computing distances in path:", path,
+        "with", NUM_PROCESSES, "processes",
+        "max graphs per type:", MAX_GRAPHS_PER_TYPE,
+        "use global length:", USE_GLOBAL,
+        "\nFound directories:", dirs_in_path
+    )
 
     for dir in dirs_in_path:
         dir_path = os.path.join(path, dir)
@@ -163,8 +239,7 @@ def main():
         "for", len(matrices), "matrices"
         )
 
-    for p in range(5, num_params):
-        type = sys.argv[p]
+    for type in args.distance_types:
         print(type)
         try:
             _ = get_lambda(type)
@@ -175,46 +250,11 @@ def main():
 
         distances = pairwise_distance(matrices.copy(), type, max_len_global, type=="IpsenMikhailov"and not max_len_global) #1m18.673s
         #distances = pairwise_distance_multiprocess(matrices.copy(), type, max_len_global)# 4 cpu: 5m27.186s
-        np.save(os.path.join(path, f"{out_dir}/distances_{type}.npy"), distances)
-        with open(os.path.join(path, f"{out_dir}/distances_order_{type}.txt"), 'w') as f:
+        np.save(os.path.join(out_dir,f"distances_{type}.npy"), distances)
+        with open(os.path.join(out_dir, f"distances_order_{type}.txt"), 'w') as f:
             for file in files:
                 f.write(f"{file}\n")
-        plot_heatmap(distances, os.path.join(path, f"{out_dir}/distances_{type}.png"), family)
-
-def test_shuffle(files, type, n_shuffles=8):
-    family = []
-    matrices = []
-    for index, f in enumerate(files):
-        for _ in range(n_shuffles):
-            with open(f"{f}.bnd", 'r') as bnd_file:
-                with open(f"{f}.cfg", 'r') as cfg_file:
-                    protocol = Protocol()
-                    protocol.import_from_bnd(bnd_file, cfg_file)
-                    protocol.to_conjunctive_form()
-                    m = protocol.to_graph_matrix(shuffle_nodes=True)
-                    matrices.append(m)
-        family.append(index*n_shuffles)
-
-    distances = pairwise_distance(matrices, type, None)
-    return distances, family
-
-def plot_from_results(path, type):
-    distances = np.load(os.path.join(path, f"distances_{type}.npy"))
-    family = []
-    current_f = None; count=0
-    f_names = []
-    with open(os.path.join(path, f"distances_order_{type}.txt"), 'r') as f:
-        for line in f:
-            family_name = "/".join(line.split("/")[:-1])
-            if (current_f != family_name):
-                family.append(count)
-                current_f = family_name
-                f_names.append(current_f.split("/")[-1])
-            count += 1
-    f_names.append(current_f.split("/")[-1])
-    family = family[1:]
-    plot_heatmap(distances, None, family, type, (8, 6), f_names)
-    return distances, family, f_names
+        plot_heatmap(distances, os.path.join(out_dir, f"distances_{type}.png"), family)
 
 if __name__ == "__main__":
     main()

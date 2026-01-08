@@ -8,4 +8,6 @@ dependencies:
   - scikit-learn
   - nbconvert
   - ipython_genutils
+  - jupyter
+  - networkx
 prefix: /home/marco/miniconda3/envs/bidms

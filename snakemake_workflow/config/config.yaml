@@ -24,6 +24,18 @@ MAX_CREATED_NODES: 45 # Max number of new nodes in the mutated model. It prevent
 MIN_MUTATIONS: 10
 MAX_MUTATIONS: 2000
 
+
+#--------------------------------------------------#
+# Static distance measures                         #
+#--------------------------------------------------#
+STATIC_DISTANCE_NUM_PROCESSES: 8
+STATIC_DISTANCE_MAX_GRAPHS: 10
+STATIC_DISTANCE_USE_GLOBAL: 1
+STATIC_DISTANCE_MEASURES: 
+    - "DeltaCon"
+    - "IpsenMikhailov"
+    - "QuantumJSD"
+
 #--------------------------------------------------#
 # Sensitivity Analysis / Sampling                  #
 #--------------------------------------------------#
