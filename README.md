@@ -1,93 +1,163 @@
 # BIDMS
 
+This repository provides a workflow for generating synthetic datasets for the PhysiBoSS simulator by applying systematic mutations to a pool of biological models. The generated datasets can be used for training machine learning models, testing simulation pipelines, or performing sensitivity analyses on biological model parameters.
 
+## Setup Environment
 
-## Getting started
+### Requirements
+- Conda
+- GCC compiler
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Option 1: Local Installation
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. Build PhysiBoSS:
+   ```bash
+   cd physiboss/Physiboss
+   make
+   ```
 
-## Add your files
+2. Install the conda environment:
+   ```bash
+   conda env create -f workflow/env/env.yml
+   conda activate <env-name>
+   ```
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Option 2: Singularity Container
 
+Build and use the provided container:
+```bash
+singularity build container.sif singularity_def/container.def
+singularity shell container.sif
 ```
-cd existing_repo
-git remote add origin https://gitlabtsgroup.polito.it/saisei/bidms.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlabtsgroup.polito.it/saisei/bidms/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+This is a standard Snakemake workflow. The pipeline is defined across multiple files:
+- `Snakefile`: Main workflow orchestration
+- `*.smk` files: Additional workflow rules
+- `config.yml`: Configuration parameters
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Running the Workflow
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Execute from the workflow directory:
+```bash
+cd snakemake_workflow
+snakemake --cores <n>
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+For a dry run to see what will be executed:
+```bash
+snakemake -n
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+To use the conda environment automatically:
+```bash
+snakemake --use-conda --cores <n>
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+User: Please write in the README.md. Also, write it more thoughfully
 
-## License
-For open source projects, say how it is licensed.
+GitHub Copilot: # Synthetic Dataset Generator for PhysiBoSS
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This repository implements an automated workflow for generating synthetic datasets tailored to the PhysiBoSS simulator. The pipeline systematically applies controlled mutations to a collection of baseline biological models, creating diverse variants that maintain biological plausibility while exploring the parameter space. The resulting datasets enable comprehensive testing of simulation pipelines, training of machine learning models, and execution of large-scale sensitivity analyses on biological model parameters.
+
+## Overview
+
+The workflow consists of several key stages:
+
+1. **Base Pool Generation**: Transforms source biological models into a generic base pool
+2. **Mutation Pipeline**: Generates diverse model variants through controlled mutations (logic switching, operator replacement, node manipulation, etc.)
+3. **Distance Computation**: Calculates graph-based distance metrics (DeltaCon, Ipsen-Mikhailov, QuantumJSD) to quantify model diversity
+4. **Sensitivity Analysis**: Performs systematic sampling across different biological contexts and subjects
+5. **Model Filtering**: Applies statistical thresholds to select high-quality models for downstream analysis
+
+## Setup Environment
+
+### Requirements
+- **Conda**: For Python environment management
+- **GCC**: For compiling PhysiBoSS simulator
+
+### Option 1: Local Installation
+
+1. **Build PhysiBoSS simulator**:
+   ```bash
+   cd physiboss/Physiboss
+   make
+   ```
+
+2. **Create and activate the conda environment**:
+   ```bash
+   conda env create -f workflow/env/env.yml
+   conda activate <environment-name>
+   ```
+
+### Option 2: Singularity Container (Recommended for HPC)
+
+Build and use the pre-configured container for reproducible execution:
+```bash
+singularity build container.sif singularity_def/container.def
+singularity shell container.sif
+```
+
+## Usage
+
+This project follows the standard Snakemake workflow structure. The pipeline logic is distributed across:
+
+- **`workflow/Snakefile`**: Main workflow orchestration and final outputs
+- **`workflow/rules/boolean_models_mutations.smk`**: Rules for model generation and mutation
+- **`workflow/rules/boolean_models_filtering.smk`**: Rules for sampling and filtering
+- **`config/config.yaml`**: All configurable parameters and thresholds
+
+### Configuration
+
+Edit `config/config.yaml` to customize:
+- Source model directories and output paths
+- Number of models to generate (`target_number_of_models`)
+- Mutation probabilities and constraints
+- Distance computation parameters
+- Sampling strategy (contexts, subjects)
+- Filtering thresholds (mean, standard deviation)
+- Remote execution settings (optional)
+
+### Running the Workflow
+
+Navigate to the workflow directory:
+```bash
+cd snakemake_workflow
+```
+
+**Dry run** to preview execution plan:
+```bash
+snakemake -n
+```
+
+**Execute the full pipeline**:
+```bash
+snakemake --cores <n>
+```
+
+**Use conda environments automatically**:
+```bash
+snakemake --use-conda --cores <n>
+```
+
+**Generate only specific outputs**:
+```bash
+# Generate mutated models and compute distances only
+snakemake results/boolean_models/static_distance --cores <n>
+
+# Run complete pipeline including filtering
+snakemake results/filtering --cores <n>
+```
+
+### Remote Execution (Optional)
+
+For computationally intensive tasks, the workflow supports remote execution on HPC systems. Configure the following parameters in `config/config.yaml`:
+
+```yaml
+use_remote: true
+remote_url: "user@hpc-server.domain"
+remote_results_path: "/home/user/results"
+remote_failed_path: "/home/user/failed"
+remote_temp_path: "/home/user/temp"
+```
