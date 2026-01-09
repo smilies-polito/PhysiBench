@@ -26,8 +26,14 @@ This repository provides a workflow for generating synthetic datasets for the Ph
 
 Build and use the provided container:
 ```bash
-singularity build container.sif singularity_def/container.def
-singularity shell container.sif
+make container.sif
+```
+
+Open a shell inside the container:
+```bash
+make open_shell
+conda activate bidms
+cd snakemake_workflow
 ```
 
 ## Usage

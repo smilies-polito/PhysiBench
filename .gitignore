@@ -1,3 +1,4 @@
 **/.snakemake/
 physiboss/PhysiCell
 snakemake_workflow/results/
+container.sif
