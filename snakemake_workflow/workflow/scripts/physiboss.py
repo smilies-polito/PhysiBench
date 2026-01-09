@@ -129,7 +129,7 @@ class LocalPhysiboss:
         root.find('.//intracellular_dt').text = str(int(sim_params.intracellular_dt))
         tree.write(f"{LocalPhysiboss.CONFIG_PATH}/PhysiCell_settings.xml", encoding='utf-8', xml_declaration=True)
         # Clean up local job directory
-        run_command(f"make data-cleanup", path=LocalPhysiboss.PHYSICELL_PATH)
+        run_command(f"rm -rf output/*", path=LocalPhysiboss.PHYSICELL_PATH)
         # Run the simulation
         run_command(f"./{LocalPhysiboss.BIN_NAME}", path=LocalPhysiboss.PHYSICELL_PATH)
         return os.path.join(LocalPhysiboss.PHYSICELL_PATH, "output")

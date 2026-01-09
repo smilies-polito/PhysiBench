@@ -1,71 +1,8 @@
-# BIDMS
+# BIDMS: Biological-Inspired Dataset for Multiscale Simulation
 
-This repository provides a workflow for generating synthetic datasets for the PhysiBoSS simulator by applying systematic mutations to a pool of biological models. The generated datasets can be used for training machine learning models, testing simulation pipelines, or performing sensitivity analyses on biological model parameters.
+In computational biology, the availability of longitudinal data describing dynamical processes is constrained by multiple factors, including the high cost and experimental burden of repeated measurements, as well as the limited availability of accurate and diverse dynamical models for many biological systems. As a consequence, both experimental and synthetic datasets capturing biological dynamics remain scarce, hindering the systematic development, validation, and benchmarking of computational methodologies targeting dynamical biological processes.
 
-## Setup Environment
-
-### Requirements
-- Conda
-- GCC compiler
-
-### Option 1: Local Installation
-
-1. Build PhysiBoSS:
-   ```bash
-   cd physiboss/Physiboss
-   make
-   ```
-
-2. Install the conda environment:
-   ```bash
-   conda env create -f workflow/env/env.yml
-   conda activate <env-name>
-   ```
-
-### Option 2: Singularity Container
-
-Build and use the provided container:
-```bash
-make container.sif
-```
-
-Open a shell inside the container:
-```bash
-make open_shell
-conda activate bidms
-cd snakemake_workflow
-```
-
-## Usage
-
-This is a standard Snakemake workflow. The pipeline is defined across multiple files:
-- `Snakefile`: Main workflow orchestration
-- `*.smk` files: Additional workflow rules
-- `config.yml`: Configuration parameters
-
-### Running the Workflow
-
-Execute from the workflow directory:
-```bash
-cd snakemake_workflow
-snakemake --cores <n>
-```
-
-For a dry run to see what will be executed:
-```bash
-snakemake -n
-```
-
-To use the conda environment automatically:
-```bash
-snakemake --use-conda --cores <n>
-```
-
-User: Please write in the README.md. Also, write it more thoughfully
-
-GitHub Copilot: # Synthetic Dataset Generator for PhysiBoSS
-
-This repository implements an automated workflow for generating synthetic datasets tailored to the PhysiBoSS simulator. The pipeline systematically applies controlled mutations to a collection of baseline biological models, creating diverse variants that maintain biological plausibility while exploring the parameter space. The resulting datasets enable comprehensive testing of simulation pipelines, training of machine learning models, and execution of large-scale sensitivity analyses on biological model parameters.
+The **Biological-Inspired Dataset for Multiscale Simulation (BIDMS)** addresses this limitation by enabling the generation of bio-plausible synthetic dynamical data through a curated collection of 2,115 structurally diverse Boolean regulatory networks designed for multi-scale simulation within the PhysiBoSS framework. These networks are generated via a mutation-based construction pipeline and subsequently filtered to maximise inter-model heterogeneity in dynamical behaviour. This process yields a final subset of 612 Boolean models which, while not corresponding to specific known biological systems, introduce only minimal structural and logical variations from biologically grounded models. As a result, they preserve key topological and dynamical characteristics observed in biological regulatory networks while substantially expanding the available model space, enabling large-scale simulation studies across a broad spectrum of bio-inspired systems and supporting robust benchmarking of computational approaches to biological dynamics.
 
 ## Overview
 
@@ -79,23 +16,45 @@ The workflow consists of several key stages:
 
 ## Setup Environment
 
-### Requirements
-- **Conda**: For Python environment management
-- **GCC**: For compiling PhysiBoSS simulator
+The simplest way to setup the execution environment is through Singularity, although building from source code is also possible.
 
-### Option 1: Local Installation
+### Option 1: Singularity container
 
-1. **Build PhysiBoSS simulator**:
+**Requirements**: Singularity.
+
+Build and use the provided container:
+```bash
+make container.sif
+```
+
+Open a shell inside the container and activate the conda environment:
+```bash
+make open_shell
+conda activate bidms
+cd snakemake_workflow
+```
+
+Note: when working inside Singularity, the directories physiboss/config_template and physiboss/virtualoutput are mounted inside the container and used to set the simulation parameters and retrieve the outputs.
+
+### Option 2: Local Installation
+
+**Requirements**
+- Conda
+- GCC compiler
+
+
+1. Build PhysiBoSS:
    ```bash
    cd physiboss/Physiboss
    make
    ```
 
-2. **Create and activate the conda environment**:
+2. Install the conda environment:
    ```bash
    conda env create -f workflow/env/env.yml
-   conda activate <environment-name>
+   conda activate <env-name>
    ```
+
 
 ### Option 2: Singularity Container (Recommended for HPC)
 
