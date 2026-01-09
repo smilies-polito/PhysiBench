@@ -1,5 +1,7 @@
 import multiprocessing.pool
 import multiprocessing.shared_memory
+import multiprocessing as mp
+
 from boolean_model_mutation import *
 import networkx as nx
 import numpy as np
@@ -7,6 +9,8 @@ import netrd
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, shared_memory
 import argparse
+import os
+from tqdm import tqdm
 
 NUM_PROCESSES = None
 
@@ -32,33 +36,65 @@ def matrix_to_graph(matrix, max_len):
                 DG.add_weighted_edges_from([(i, j, matrix[i][j])])
     return DG
 
+
 import warnings
 
-def run_distance(args):
-    m1, m2, type, max_len, skip_len_ajust = args
-    if (max_len is None):
+def _run_distance_pair(args):
+    """
+    args = (i, j, m1, m2, type, max_len, skip_len_adjust)
+    """
+    i, j, m1, m2, dist_type, max_len, skip_len_adjust = args
+    name = f"{i}-{j}"
+    print("Starting", name)
+
+    # Adjust lengths
+    if max_len is None:
         max_len = max(m1.shape[0], m2.shape[0])
-    if (skip_len_ajust):
+    if skip_len_adjust:
         max_len = m1.shape[0]
     g1 = matrix_to_graph(m1, max_len)
-    if (skip_len_ajust):
+
+    if skip_len_adjust:
         max_len = m2.shape[0]
     g2 = matrix_to_graph(m2, max_len)
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        return get_lambda(type)(g1, g2)
+        print("Running lambda", name)
+        lambda_ = get_lambda(dist_type)
+        x = lambda_(g1, g2)
+        print("Finished", name)
+        return (i, j, x)
 
 
-def pairwise_distance(vector_of_matrices, type, max_len_global, skip_len_ajust=False):
-    distances = np.zeros((len(vector_of_matrices), len(vector_of_matrices)))
+def pairwise_distance(vector_of_matrices, dist_type, max_len_global, skip_len_adjust=False):
+    tasks = []
+
+    # Build argument list sending *matrix copies* only for (i, j)
     for i in range(len(vector_of_matrices)):
-        for j in range(i+1, len(vector_of_matrices)):
+        for j in range(i + 1, len(vector_of_matrices)):
             m1 = vector_of_matrices[i]
             m2 = vector_of_matrices[j]
-            dist = run_distance((m1, m2, type, max_len_global, skip_len_ajust))
-            distances[i][j] = dist
-            distances[j][i] = dist
-        print(i, len(vector_of_matrices))
+
+            tasks.append(
+                (i, j, m1, m2, dist_type, max_len_global, skip_len_adjust)
+            )
+
+    print(f"Computing {len(tasks)} pairwise distances...")
+
+    ctx = mp.get_context("spawn")
+    with ctx.Pool(processes=NUM_PROCESSES) as pool:
+        results = list(tqdm(pool.imap(_run_distance_pair, tasks)))
+
+    # Build distance matrix
+    n = len(vector_of_matrices)
+    distances = np.zeros((n, n))
+
+    for i, j, value in results:
+        distances[i][j] = value
+        distances[j][i] = value
+
+    print("Finished")
     return distances
 
 def plot_heatmap(distances, path, family_boundaries=None, title="", size=None, family_names=None):
@@ -220,7 +256,8 @@ def main():
         files_ = [f[:-4] for f in files_]
         files_ = [os.path.join(dir_path, f) for f in files_]
         random.shuffle(files_)
-        files_ = files_[:MAX_GRAPHS_PER_TYPE]
+        if MAX_GRAPHS_PER_TYPE != -1:
+            files_ = files_[:MAX_GRAPHS_PER_TYPE]
         files = files + files_
         family.append(len(files))
 
