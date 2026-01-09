@@ -83,12 +83,12 @@ class OpenedModel:
                     self.out_dir.split("/")[-1],
                     self.name
                 )
-                sim_params = SimulationParameters.get_defaults()
+                sim_params = SimulationParameters.get_test_defaults()
                 pool_path = os.path.dirname(self.out_dir)
                 output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
                 alive = alive_cells(output_dir)
                 alive = np.array(alive)
-                alive = alive[-1:]
+                alive = alive[-6:]
                 states.append(alive)
             except Exception as e:
                 print("Failed simulation")

@@ -47,12 +47,12 @@ def run_simulation_(cfg_filename, bnd_filename, out_dir):
                                 out_dir.split("/")[-1],
                                 "_temp_boolean_model"
                             )
-                            sim_params = SimulationParameters.get_defaults()
+                            sim_params = SimulationParameters.get_test_defaults()
                             pool_path = os.path.dirname(out_dir)
                             output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, pool_path)
                             alive = alive_cells(output_dir)
                             alive = np.array(alive)
-                            alive = alive[-1:]
+                            alive = alive[-6:]
                             config_results.append(alive)
                             break
 
@@ -123,6 +123,8 @@ if __name__ == "__main__":
     original_path = sys.argv[1]
     output_path = sys.argv[2]
     target_count = int(sys.argv[3])
+
+    set_log_Path(os.path.join(output_path, "make_model_generic.log"))
 
     # Iterate over all models in the original path
     all_subdirectories = os.listdir(original_path)

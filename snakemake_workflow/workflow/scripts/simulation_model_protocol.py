@@ -113,6 +113,8 @@ class SimulationParameters:
     speed: float        # 1-3
     intracellular_dt: int = 1000 #500 - 1800
 
+    save_interval: int = 1000
+
     def get_defaults():
         return SimulationParameters(
             domain_size=206,
@@ -123,20 +125,22 @@ class SimulationParameters:
             num_threads=3,
             diffusion_coefficient=1070.0,
             speed=3.3,
-            intracellular_dt=518
+            intracellular_dt=518,
+            save_interval=1000
         )
 
     def get_test_defaults():
         return SimulationParameters(
             domain_size=206,
-            max_time=17000,
+            max_time=1700,
             dt_diffusion=0.256,
             dt_mechanics=0.152,
             dt_phenotype=5.718,
             num_threads=3,
             diffusion_coefficient=1070.0,
             speed=3.3,
-            intracellular_dt=260
+            intracellular_dt=518,
+            save_interval=100
         )
 
     def to_hash(self):
