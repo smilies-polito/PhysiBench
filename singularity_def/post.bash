@@ -13,11 +13,5 @@ else
     fi
 fi
 # Fill this file with your environment creation
-mamba env create --quiet --file /root/env.yaml
-conda activate pctk
-python3 -m pip install --upgrade pip setuptools wheel
-git clone https://github.com/netsiphd/netrd
-cd netrd
-pip install .
-
-#pip install -r requirements.txt
+mamba env create --file /root/env.yml
+conda activate bidms

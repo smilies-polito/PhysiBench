@@ -1,0 +1,441 @@
+node AKT
+{
+	logic = (((! Apoptosis) & LRP) | Apoptosis);
+	rate_up = (@logic ? $u_AKT : 0);
+	rate_down = (@logic ? 0 : $d_AKT);
+}
+
+node p38alpha
+{
+	logic = ((((! MKK3) & (! DUSP1)) & NLK) | (MKK3 & (! DUSP1)));
+	rate_up = (@logic ? $u_p38alpha : 0);
+	rate_down = (@logic ? 0 : $d_p38alpha);
+}
+
+node TAK1
+{
+	logic = TAB;
+	rate_up = (@logic ? $u_TAK1 : 0);
+	rate_down = (@logic ? 0 : $d_TAK1);
+}
+
+node RTPK
+{
+	logic = (((((! CFLAR) & (! p38alpha)) & (! RTPKgene)) & MMP) | (((! CFLAR) & (! p38alpha)) & RTPKgene));
+	rate_up = (@logic ? $u_RTPK : 0);
+	rate_down = (@logic ? 0 : $d_RTPK);
+}
+
+node SHC1
+{
+	logic = (((! RTPK) & (! sec_activator)) | RTPK);
+	rate_up = (@logic ? $u_SHC1 : 0);
+	rate_down = (@logic ? 0 : $d_SHC1);
+}
+
+node SOS
+{
+	logic = (((! AKT) & (! ERK)) | AKT);
+	rate_up = (@logic ? $u_SOS : 0);
+	rate_down = (@logic ? 0 : $d_SOS);
+}
+
+node ERK
+{
+	logic = (((! CFLAR) & (! DUSP6)) | CFLAR);
+	rate_up = (@logic ? $u_ERK : 0);
+	rate_down = (@logic ? 0 : $d_ERK);
+}
+
+node DUSP6
+{
+	logic = (((! ERK) & mTORC1) | ERK);
+	rate_up = (@logic ? $u_DUSP6 : 0);
+	rate_down = (@logic ? 0 : $d_DUSP6);
+}
+
+node MKK3
+{
+	logic = (((! TAK1) & ASK1) | TAK1);
+	rate_up = (@logic ? $u_MKK3 : 0);
+	rate_down = (@logic ? 0 : $d_MKK3);
+}
+
+node ASK1
+{
+	logic = (! AKT);
+	rate_up = (@logic ? $u_ASK1 : 0);
+	rate_down = (@logic ? 0 : $d_ASK1);
+}
+
+node TAB
+{
+	logic = (! p38alpha);
+	rate_up = (@logic ? $u_TAB : 0);
+	rate_down = (@logic ? 0 : $d_TAB);
+}
+
+node DUSP1
+{
+	logic = (((! p38alpha) & MSK) | p38alpha);
+	rate_up = (@logic ? $u_DUSP1 : 0);
+	rate_down = (@logic ? 0 : $d_DUSP1);
+}
+
+node MEKK4
+{
+	logic = Rac;
+	rate_up = (@logic ? $u_MEKK4 : 0);
+	rate_down = (@logic ? 0 : $d_MEKK4);
+}
+
+node MLK3
+{
+	logic = Rac;
+	rate_up = (@logic ? $u_MLK3 : 0);
+	rate_down = (@logic ? 0 : $d_MLK3);
+}
+
+node Rac
+{
+	logic = (((! Apoptosis) & Dvl) | Apoptosis);
+	rate_up = (@logic ? $u_Rac : 0);
+	rate_down = (@logic ? 0 : $d_Rac);
+}
+
+node JNK
+{
+	logic = ((((! DUSP1) & (! NLK)) & SFRP1gene) | ((! DUSP1) & NLK));
+	rate_up = (@logic ? $u_JNK : 0);
+	rate_down = (@logic ? 0 : $d_JNK);
+}
+
+node IKKB
+{
+	logic = (TAK1 & (! ITCH));
+	rate_up = (@logic ? $u_IKKB : 0);
+	rate_down = (@logic ? 0 : $d_IKKB);
+}
+
+node IKKA
+{
+	logic = AKT;
+	rate_up = (@logic ? $u_IKKA : 0);
+	rate_down = (@logic ? 0 : $d_IKKA);
+}
+
+node IRS1
+{
+	logic = (((! ERK) & (! IKKB)) & (! S6K));
+	rate_up = (@logic ? $u_IRS1 : 0);
+	rate_down = (@logic ? 0 : $d_IRS1);
+}
+
+node Caspase8
+{
+	logic = (! CFLAR);
+	rate_up = (@logic ? $u_Caspase8 : 0);
+	rate_down = (@logic ? 0 : $d_Caspase8);
+}
+
+node PTENgene
+{
+	logic = Egr1;
+	rate_up = (@logic ? $u_PTENgene : 0);
+	rate_down = (@logic ? 0 : $d_PTENgene);
+}
+
+node Caspase9
+{
+	logic = CytochromeC;
+	rate_up = (@logic ? $u_Caspase9 : 0);
+	rate_down = (@logic ? 0 : $d_Caspase9);
+}
+
+node FOXO
+{
+	logic = ((! AKT) & (! NLK));
+	rate_up = (@logic ? $u_FOXO : 0);
+	rate_down = (@logic ? 0 : $d_FOXO);
+}
+
+node pras40
+{
+	logic = (! AKT);
+	rate_up = (@logic ? $u_pras40 : 0);
+	rate_down = (@logic ? 0 : $d_pras40);
+}
+
+node Rheb
+{
+	logic = (! NLK);
+	rate_up = (@logic ? $u_Rheb : 0);
+	rate_down = (@logic ? 0 : $d_Rheb);
+}
+
+node mTORC1
+{
+	logic = ((((! pras40) & (! Rheb)) & RSK) | ((! pras40) & Rheb));
+	rate_up = (@logic ? $u_mTORC1 : 0);
+	rate_down = (@logic ? 0 : $d_mTORC1);
+}
+
+node MDM2gene
+{
+	logic = (((! ITCH) & SFRP1gene) | ITCH);
+	rate_up = (@logic ? $u_MDM2gene : 0);
+	rate_down = (@logic ? 0 : $d_MDM2gene);
+}
+
+node S6K
+{
+	logic = (((! mTORC1) & LRP) | mTORC1);
+	rate_up = (@logic ? $u_S6K : 0);
+	rate_down = (@logic ? 0 : $d_S6K);
+}
+
+node MDM2
+{
+	logic = ((((! AKT) & MDM2gene) & (! S6K)) | (AKT & (! S6K)));
+	rate_up = (@logic ? $u_MDM2 : 0);
+	rate_down = (@logic ? 0 : $d_MDM2);
+}
+
+node CytochromeC
+{
+	logic = ((! Apoptosis) & BAX);
+	rate_up = (@logic ? $u_CytochromeC : 0);
+	rate_down = (@logic ? 0 : $d_CytochromeC);
+}
+
+node BAX
+{
+	logic = ITCH;
+	rate_up = (@logic ? $u_BAX : 0);
+	rate_down = (@logic ? 0 : $d_BAX);
+}
+
+node LRP
+{
+	logic = ((((((((! ERK) & (! p38alpha)) & (! JNK)) & (! DKK1)) & Fz) | ((((! ERK) & (! p38alpha)) & JNK) & (! DKK1))) | (((! ERK) & p38alpha) & (! DKK1))) | (ERK & (! DKK1)));
+	rate_up = (@logic ? $u_LRP : 0);
+	rate_down = (@logic ? 0 : $d_LRP);
+}
+
+node ITCH
+{
+	logic = JNK;
+	rate_up = (@logic ? $u_ITCH : 0);
+	rate_down = (@logic ? 0 : $d_ITCH);
+}
+
+node DKK1
+{
+	logic = DKK1gene;
+	rate_up = (@logic ? $u_DKK1 : 0);
+	rate_down = (@logic ? 0 : $d_DKK1);
+}
+
+node Fz
+{
+	logic = (! SFRP1);
+	rate_up = (@logic ? $u_Fz : 0);
+	rate_down = (@logic ? 0 : $d_Fz);
+}
+
+node Antisurvival_b1
+{
+	logic = (((((! FOXO) & (! Antisurvival_b2)) & Caspase37_b1) | ((! FOXO) & Antisurvival_b2)) | FOXO);
+	rate_up = (@logic ? $u_Antisurvival_b1 : 0);
+	rate_down = (@logic ? 0 : $d_Antisurvival_b1);
+}
+
+node Antisurvival_b2
+{
+	logic = ((((((((! FOXO) & (! Antisurvival_b1)) & Antisurvival_b3) | (((((! FOXO) & Antisurvival_b1) & (! Antisurvival_b3)) & Caspase37_b1) & Caspase37_b2)) | (((! FOXO) & Antisurvival_b1) & Antisurvival_b3)) | ((FOXO & (! Antisurvival_b1)) & Antisurvival_b3)) | (((FOXO & Antisurvival_b1) & (! Antisurvival_b3)) & Caspase37_b1)) | ((FOXO & Antisurvival_b1) & Antisurvival_b3));
+	rate_up = (@logic ? $u_Antisurvival_b2 : 0);
+	rate_down = (@logic ? 0 : $d_Antisurvival_b2);
+}
+
+node Antisurvival_b3
+{
+	logic = (((FOXO & Antisurvival_b2) & Caspase37_b1) & Caspase37_b2);
+	rate_up = (@logic ? $u_Antisurvival_b3 : 0);
+	rate_down = (@logic ? 0 : $d_Antisurvival_b3);
+}
+
+node Axin
+{
+	logic = (! LRP);
+	rate_up = (@logic ? $u_Axin : 0);
+	rate_down = (@logic ? 0 : $d_Axin);
+}
+
+node RTPKgene
+{
+	logic = FOXO;
+	rate_up = (@logic ? $u_RTPKgene : 0);
+	rate_down = (@logic ? 0 : $d_RTPKgene);
+}
+
+node RSK
+{
+	logic = (ERK & LRP);
+	rate_up = (@logic ? $u_RSK : 0);
+	rate_down = (@logic ? 0 : $d_RSK);
+}
+
+node MSK
+{
+	logic = (((! ERK) & p38alpha) | ERK);
+	rate_up = (@logic ? $u_MSK : 0);
+	rate_down = (@logic ? 0 : $d_MSK);
+}
+
+node CFLAR
+{
+	logic = (AKT & (! ITCH));
+	rate_up = (@logic ? $u_CFLAR : 0);
+	rate_down = (@logic ? 0 : $d_CFLAR);
+}
+
+node Dvl
+{
+	logic = Fz;
+	rate_up = (@logic ? $u_Dvl : 0);
+	rate_down = (@logic ? 0 : $d_Dvl);
+}
+
+node SFRP1
+{
+	logic = SFRP1gene;
+	rate_up = (@logic ? $u_SFRP1 : 0);
+	rate_down = (@logic ? 0 : $d_SFRP1);
+}
+
+node SFRP1gene
+{
+	logic = (! cMYC);
+	rate_up = (@logic ? $u_SFRP1gene : 0);
+	rate_down = (@logic ? 0 : $d_SFRP1gene);
+}
+
+node Caspase37_b1
+{
+	logic = (((((! Caspase8) & (! Caspase9)) & Caspase37_b2) | ((! Caspase8) & Caspase9)) | Caspase8);
+	rate_up = (@logic ? $u_Caspase37_b1 : 0);
+	rate_down = (@logic ? 0 : $d_Caspase37_b1);
+}
+
+node Caspase37_b2
+{
+	logic = ((Caspase8 & Caspase9) & Caspase37_b1);
+	rate_up = (@logic ? $u_Caspase37_b2 : 0);
+	rate_down = (@logic ? 0 : $d_Caspase37_b2);
+}
+
+node betaTrCP
+{
+	logic = ((Axin & RTPK) & Survival);
+	rate_up = (@logic ? $u_betaTrCP : 0);
+	rate_down = (@logic ? 0 : $d_betaTrCP);
+}
+
+node MMP
+{
+	logic = LEF;
+	rate_up = (@logic ? $u_MMP : 0);
+	rate_down = (@logic ? 0 : $d_MMP);
+}
+
+node Egr1
+{
+	logic = (! SFRP1);
+	rate_up = (@logic ? $u_Egr1 : 0);
+	rate_down = (@logic ? 0 : $d_Egr1);
+}
+
+node LEF
+{
+	logic = ITCH;
+	rate_up = (@logic ? $u_LEF : 0);
+	rate_down = (@logic ? 0 : $d_LEF);
+}
+
+node Prosurvival_b1
+{
+	logic = (((((! TNF) & (! cMYC)) & CCND1_b1) | ((! TNF) & cMYC)) | TNF);
+	rate_up = (@logic ? $u_Prosurvival_b1 : 0);
+	rate_down = (@logic ? 0 : $d_Prosurvival_b1);
+}
+
+node Prosurvival_b3
+{
+	logic = (((TNF & cMYC) & CCND1_b1) & Apoptosis);
+	rate_up = (@logic ? $u_Prosurvival_b3 : 0);
+	rate_down = (@logic ? 0 : $d_Prosurvival_b3);
+}
+
+node cMYC
+{
+	logic = SFRP1;
+	rate_up = (@logic ? $u_cMYC : 0);
+	rate_down = (@logic ? 0 : $d_cMYC);
+}
+
+node NLK
+{
+	logic = TAK1;
+	rate_up = (@logic ? $u_NLK : 0);
+	rate_down = (@logic ? 0 : $d_NLK);
+}
+
+node DKK1gene
+{
+	logic = ((! cMYC) & SFRP1);
+	rate_up = (@logic ? $u_DKK1gene : 0);
+	rate_down = (@logic ? 0 : $d_DKK1gene);
+}
+
+node CCND1_b1
+{
+	logic = (((((! RSK) & (! SFRP1)) & Apoptosis) | ((! RSK) & SFRP1)) | RSK);
+	rate_up = (@logic ? $u_CCND1_b1 : 0);
+	rate_down = (@logic ? 0 : $d_CCND1_b1);
+}
+
+node TNF
+{
+	logic = TNF;
+	rate_up = (@logic ? $u_Prosurvival_b2 : 0);
+	rate_down = (@logic ? 0 : $d_Prosurvival_b2);
+}
+
+node Survival
+{
+	logic = (! LRP);
+	rate_up = (@logic ? $u_CK1 : 0);
+	rate_down = (@logic ? 0 : $d_CK1);
+}
+
+node sec_activator
+{
+	logic = (PTENgene & (! RTPK));
+	rate_up = (@logic ? $u_PTEN : 0);
+	rate_down = (@logic ? 0 : $d_PTEN);
+}
+
+node NonACD
+{
+	logic = Caspase37_b1;
+	rate_up = (@logic ? $u_SHP2 : 0);
+	rate_down = (@logic ? 0 : $d_SHP2);
+}
+
+node Apoptosis
+{
+	logic = (((((! RSK) & (! Caspase37_b1)) & IRS1) | ((! RSK) & Caspase37_b1)) | RSK);
+	rate_up = (@logic ? $u_PI3K : 0);
+	rate_down = (@logic ? 0 : $d_PI3K);
+}
+

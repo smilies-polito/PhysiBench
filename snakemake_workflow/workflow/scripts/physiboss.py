@@ -35,13 +35,24 @@ def run_command(command, path=None, silent=False):
             print(completed.stderr)
     raise RuntimeError(f"Command failed with exit code {completed.returncode}")
 
+def is_singularity():
+    """Check if running inside a Singularity container"""
+    return 'SINGULARITY_CONTAINER' in os.environ or \
+           'SINGULARITY_NAME' in os.environ
 
 class LocalPhysiboss:
+    
+    NETWORK_BASE_NAME = "cellfate"
+    BIN_NAME = "project"
+
     PHYSICELL_PATH = "../physiboss/PhysiCell/"
     CONFIG_PATH = os.path.join(PHYSICELL_PATH, "config")
     NETWORK_PATH = os.path.join(CONFIG_PATH, "simple_tnf", "boolean_network")
-    NETWORK_BASE_NAME = "cellfate"
-    BIN_NAME = "project"
+    
+    if is_singularity():
+        NETWORK_PATH = "/virtualconfig/simple_tnf/boolean_network"
+        CONFIG_PATH = "/virtualconfig"
+        PHYSICELL_PATH = "/bin/PhysiCell"
     
     def run_local(model: ModelParameters, protocol: Protocols, sim_params: SimulationParameters, pool_path: str):
         if (protocol is not None):
