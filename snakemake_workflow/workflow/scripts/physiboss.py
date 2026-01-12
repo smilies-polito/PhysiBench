@@ -127,6 +127,8 @@ class LocalPhysiboss:
         root.find('.//motility/speed').text = str(sim_params.speed)
         # Update intracellular_dt
         root.find('.//intracellular_dt').text = str(int(sim_params.intracellular_dt))
+        # Update save interval
+        root.find('.//save/full_data/interval').text = str(sim_params.save_interval)
         tree.write(f"{LocalPhysiboss.CONFIG_PATH}/PhysiCell_settings.xml", encoding='utf-8', xml_declaration=True)
         # Clean up local job directory
         run_command(f"rm -rf output/*", path=LocalPhysiboss.PHYSICELL_PATH)
@@ -271,6 +273,8 @@ class RemotePhysiboss:
         root.find('.//motility/speed').text = str(sim_params.speed)
         # Update intracellular_dt
         root.find('.//intracellular_dt').text = str(int(sim_params.intracellular_dt))
+        # Update save interval
+        root.find('.//save/full_data/interval').text = str(sim_params.save_interval)
         tree.write(f"{RemotePhysiboss.CONFIG_PATH}/PhysiCell_settings.xml", encoding='utf-8', xml_declaration=True)
 
         # Prepare the job directory that will be sent to the HPC server
@@ -359,6 +363,8 @@ class RemotePhysiboss:
             root.find('.//motility/speed').text = str(sim_params.speed)
             # Update intracellular_dt
             root.find('.//intracellular_dt').text = str(int(sim_params.intracellular_dt))
+            # Update save interval
+            root.find('.//save/full_data/interval').text = str(sim_params.save_interval)
             tree.write(f"{RemotePhysiboss.CONFIG_PATH}/PhysiCell_settings.xml", encoding='utf-8', xml_declaration=True)
 
             # Prepare the job directory that will be sent to the HPC server

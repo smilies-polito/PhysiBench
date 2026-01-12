@@ -9,8 +9,10 @@ rule base_pool:
         source_boolean_models = config["source_boolean_models_dir"]
     output: 
         base_pool = directory(f"{config['base_pool_dir']}")
+    params:
+        num_generic_by_family = config['NUM_GENERICS_BY_FAMILY']
     shell: """
-		python workflow/scripts/make_model_generic.py {input.source_boolean_models} {output.base_pool} 26
+		python workflow/scripts/make_model_generic.py {input.source_boolean_models} {output.base_pool} {params.num_generic_by_family}
 	"""
 
 # 2- From the base pool, create a pool of mutated boolean models
