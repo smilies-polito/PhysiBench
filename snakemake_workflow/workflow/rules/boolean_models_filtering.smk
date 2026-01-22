@@ -51,6 +51,6 @@ rule filtering:
         --allow-errors \
         --ExecutePreprocessor.timeout=-1 \
         --output-dir=results/filtering \
-        --output=sensitivity_analysis_debug.ipynb \
+        --output=sensitivity_analysis_output.ipynb \
         workflow/scripts/sensitivity_analysis.ipynb
                 """

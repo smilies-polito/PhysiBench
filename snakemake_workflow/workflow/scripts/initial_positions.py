@@ -27,10 +27,10 @@ import sys
 Cell = Tuple[float, float, float, int]  # x, y, z, cell_type_id
 # Default spacing for dense and contour modes (based on volume of 1000 u^3 in PhysiCell settings)
 SPACING_DEFAULT = 16.82
-X_MAX = 500
-X_MIN = -500
-Y_MAX = 500
-Y_MIN = -500
+X_MAX = 100
+X_MIN = -100
+Y_MAX = 100
+Y_MIN = -100
 
 @dataclass
 class InitialPosition:

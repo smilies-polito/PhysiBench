@@ -5,8 +5,8 @@
 source_boolean_models_dir: "source_data/base_boolean_models_v1"
 base_pool_dir: "results/boolean_models/base_pool"
 mutated_boolean_models_dir: "results/boolean_models/mutated"
-target_number_of_models: 100
-NUM_GENERICS_BY_FAMILY: 5
+target_number_of_models: 2115
+NUM_GENERICS_BY_FAMILY: 12
 
 MIN_DISTANCE: 0.0015 # Min. distance threshold to the closest existing model
 MAX_TESTED: 200000 # Quit after testing this number of mutations
@@ -42,8 +42,8 @@ STATIC_DISTANCE_MEASURES:
 #--------------------------------------------------#
 
 sampling_dir: "results/sampling"
-sampling_number_of_contexts: 3 #TODO: adjust
-sampling_number_of_subjects: 3
+sampling_number_of_contexts: 215
+sampling_number_of_subjects: 2115
 
 # Remote execution settings (set use_remote to true to enable)
 use_remote: false
