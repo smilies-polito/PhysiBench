@@ -34,12 +34,6 @@ REAL_FITNESS_ESTIMATION_BUDGET = None
 PHYSIBOSS_DIR_LOCK = multiprocessing.Lock()
 
 def executor(protocol: Protocols, model: ModelParameters, settings: SimulationParameters) -> float:
-    random_fitness = random.uniform(0, 100)
-    time.sleep(0.3)
-    if random_fitness < 10:
-        return None  # Simulate a failed job
-    return random_fitness
-
     job_name = f"optimization_n{time.time()}_{random.randint(0,10000)}"
     try:
         physiboss = RemotePhysiboss(
@@ -199,12 +193,11 @@ class AbstractOptimizer:
 class DEOptimizer(AbstractOptimizer):
 
     def __init__(self,
-        algo_name: str,
         boolean_family: str,
         boolean_model: str,
         function_evaluation_budget: int,
         real_fitness_estimation_budget: int, 
-        pop_size=14, 
+        pop_size=8, 
         mutation_factor=0.15, 
         crossover_prob=0.7
     ):
@@ -212,7 +205,7 @@ class DEOptimizer(AbstractOptimizer):
         self.pop_size = pop_size
         self.mutation_factor = mutation_factor
         self.crossover_prob = crossover_prob
-        self.max_iter = (function_evaluation_budget // (6 * pop_size)) - 1
+        self.max_iter = (function_evaluation_budget // (pop_size*12)) - 1
         self.bounds = [
             (0, 1), # treatment_duration
             (0, 0.5), # treatment_period
@@ -232,8 +225,8 @@ class DEOptimizer(AbstractOptimizer):
     def optimize(self):
         shared_counters = make_shared_counters()
         def callback(intermediate_result):
-            print("Finished generation: ", len(self.fitness_by_gen))
             individuals_evaluated = shared_counters["individuals_evaluated"]
+            print("Finished generation: ", len(self.fitness_by_gen), "Evaluated individuals in this generation: ", len(individuals_evaluated))
             individuals_evaluated = [x[0] for x in individuals_evaluated]  # Extract just the protocol parameters
             fitness_evaluated = [x[1] for x in individuals_evaluated]  # Extract just the fitness values
             self.fitness_by_gen.append(fitness_evaluated)
@@ -255,6 +248,7 @@ class DEOptimizer(AbstractOptimizer):
             args=(self.model_parameters, self.physiboss_settings, shared_counters),
             maxiter=self.max_iter,
         )
+        callback(None)  # Final callback to save the last generation's data
         print("Finished optimization. Now refining the results with real fitness estimation...")
         self.measured_best_fitness = float(result.fun)
         print("Accessing shared values")
@@ -315,7 +309,6 @@ def main() -> None:
     REAL_FITNESS_ESTIMATION_BUDGET = args.real_fitness_estimation_budget
 
     optimizer = DEOptimizer(
-        algo_name="DE",
         boolean_family=MODEL_FAMILY,
         boolean_model=MODEL_NAME,
         function_evaluation_budget=OPTIMIZATION_BUDGET,
