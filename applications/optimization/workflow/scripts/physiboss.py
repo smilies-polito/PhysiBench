@@ -246,7 +246,6 @@ class RemotePhysiboss:
 
                     finally:
                         try:
-                            run_command(f"rm -rf {local_job}")
                             run_command(f"ssh {self.HPC_LOGIN} rm -rf {os.path.join(self.REMOTE_HPC_RESULTS_PATH, job_name)}")
                         except Exception as e:
                             print("Cannot clean up job files for", job_name)
@@ -353,6 +352,8 @@ class RemotePhysiboss:
             # Prepare the job directory that will be sent to the HPC server
             run_command(f"mkdir {job_name}")
             run_command(f"cp -r {self.CONFIG_PATH} {job_name}/")
+            if os.path.exists(f"{job_name}/virtualconfig"):
+                run_command(f"mv {job_name}/virtualconfig {job_name}/config")
             run_command(f"mkdir {job_name}/output")
 
         # Send the job to the HPC server and run it

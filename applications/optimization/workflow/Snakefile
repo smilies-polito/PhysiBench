@@ -14,7 +14,7 @@ configfile: "config/config.yaml"
 
 rule test_hpc_jobs:
     output:
-        OUTPUT_DIR = "temp"
+        OUTPUT_DIR = directory("temp")
     params:
         POLLING_ATTEMPTS = config["POLLING_ATTEMPTS"],
         POLLING_INTERVAL_SECONDS = config["POLLING_INTERVAL_SECONDS"],
@@ -28,19 +28,20 @@ rule test_hpc_jobs:
     shell:
         """
         python workflow/scripts/test_hpc_jobs.py \
-            --temp-output-dir{output.OUTPUT_DIR} \
+            --output-dir {output.OUTPUT_DIR} \
             --polling-attempts {params.POLLING_ATTEMPTS} \
             --polling-interval-seconds {params.POLLING_INTERVAL_SECONDS} \
             --remote-hpc-results-path {params.REMOTE_HPC_RESULTS_PATH} \
             --remote-hpc-failed-path {params.REMOTE_HPC_FAILED_PATH} \
             --hpc-temp-path {params.HPC_TEMP_PATH} \
             --hpc-login {params.HPC_LOGIN} \
-            --hpc-script-name {params.HPC_SCRIPT_NAME}
+            --hpc-script-name {params.HPC_SCRIPT_NAME} \
+            --boolean-model-pool {params.BOOLEAN_MODEL_POOL}
         """
 
 rule run_optimization:
     output:
-        OUTPUT_DIR = directory("optimization_res")
+        OUTPUT_DIR = directory(config["optimization_results_dir"])
     params:
         POLLING_ATTEMPTS = config["POLLING_ATTEMPTS"],
         POLLING_INTERVAL_SECONDS = config["POLLING_INTERVAL_SECONDS"],

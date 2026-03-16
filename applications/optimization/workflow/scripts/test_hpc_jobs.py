@@ -18,12 +18,12 @@ PHYSIBOSS_DIR_LOCK = multiprocessing.Lock()
 TEMP_OUTPUT_DIR = None
 POLLING_ATTEMPTS = 20
 POLLING_INTERVAL_SECONDS = 15
-BOOLEAN_MODEL_POOL = "../protocols/v1/pool"
-REMOTE_HPC_RESULTS_PATH = "masera/results"
-REMOTE_HPC_FAILED_PATH = "masera/failed_jobs"
-HPC_TEMP_PATH = "/home/rsmeriglio/masera/jobs"
-HPC_LOGIN = "rsmeriglio@hpc-legionlogin.polito.it"
-HPC_SCRIPT_NAME = "masera/run_job.sh"
+BOOLEAN_MODEL_POOL = None
+REMOTE_HPC_RESULTS_PATH = None
+REMOTE_HPC_FAILED_PATH = None
+HPC_TEMP_PATH = None
+HPC_LOGIN = None
+HPC_SCRIPT_NAME = None
 
 def executor(protocol: Protocols, model: ModelParameters, settings: SimulationParameters) -> float:
     job_name = f"optimization_n{time.time()}_{random.randint(0,10000)}"
@@ -58,7 +58,6 @@ def executor(protocol: Protocols, model: ModelParameters, settings: SimulationPa
         print(f"Error running job {job_name}: {e}")
         return float('inf')  # Return a high fitness value for exceptions
     finally:
-        # Clean up remote job output directory
         if output and os.path.isdir(output):
             shutil.rmtree(output, ignore_errors=True)
 
@@ -66,11 +65,10 @@ def executor(protocol: Protocols, model: ModelParameters, settings: SimulationPa
 def run_some_tests():
     simulation_settings = SimulationParameters.get_defaults()
     models = [
-        ModelParameters("EGFTNF", "P0"),
-        ModelParameters("gastric_cancer", "P0")
+        ModelParameters("cell_cycle", "P0"),
     ]
     protocols = [
-        Protocols.get_random() for _ in range(5)
+        Protocols.get_random() for _ in range(3)
     ]
     with multiprocessing.Pool(processes=len(protocols)*len(models)) as pool:
         results = []
@@ -125,6 +123,8 @@ def main() -> None:
     print(f"  HPC_TEMP_PATH={HPC_TEMP_PATH}")
     print(f"  HPC_LOGIN={HPC_LOGIN}")
     print(f"  HPC_SCRIPT_NAME={HPC_SCRIPT_NAME}")
+
+    os.makedirs(TEMP_OUTPUT_DIR, exist_ok=True)
 
     run_some_tests()
 
