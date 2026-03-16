@@ -2,3 +2,4 @@
 physiboss/PhysiCell
 results/
 container.sif
+**__pycache__/
