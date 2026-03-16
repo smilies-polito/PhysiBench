@@ -1,0 +1,40 @@
+configfile: "config/config.yaml"
+
+# Default rule - defines final outputs
+#rule all:
+#    input:
+#        static_distances = "results/boolean_models/static_distance",
+#        filtering = config["filtering_output_dir"]
+
+# Boolean Model generation rules
+# -----------------------------------------------------
+#include: "rules/boolean_models_mutations.smk"
+
+
+
+rule test_hpc_jobs:
+    output:
+        OUTPUT_DIR = "temp"
+    params:
+        POLLING_ATTEMPTS = config["POLLING_ATTEMPTS"],
+        POLLING_INTERVAL_SECONDS = config["POLLING_INTERVAL_SECONDS"],
+        BOOLEAN_MODEL_POOL = config["base_pool_dir"],
+        REMOTE_HPC_RESULTS_PATH = config["REMOTE_HPC_RESULTS_PATH"],
+        REMOTE_HPC_FAILED_PATH = config["REMOTE_HPC_FAILED_PATH"],
+        HPC_TEMP_PATH = config["HPC_TEMP_PATH"],
+        HPC_LOGIN = config["HPC_LOGIN"],
+        HPC_SCRIPT_NAME = config["HPC_SCRIPT_NAME"]
+
+    shell:
+        """
+        python workflow/scripts/test_hpc_jobs.py \
+            --output-dir {output.OUTPUT_DIR} \
+            --polling-attempts {params.POLLING_ATTEMPTS} \
+            --polling-interval-seconds {params.POLLING_INTERVAL_SECONDS} \
+            --boolean-model-pool {params.BOOLEAN_MODEL_POOL} \
+            --remote-hpc-results-path {params.REMOTE_HPC_RESULTS_PATH} \
+            --remote-hpc-failed-path {params.REMOTE_HPC_FAILED_PATH} \
+            --hpc-temp-path {params.HPC_TEMP_PATH} \
+            --hpc-login {params.HPC_LOGIN} \
+            --hpc-script-name {params.HPC_SCRIPT_NAME}
+        """

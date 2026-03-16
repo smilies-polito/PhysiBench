@@ -1,0 +1,17 @@
+#--------------------------------------------------#
+# Generation of boolean models                     #
+#--------------------------------------------------#
+
+base_pool_dir: "../../results/boolean_models/base_pool"
+
+
+#--------------------------------------------------#
+# Remote execution                                 #
+#--------------------------------------------------#
+REMOTE_HPC_RESULTS_PATH: "masera/results"
+REMOTE_HPC_FAILED_PATH: "masera/failed_jobs"
+HPC_TEMP_PATH: "/home/rsmeriglio/masera/jobs"
+HPC_LOGIN: "rsmeriglio@hpc-legionlogin.polito.it"
+HPC_SCRIPT_NAME: "masera/run_job.sh"
+POLLING_ATTEMPTS: 40
+POLLING_INTERVAL_SECONDS: 15
