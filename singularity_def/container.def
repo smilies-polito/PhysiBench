@@ -18,7 +18,7 @@ From: ubuntu:20.04
     conda activate bidms
 %files
     post.bash /opt/post.bash
-    ../snakemake_workflow/workflow/env/env.yml /root/env.yml
+    ../dataset_generation/workflow/env/env.yml /root/env.yml
     ../physiboss/PhysiCell /bin/PhysiCell
 
 %environment
