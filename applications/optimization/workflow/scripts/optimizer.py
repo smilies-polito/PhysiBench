@@ -1,17 +1,15 @@
 import argparse
 import shutil
 
-from initial_positions import Cell, InitialPosition
+from initial_positions import InitialPosition
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
-from physiboss import Physiboss, run_command
 import time
 import os
-from physiboss import RemotePhysiboss, run_command
-import matplotlib.pyplot as plt
+from physiboss import RemotePhysiboss
 from scipy.optimize import differential_evolution
 import random
 import multiprocessing
-from fitness_functions import AliveCellsFitness, SquaredFitness, SpatialFitnessType
+from fitness_functions import SquaredFitness, SpatialFitnessType
 import multiprocessing
 
 # Job execution config - parsed from CLI
@@ -37,7 +35,7 @@ PHYSIBOSS_DIR_LOCK = multiprocessing.Lock()
 
 def executor(protocol: Protocols, model: ModelParameters, settings: SimulationParameters) -> float:
     random_fitness = random.uniform(0, 100)
-    time.sleep(random.uniform(1, 3))  # Simulate variable job execution time
+    time.sleep(0.3)
     if random_fitness < 10:
         return None  # Simulate a failed job
     return random_fitness
@@ -102,6 +100,7 @@ def make_shared_counters():
         "num_individuals_evaluated": mgr.Value("i", 0),
         "num_soft_failed_jobs": mgr.Value("i", 0),
         "num_hard_failed_jobs": mgr.Value("i", 0),
+        "individuals_evaluated": mgr.list()  # To store evaluated individuals if needed
     }
 
 
@@ -117,11 +116,13 @@ def fitness(arr, model: ModelParameters, settings: SimulationParameters, counter
 
         fit = executor(protocol, model, settings)
         if fit is not None:
+            counters["individuals_evaluated"].append((arr, fit))  # Store the evaluated individual and its fitness
             return fit
 
         if tries >= 4:
             with counters["lock"]:
                 counters["num_hard_failed_jobs"].value += 1
+            counters["individuals_evaluated"].append((arr, float("inf")))  # Store the evaluated individual and its fitness
             return float("inf")
 
         with counters["lock"]:
@@ -170,9 +171,12 @@ class AbstractOptimizer:
                 f.write("\n")
         # Solution_by_gen is a threed list (gen -> individual -> protocol parameters), can save it as a JSON file
         import json
-        solution_json_path = os.path.join(self.output_dir, "solution_by_gen.json")
-        with open(solution_json_path, "w") as f:
-            json.dump(self.solution_by_gen, f, indent=4)
+        import numpy as np
+        json_ready_data = [[item.tolist() for item in sublist] for sublist in self.solution_by_gen]
+
+        solution_path = os.path.join(self.output_dir, "solution_by_gen.json")
+        with open(solution_path, "w") as f:
+            json.dump(json_ready_data, f)
         # Save other relevant info in a yaml file
         import yaml
         info_yaml_path = os.path.join(self.output_dir, "info.yaml")
@@ -226,12 +230,19 @@ class DEOptimizer(AbstractOptimizer):
 
 
     def optimize(self):
-        def callback(intermediate_result):
-            print(f"Generation {len(self.best_by_gen)}: Best Fitness = {intermediate_result.fun}")
-            self.fitness_by_gen.append([intermediate_result.fun])
-            self.solution_by_gen.append([intermediate_result.x.tolist()])
-
         shared_counters = make_shared_counters()
+        def callback(intermediate_result):
+            print("Finished generation: ", len(self.fitness_by_gen))
+            individuals_evaluated = shared_counters["individuals_evaluated"]
+            individuals_evaluated = [x[0] for x in individuals_evaluated]  # Extract just the protocol parameters
+            fitness_evaluated = [x[1] for x in individuals_evaluated]  # Extract just the fitness values
+            self.fitness_by_gen.append(fitness_evaluated)
+            self.solution_by_gen.append(individuals_evaluated)
+            # Reset the shared list for the next generation
+            with shared_counters["lock"]:
+                del shared_counters["individuals_evaluated"][:]
+
+        
 
         result = differential_evolution(
             fitness,
@@ -244,8 +255,9 @@ class DEOptimizer(AbstractOptimizer):
             args=(self.model_parameters, self.physiboss_settings, shared_counters),
             maxiter=self.max_iter,
         )
-        self.measured_best_fitness = result.fun
-
+        print("Finished optimization. Now refining the results with real fitness estimation...")
+        self.measured_best_fitness = float(result.fun)
+        print("Accessing shared values")
         self.num_function_evaluations = shared_counters["num_function_evaluations"].value
         self.num_individuals_evaluated = shared_counters["num_individuals_evaluated"].value
         self.num_soft_failed_jobs = shared_counters["num_soft_failed_jobs"].value
@@ -253,8 +265,10 @@ class DEOptimizer(AbstractOptimizer):
 
         # Refine the best solution by running it multiple times and taking the average fitness
         refineds = []
+        print("Refining best solution with multiple evaluations...")
         for _ in range(self.real_fitness_estimation_budget):
-            refineds.append(fitness(result.x, self.model_parameters, self.physiboss_settings))
+            print(f"Refinement run {_+1}/{self.real_fitness_estimation_budget}...")
+            refineds.append(fitness(result.x, self.model_parameters, self.physiboss_settings, shared_counters))
         refineds = [r for r in refineds if r is not None and r != float('inf')]
         self.refined_best_fitness = sum(refineds) / len(refineds) if refineds else float('inf')
         
@@ -300,7 +314,18 @@ def main() -> None:
     OPTIMIZATION_BUDGET = args.optimization_budget
     REAL_FITNESS_ESTIMATION_BUDGET = args.real_fitness_estimation_budget
 
-
+    optimizer = DEOptimizer(
+        algo_name="DE",
+        boolean_family=MODEL_FAMILY,
+        boolean_model=MODEL_NAME,
+        function_evaluation_budget=OPTIMIZATION_BUDGET,
+        real_fitness_estimation_budget=REAL_FITNESS_ESTIMATION_BUDGET,
+        pop_size=14,
+        mutation_factor=0.15,
+        crossover_prob=0.7
+    )
+    optimizer.optimize()
+    optimizer.save()
 
 if __name__ == "__main__":
     main()
