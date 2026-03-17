@@ -51,6 +51,7 @@ def executor(protocol: Protocols, model: ModelParameters, settings: SimulationPa
 
         if output is None:
             print(f"Job {job_name} failed or timed out.")
+            output = os.path.join(TEMP_OUTPUT_DIR, job_name)
             return None
         
         squared = SquaredFitness(
@@ -82,7 +83,7 @@ def array_to_protocol(arr) -> Protocols:
             cell_type=0,
             mode="sparse" if arr[10] < 0.5 else "contour",
             length=arr[11]
-        )
+        ).stick_to_limits()
     )
 
 # Global variables to track optimization events
@@ -100,6 +101,9 @@ def make_shared_counters():
 
 def fitness(arr, model: ModelParameters, settings: SimulationParameters, counters) -> float:
     with counters["lock"]:
+        num_eval = counters["num_individuals_evaluated"].value
+        if num_eval%10==0:
+            print(f"Evaluating individual n: {num_eval}")
         counters["num_individuals_evaluated"].value += 1
 
     protocol = array_to_protocol(arr)
@@ -113,7 +117,7 @@ def fitness(arr, model: ModelParameters, settings: SimulationParameters, counter
             counters["individuals_evaluated"].append((arr, fit))  # Store the evaluated individual and its fitness
             return fit
 
-        if tries >= 4:
+        if tries >= 1:
             with counters["lock"]:
                 counters["num_hard_failed_jobs"].value += 1
             counters["individuals_evaluated"].append((arr, float("inf")))  # Store the evaluated individual and its fitness

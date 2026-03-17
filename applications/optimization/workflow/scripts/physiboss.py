@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 from initial_positions import Cell, InitialPosition
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
 import subprocess
+import traceback
         
 #############################################################
 #    Physiboss:
@@ -21,6 +22,13 @@ import subprocess
 #############################################################
 import subprocess
 
+SSH_MULTIPLEX_ARGS = [
+    "-o", "ControlMaster=auto ",
+    "-o", " ControlPath=/tmp/ssh-%r@%h:%p ",
+    "-o", " ControlPersist=10m ",
+    "-o", " ServerAliveInterval=60",
+]
+SSH_MULTIPLEX_ARGS_STRINGIFIED = " ".join(SSH_MULTIPLEX_ARGS)
 
 def run_command(command, path=None, silent=False):
     if path is None:
@@ -163,7 +171,7 @@ class RemotePhysiboss:
         try:
             # Execute SSH command
             result = subprocess.run(
-                ["ssh", self.HPC_LOGIN, "ls", "-1", self.REMOTE_HPC_RESULTS_PATH],
+                ["ssh"] + SSH_MULTIPLEX_ARGS + [self.HPC_LOGIN, "ls -1", self.REMOTE_HPC_RESULTS_PATH],
                 capture_output=True,
                 text=True,
                 check=True
@@ -177,7 +185,7 @@ class RemotePhysiboss:
             return set(filenames)
         
         except subprocess.CalledProcessError as e:
-            print(f"SSH command (success) failed with return code {e.returncode}")
+            print(f"SSH command (get job list) failed with return code {e.returncode}")
             print(f"Error: {e.stderr}")
             return set()
         except Exception as e:
@@ -188,7 +196,7 @@ class RemotePhysiboss:
         try:
             # Execute SSH command
             result = subprocess.run(
-                ["ssh", self.HPC_LOGIN, "ls", "-1", self.REMOTE_HPC_FAILED_PATH],
+                ["ssh", self.HPC_LOGIN, "ls -1", self.REMOTE_HPC_FAILED_PATH],
                 capture_output=True,
                 text=True,
                 check=True
@@ -225,7 +233,11 @@ class RemotePhysiboss:
             self.run_remote_and_not_fetch(
                 model, protocol, job_name, sim_params, PHYSIBOSS_DIR_LOCK
             )
-
+        except Exception as e:
+            print("Error submitting job to HPC - ", job_name, ":", e)
+            traceback.print_exc()
+            return None
+        try:
             # Polling to retrieve the result
             for _ in range(POLLING_ATTEMPTS):
                 time.sleep(POLLING_INTERVAL_SECONDS)
@@ -236,30 +248,31 @@ class RemotePhysiboss:
                     try:
                         remote_hpc_job = os.path.join(self.REMOTE_HPC_RESULTS_PATH, job_name, "output")
                         local_job = os.path.join(local_output_path, job_name)
-                        system_command = f"scp -r {self.HPC_LOGIN}:{remote_hpc_job} {local_job}"
+                        system_command = f"scp {SSH_MULTIPLEX_ARGS_STRINGIFIED} -r  {self.HPC_LOGIN}:{remote_hpc_job} {local_job}"
                         run_command(system_command)
                         return local_job
 
                     except Exception as e:
-                        print("Error retrieving job", job_name, ":", e)
+                        print("Error retrieving job from the HPC - ", job_name, ":", e)
                         return None
 
                     finally:
                         try:
-                            run_command(f"ssh {self.HPC_LOGIN} rm -rf {os.path.join(self.REMOTE_HPC_RESULTS_PATH, job_name)}")
+                            run_command(f"ssh {self.HPC_LOGIN} {SSH_MULTIPLEX_ARGS_STRINGIFIED} rm -rf {os.path.join(self.REMOTE_HPC_RESULTS_PATH, job_name)}")
                         except Exception as e:
                             print("Cannot clean up job files for", job_name)
 
                 # Check if job failed
                 failed_jobs = self.get_failed_job_list()
                 if job_name in failed_jobs:
-                    print(f"Job {job_name} failed on HPC.")
+                    print("Error running the job from the HPC - ", job_name, "Job has been left in failed_jobs.")
                     return None
 
-            print(f"Job {job_name} did not complete within the polling time. Giving up.")
+            print(f"Job {job_name} did not complete within the polling time. Giving up and freeing the subprocess.")
             return None
         except Exception as e:
             print("Error submitting job", job_name, ":", e)
+            traceback.print_exc()
             return None
         
 
@@ -357,8 +370,8 @@ class RemotePhysiboss:
             run_command(f"mkdir {job_name}/output")
 
         # Send the job to the HPC server and run it
-        run_command(f"echo $PWD && scp -r {job_name} {self.HPC_LOGIN}:{self.HPC_TEMP_PATH}")
-        run_command(f"ssh {self.HPC_LOGIN} sbatch {self.HPC_SCRIPT_NAME} {job_name}")
+        run_command(f"echo $PWD && scp {SSH_MULTIPLEX_ARGS_STRINGIFIED} -r {job_name} {self.HPC_LOGIN}:{self.HPC_TEMP_PATH}")
+        run_command(f"ssh {self.HPC_LOGIN} {SSH_MULTIPLEX_ARGS_STRINGIFIED} sbatch {self.HPC_SCRIPT_NAME} {job_name}")
 
         # Clean up local job directory
         run_command(f"rm -rf {job_name}")
