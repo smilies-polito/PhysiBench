@@ -40,7 +40,7 @@ rule test_hpc_jobs:
         """
 
 rule test_optimization:
-    input: config["optimization_results_dir"]+ "/raw_DE_budget256_realfitness5__cell_cycle_P0"
+    input: config["optimization_results_dir"]+ "/raw_DE_budget4000_realfitness20__gastric_cancer_V14"
 
 rule run_optimization:
     output:

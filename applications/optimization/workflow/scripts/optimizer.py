@@ -203,9 +203,11 @@ class DEOptimizer(AbstractOptimizer):
         real_fitness_estimation_budget: int, 
         pop_size=8, 
         mutation_factor=0.15, 
-        crossover_prob=0.7
+        crossover_prob=0.7,
+        strategy="rand1bin"
     ):
         super().__init__("DE", boolean_family, boolean_model, function_evaluation_budget, real_fitness_estimation_budget)
+        self.strategy = strategy
         self.pop_size = pop_size
         self.mutation_factor = mutation_factor
         self.crossover_prob = crossover_prob
@@ -239,11 +241,25 @@ class DEOptimizer(AbstractOptimizer):
             with shared_counters["lock"]:
                 del shared_counters["individuals_evaluated"][:]
 
-        
+        print(f"""
+        {'-'*20} DE HYPERPARAMETERS {'-'*20}
+        Strategy:          {self.strategy}
+        Max Iterations:    {self.max_iter}
+        Population Size:   {self.pop_size} (Total: {self.pop_size * len(self.bounds)})
+        Mutation Factor:   {self.mutation_factor}
+        Crossover Prob:    {self.crossover_prob}
+        Workers:           32
+
+        Optimization Context:
+        Bounds:          {self.bounds}
+        Shared Counters: {shared_counters}
+        {'-'*54}
+        """)
 
         result = differential_evolution(
             fitness,
             self.bounds,
+            strategy=self.strategy,
             popsize=self.pop_size,
             mutation=self.mutation_factor,
             recombination=self.crossover_prob,
@@ -312,14 +328,39 @@ def main() -> None:
     OPTIMIZATION_BUDGET = args.optimization_budget
     REAL_FITNESS_ESTIMATION_BUDGET = args.real_fitness_estimation_budget
 
+
+    print(f"""Running optimization with:
+    {'='*20} RUN CONFIGURATION {'='*20}
+    Output Directory:           {OUTPUT_DIR}
+    Temp Output Directory:      {TEMP_OUTPUT_DIR}
+    Model Family:               {MODEL_FAMILY}
+    Model Name:                 {MODEL_NAME}
+    Optimization Budget:        {OPTIMIZATION_BUDGET}
+    Fitness Estimation Budget:  {REAL_FITNESS_ESTIMATION_BUDGET}
+    Boolean Model Pool:         {BOOLEAN_MODEL_POOL}
+
+    HPC Settings:
+    Login:                    {HPC_LOGIN}
+    Script Name:              {HPC_SCRIPT_NAME}
+    Temp Path:                {HPC_TEMP_PATH}
+    Results Path:             {REMOTE_HPC_RESULTS_PATH}
+    Failed Path:              {REMOTE_HPC_FAILED_PATH}
+
+    Polling:
+    Attempts:                 {POLLING_ATTEMPTS}
+    Interval (s):             {POLLING_INTERVAL_SECONDS}
+    {'='*59}
+    """)
+
     optimizer = DEOptimizer(
         boolean_family=MODEL_FAMILY,
         boolean_model=MODEL_NAME,
         function_evaluation_budget=OPTIMIZATION_BUDGET,
         real_fitness_estimation_budget=REAL_FITNESS_ESTIMATION_BUDGET,
-        pop_size=14,
-        mutation_factor=0.15,
-        crossover_prob=0.7
+        pop_size=6,
+        mutation_factor=(0.5, 0.9),
+        crossover_prob=0.5,
+        strategy="rand1bin"
     )
     optimizer.optimize()
     optimizer.save()
