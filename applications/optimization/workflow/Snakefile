@@ -39,9 +39,13 @@ rule test_hpc_jobs:
             --boolean-model-pool {params.BOOLEAN_MODEL_POOL}
         """
 
+rule test_optimization:
+    input: config["optimization_results_dir"]+ "/raw_DE_budget6000_sampling3_realfitness20__gastric_cancer_V14"
+
+
 rule run_optimization:
     output:
-        OUTPUT_DIR = directory(config["optimization_results_dir"]+ "/DE_budget{budget}_realfitness{real_fitness}__{family}_{model}")
+        OUTPUT_DIR = directory(config["optimization_results_dir"]+ "/raw_DE_budget{budget}_sampling{sampling}_realfitness{real_fitness}__{family}_{model}")
     params:
         POLLING_ATTEMPTS = config["POLLING_ATTEMPTS"],
         POLLING_INTERVAL_SECONDS = config["POLLING_INTERVAL_SECONDS"],
@@ -50,7 +54,8 @@ rule run_optimization:
         REMOTE_HPC_FAILED_PATH = config["REMOTE_HPC_FAILED_PATH"],
         HPC_TEMP_PATH = config["HPC_TEMP_PATH"],
         HPC_LOGIN = config["HPC_LOGIN"],
-        HPC_SCRIPT_NAME = config["HPC_SCRIPT_NAME"]
+        HPC_SCRIPT_NAME = config["HPC_SCRIPT_NAME"],
+        WORKERS = config["WORKERS"]
 
     shell:
         """
@@ -68,5 +73,19 @@ rule run_optimization:
             --real-fitness-estimation-budget {wildcards.real_fitness} \
             --model-family {wildcards.family} \
             --model-name {wildcards.model} \
-            --boolean-model-pool {params.BOOLEAN_MODEL_POOL}
+            --boolean-model-pool {params.BOOLEAN_MODEL_POOL} \
+            --workers {params.WORKERS} \
+            --explicit-sampling {wildcards.sampling}
         """
+
+rule run_optimization_plot:
+    input: config["optimization_results_dir"]+ "/raw_DE_budget{budget}_sampling{sampling}_realfitness{real_fitness}__{family}_{model}"
+    output:
+        OUTPUT_DIR = directory(config["optimization_results_dir"]+ "/raw_DE_budget{budget}_sampling{sampling}_realfitness{real_fitness}__{family}_{model}/plots")
+    shell:
+        """
+        python workflow/scripts/optimization_plots.py \
+            --output-dir {config["optimization_results_dir"]}/raw_DE_budget{budget}_sampling{sampling}_realfitness{real_fitness}__{family}_{model}/plots
+        """
+
+ruleorder: run_optimization > run_optimization_plot
