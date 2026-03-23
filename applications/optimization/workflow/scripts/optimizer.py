@@ -11,6 +11,7 @@ import random
 import multiprocessing
 from fitness_functions import SquaredFitness, SpatialFitnessType
 import multiprocessing
+import numpy as np
 
 # Job execution config - parsed from CLI
 TEMP_OUTPUT_DIR = None
@@ -99,13 +100,7 @@ def make_shared_counters():
     }
 
 
-def fitness(arr, model: ModelParameters, settings: SimulationParameters, counters) -> float:
-    with counters["lock"]:
-        num_eval = counters["num_individuals_evaluated"].value
-        if num_eval%10==0:
-            print(f"Evaluating individual n: {num_eval}")
-        counters["num_individuals_evaluated"].value += 1
-
+def single_fitness(arr, model: ModelParameters, settings: SimulationParameters, counters) -> float:
     protocol = array_to_protocol(arr)
     tries = 0
     while True:
@@ -114,18 +109,37 @@ def fitness(arr, model: ModelParameters, settings: SimulationParameters, counter
 
         fit = executor(protocol, model, settings)
         if fit is not None:
-            counters["individuals_evaluated"].append((arr, fit))  # Store the evaluated individual and its fitness
             return fit
 
         if tries >= 1:
             with counters["lock"]:
                 counters["num_hard_failed_jobs"].value += 1
-            counters["individuals_evaluated"].append((arr, float("inf")))  # Store the evaluated individual and its fitness
-            return float("inf")
+            return None
 
         with counters["lock"]:
             counters["num_soft_failed_jobs"].value += 1
         tries += 1
+
+def fitness(arr, model: ModelParameters, settings: SimulationParameters, counters, explicit_sampling: int) -> float:
+    with counters["lock"]:
+        num_eval = counters["num_individuals_evaluated"].value
+        if num_eval%10==0:
+            print(f"Evaluating individual n: {num_eval}")
+        counters["num_individuals_evaluated"].value += 1
+    fitnesses = []
+    for _ in range(explicit_sampling):
+        fitnesses.append(
+            single_fitness(arr, model, settings, counters)
+        )
+    fitnesses = [f for f in fitnesses if f is not None]
+    if len(fitnesses)==0:
+        with counters["lock"]:
+            counters["individuals_evaluated"].append((arr, None))  # Store the evaluated individual and its fitness
+        return float('inf')
+    avg_fitness = float(np.mean(np.array(fitnesses)))
+    with counters["lock"]:
+        counters["individuals_evaluated"].append((arr, avg_fitness))  # Store the evaluated individual and its fitness
+    return avg_fitness
 
 
 class AbstractOptimizer:
@@ -202,16 +216,19 @@ class DEOptimizer(AbstractOptimizer):
         function_evaluation_budget: int,
         real_fitness_estimation_budget: int, 
         pop_size=8, 
+        explicit_sampling=1,
         mutation_factor=0.15, 
         crossover_prob=0.7,
-        strategy="rand1bin"
+        strategy="rand1bin",
+        n_processes=32
     ):
         super().__init__("DE", boolean_family, boolean_model, function_evaluation_budget, real_fitness_estimation_budget)
         self.strategy = strategy
         self.pop_size = pop_size
         self.mutation_factor = mutation_factor
         self.crossover_prob = crossover_prob
-        self.max_iter = (function_evaluation_budget // (pop_size*12)) - 1
+        self.max_iter = int(((function_evaluation_budget/explicit_sampling) / (pop_size*12)) - 1)
+        self.explicit_sampling = explicit_sampling
         self.bounds = [
             (0, 1), # treatment_duration
             (0, 0.5), # treatment_period
@@ -226,15 +243,16 @@ class DEOptimizer(AbstractOptimizer):
             (0, 1), # initial_positions.mode
             (30, 200) # initial_positions.length
         ]
+        self.n_processes = n_processes
 
 
     def optimize(self):
         shared_counters = make_shared_counters()
         def callback(intermediate_result):
-            individuals_evaluated = shared_counters["individuals_evaluated"]
-            print("Finished generation: ", len(self.fitness_by_gen), "Evaluated individuals in this generation: ", len(individuals_evaluated))
-            individuals_evaluated = [x[0] for x in individuals_evaluated]  # Extract just the protocol parameters
-            fitness_evaluated = [x[1] for x in individuals_evaluated]  # Extract just the fitness values
+            raw_evaluations = shared_counters["individuals_evaluated"]
+            print("Finished generation: ", len(self.fitness_by_gen), "Evaluated individuals in this generation: ", len(raw_evaluations))
+            individuals_evaluated = [x[0] for x in raw_evaluations]  # Extract just the protocol parameters
+            fitness_evaluated = [x[1] for x in raw_evaluations]  # Extract just the fitness values
             self.fitness_by_gen.append(fitness_evaluated)
             self.solution_by_gen.append(individuals_evaluated)
             # Reset the shared list for the next generation
@@ -248,7 +266,8 @@ class DEOptimizer(AbstractOptimizer):
         Population Size:   {self.pop_size} (Total: {self.pop_size * len(self.bounds)})
         Mutation Factor:   {self.mutation_factor}
         Crossover Prob:    {self.crossover_prob}
-        Workers:           32
+        Explicit Sampling: {self.explicit_sampling}
+        Workers:           {self.n_processes}
 
         Optimization Context:
         Bounds:          {self.bounds}
@@ -264,8 +283,8 @@ class DEOptimizer(AbstractOptimizer):
             mutation=self.mutation_factor,
             recombination=self.crossover_prob,
             callback=callback,
-            workers=32,
-            args=(self.model_parameters, self.physiboss_settings, shared_counters),
+            workers=self.n_processes,
+            args=(self.model_parameters, self.physiboss_settings, shared_counters, self.explicit_sampling),
             maxiter=self.max_iter,
         )
         callback(None)  # Final callback to save the last generation's data
@@ -294,6 +313,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", required=True, help="Directory to store output results")
     parser.add_argument("--optimization-budget", type=int, required=True, help="Optimization budget (number of evaluations)")
     parser.add_argument("--real-fitness-estimation-budget", type=int, required=True, help="Budget for real fitness estimation (number of runs)")
+    parser.add_argument("--explicit-sampling", type=int, required=True, help="Repeat every individual evaluation")
+    
 
     parser.add_argument("--polling-attempts", type=int, required=True, help="Number of polling attempts to wait for job completion")
     parser.add_argument("--polling-interval-seconds", type=int, required=True, help="Seconds between polling checks")
@@ -304,6 +325,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--hpc-login", required=True, help="HPC login/host")
     parser.add_argument("--hpc-script-name", required=True, help="HPC job script name")
     parser.add_argument("--temp-output-dir", required=True, help="Output directory")
+    parser.add_argument("--workers", type=int, required=True, help="Number of workers")
     return parser.parse_args()
 
 
@@ -327,6 +349,8 @@ def main() -> None:
     MODEL_NAME = args.model_name
     OPTIMIZATION_BUDGET = args.optimization_budget
     REAL_FITNESS_ESTIMATION_BUDGET = args.real_fitness_estimation_budget
+    N_WORKERS = args.workers
+    EXPLICIT_SAMPLING = args.explicit_sampling
 
 
     print(f"""Running optimization with:
@@ -357,10 +381,12 @@ def main() -> None:
         boolean_model=MODEL_NAME,
         function_evaluation_budget=OPTIMIZATION_BUDGET,
         real_fitness_estimation_budget=REAL_FITNESS_ESTIMATION_BUDGET,
-        pop_size=6,
-        mutation_factor=(0.5, 0.9),
-        crossover_prob=0.5,
-        strategy="rand1bin"
+        explicit_sampling=EXPLICIT_SAMPLING,
+        pop_size=4,
+        mutation_factor=(0.4, 0.7),
+        crossover_prob=0.6,
+        strategy="randtobest1bin",
+        n_processes=N_WORKERS
     )
     optimizer.optimize()
     optimizer.save()

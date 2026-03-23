@@ -6,9 +6,13 @@ rule all:
         static_distances = "results/boolean_models/static_distance",
         filtering = config["filtering_output_dir"]
 
+
+
 # Boolean Model generation rules
 # -----------------------------------------------------
 include: "rules/boolean_models_mutations.smk"
+
+
 
 # Sensitivity Analysis and model filtering rules
 # -----------------------------------------------------

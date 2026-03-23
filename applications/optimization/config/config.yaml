@@ -15,3 +15,4 @@ HPC_LOGIN: "rsmeriglio@hpc-legionlogin.polito.it"
 HPC_SCRIPT_NAME: "masera/run_job.sh"
 POLLING_ATTEMPTS: 10
 POLLING_INTERVAL_SECONDS: 40
+WORKERS: 56
