@@ -63,7 +63,6 @@ def _run_distance_pair(args):
         print("Running lambda", name)
         lambda_ = get_lambda(dist_type)
         x = lambda_(g1, g2)
-        print("Finished", name)
         return (i, j, x)
 
 
@@ -121,6 +120,38 @@ def plot_heatmap(distances, path, family_boundaries=None, title="", size=None, f
         plt.savefig(path)
         plt.close()
 
+def plot_all_heatmaps(vector_of_distances, path, titles=[], N_ROWS=2, N_COLS=3, family_boundaries=None):
+    assert len(vector_of_distances) == len(titles), "Number of distance matrices must match number of titles"
+    assert N_ROWS * N_COLS >= len(vector_of_distances), "Not enough subplots for all distance matrices"
+    
+    fig, axes = plt.subplots(N_ROWS, N_COLS, figsize=(N_COLS * 6, N_ROWS * 9))
+    axes = np.array(axes).flatten()
+    
+    for i, (distances, title) in enumerate(zip(vector_of_distances, titles)):
+        ax = axes[i]
+        im = ax.imshow(distances, cmap='hot', interpolation='nearest')
+        fig.colorbar(im, ax=ax, orientation='horizontal', fraction=0.05, pad=0.1)
+        ax.set_title(title, fontsize=18, pad=20)
+        ax.tick_params(axis='both', which='major', labelsize=10)
+        
+        if family_boundaries is not None:
+            for boundary in family_boundaries:
+                # Add vertical lines
+                ax.axvline(x=boundary - 0.5, color='black', linestyle='-', linewidth=1.5)
+                # Add horizontal lines
+                ax.axhline(y=boundary - 0.5, color='black', linestyle='-', linewidth=1.5)
+    
+    # Remove empty subplots
+    for j in range(i + 1, len(axes)):
+        fig.delaxes(axes[j])
+        
+    plt.tight_layout()
+    if path is None:
+        plt.show()
+    else:
+        plt.savefig(path)
+        plt.close()
+
 def get_lambda(type):
     if type == "JaccardDistance":
         return netrd.distance.JaccardDistance().dist
@@ -161,7 +192,7 @@ def test_shuffle(files, type, n_shuffles=8):
                     m = protocol.to_graph_matrix(shuffle_nodes=True)
                     matrices.append(m)
         family.append(index*n_shuffles)
-
+    print(f"Running distances with {type} for {len(matrices)} shuffled matrices...")
     distances = pairwise_distance(matrices, type, None)
     return distances, family
 
@@ -183,6 +214,31 @@ def plot_from_results(path, type):
     plot_heatmap(distances, None, family, type, (8, 6), f_names)
     return distances, family, f_names
 
+def test_metrics(mutated_models_path, out_dir):
+    list_of_dirs = os.listdir(mutated_models_path)
+    list_of_dirs = [d for d in list_of_dirs if os.path.isdir(os.path.join(mutated_models_path, d))]
+    models = [
+        os.path.join(mutated_models_path, d, "V0") for d in list_of_dirs
+    ]
+    def run_with(measure):
+        with warnings.catch_warnings():
+            distances, families = test_shuffle(models, type=measure, n_shuffles=2)
+            return distances, families
+    distances, families = [], []
+    for measure in ["DeltaCon", "IpsenMikhailov", "QuantumJSD"]:
+        d, f = run_with(measure)
+        distances.append(d)
+        families.append(f)
+    plot_all_heatmaps(
+        distances, 
+        os.path.join(out_dir, f"test_distances.png"),
+        titles=[
+            f"Static Distances with {type}" for type in ["DeltaCon", "IpsenMikhailov", "QuantumJSD"]
+        ], 
+        N_ROWS=1, N_COLS=3,
+        family_boundaries=families[0]
+    )
+    
 
 def main():
     import os
@@ -246,7 +302,8 @@ def main():
         "with", NUM_PROCESSES, "processes",
         "max graphs per type:", MAX_GRAPHS_PER_TYPE,
         "use global length:", USE_GLOBAL,
-        "\nFound directories:", dirs_in_path
+        "\nFound directories:", dirs_in_path,
+        "\nWriting output in:", out_dir
     )
 
     for dir in dirs_in_path:
@@ -260,6 +317,10 @@ def main():
             files_ = files_[:MAX_GRAPHS_PER_TYPE]
         files = files + files_
         family.append(len(files))
+
+    
+    test_metrics(path, out_dir)
+    exit(0)
 
     matrices = [
         get_matrix_from_path(f) for f in files
@@ -276,7 +337,7 @@ def main():
         "for", len(matrices), "matrices"
         )
 
-    for type in args.distance_types:
+    """for type in args.distance_types:
         print(type)
         try:
             _ = get_lambda(type)
@@ -291,7 +352,24 @@ def main():
         with open(os.path.join(out_dir, f"distances_order_{type}.txt"), 'w') as f:
             for file in files:
                 f.write(f"{file}\n")
-        plot_heatmap(distances, os.path.join(out_dir, f"distances_{type}.png"), family)
+        plot_heatmap(distances, os.path.join(out_dir, f"distances_{type}.png"), family)"""
+
+    # Now create the last heatmap with all the distances together
+    all_distances = []
+    print("Plotting all heatmaps together...")
+    for type in args.distance_types:
+        distances = np.load(os.path.join(out_dir, f"distances_{type}.npy"))
+        all_distances.append(distances)
+    print(all_distances[0].shape)
+    plot_all_heatmaps(
+        all_distances, 
+        os.path.join(out_dir, f"distances_all.png"),
+        titles=[
+            f"Static Distances with {type}" for type in args.distance_types
+        ], 
+        N_ROWS=1, N_COLS=3)
+    
+    
 
 if __name__ == "__main__":
     main()

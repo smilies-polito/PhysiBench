@@ -49,7 +49,7 @@ rule static_distances:
     input:
         mutated_models = config["mutated_boolean_models_dir"]
     output:
-        static_distances_dir = directory("results/boolean_models/static_distance")
+        static_distances_dir = directory(config["static_distance_dir"])
     params:
         num_processes = config["STATIC_DISTANCE_NUM_PROCESSES"],
         max_graphs = config["STATIC_DISTANCE_MAX_GRAPHS"],

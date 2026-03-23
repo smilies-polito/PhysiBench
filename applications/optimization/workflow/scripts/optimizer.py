@@ -34,6 +34,11 @@ REAL_FITNESS_ESTIMATION_BUDGET = None
 PHYSIBOSS_DIR_LOCK = multiprocessing.Lock()
 
 def executor(protocol: Protocols, model: ModelParameters, settings: SimulationParameters) -> float:
+    time.sleep(5)
+    v = random.random() * 100  # Mocked fitness value, replace with actual job execution and result parsing logic
+    if v < 20:  # Simulate a 20% chance of job failure
+        return None
+    return v
     job_name = f"optimization_n{time.time()}_{random.randint(0,10000)}"
     try:
         physiboss = RemotePhysiboss(
@@ -99,11 +104,15 @@ def make_shared_counters():
 
 
 def fitness(arr, model: ModelParameters, settings: SimulationParameters, counters) -> float:
+    num = 0
     with counters["lock"]:
+        num = counters["num_individuals_evaluated"].value
         counters["num_individuals_evaluated"].value += 1
+        print(f"Starting evaluating individual {num+1}")
 
     protocol = array_to_protocol(arr)
     tries = 0
+    
     while True:
         with counters["lock"]:
             counters["num_function_evaluations"].value += 1
@@ -111,12 +120,14 @@ def fitness(arr, model: ModelParameters, settings: SimulationParameters, counter
         fit = executor(protocol, model, settings)
         if fit is not None:
             counters["individuals_evaluated"].append((arr, fit))  # Store the evaluated individual and its fitness
+            print(f"Finished evaluating individual {num+1}")
             return fit
 
         if tries >= 4:
             with counters["lock"]:
                 counters["num_hard_failed_jobs"].value += 1
             counters["individuals_evaluated"].append((arr, float("inf")))  # Store the evaluated individual and its fitness
+            print(f"Finished evaluating individual {num+1}")
             return float("inf")
 
         with counters["lock"]:

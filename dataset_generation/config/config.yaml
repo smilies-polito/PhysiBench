@@ -29,6 +29,7 @@ MAX_MUTATIONS: 2000
 #--------------------------------------------------#
 # Static distance measures                         #
 #--------------------------------------------------#
+static_distance_dir: "../results/boolean_models/static_distances"
 STATIC_DISTANCE_NUM_PROCESSES: 16
 STATIC_DISTANCE_MAX_GRAPHS: -1 # -1 to use all graphs
 STATIC_DISTANCE_USE_GLOBAL: 0
