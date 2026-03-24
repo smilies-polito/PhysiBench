@@ -2,7 +2,7 @@
 # This makefile helps to build the singularity container and launch it with the appropriate bindings.
 
 container.sif:
-	cd singularity_def && singularity build --fakeroot ../container.sif container.def
+	cd singularity && singularity build --fakeroot ../container.sif container.def
 
 launch_container: container.sif
-	singularity shell -B physiboss/config_template/:/virtualconfig -B ${PWD}:${PWD} container.sif
+	singularity shell -B src/bin/physiboss/config_template/:/virtualconfig -B ${PWD}:${PWD} container.sif

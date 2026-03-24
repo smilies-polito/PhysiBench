@@ -356,7 +356,6 @@ def main():
 
     
     test_metrics(path, out_dir)
-    exit(0)
 
     matrices = [
         get_matrix_from_path(f) for f in files
@@ -373,7 +372,7 @@ def main():
         "for", len(matrices), "matrices"
         )
 
-    """for type in args.distance_types:
+    for type in args.distance_types:
         print(type)
         try:
             _ = get_lambda(type)
@@ -388,7 +387,7 @@ def main():
         with open(os.path.join(out_dir, f"distances_order_{type}.txt"), 'w') as f:
             for file in files:
                 f.write(f"{file}\n")
-        plot_heatmap(distances, os.path.join(out_dir, f"distances_{type}.png"), family)"""
+        plot_heatmap(distances, os.path.join(out_dir, f"distances_{type}.png"), family)
 
     # Now create the last heatmap with all the distances together
     all_distances = []

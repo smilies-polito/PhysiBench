@@ -40,6 +40,8 @@ rule filtering:
         abs_std_threshold = config["abs_std_threshold"],
         norm_std_threshold = config["norm_std_threshold"],
         output_dir = config["filtering_output_dir"],
+        filtered_output_dir = config["filtered_output_dir"],
+        mutated_models_pool = config["mutated_boolean_models_dir"]
     shell:
         """
         export OUTPUT_DIR={params.output_dir} && \
@@ -47,10 +49,13 @@ rule filtering:
         export MEAN_THRESHOLD={params.mean_threshold} && \
         export ABS_STD_THRESHOLD={params.abs_std_threshold} && \
         export NORM_STD_THRESHOLD={params.norm_std_threshold} && \
+        export FILTERED_OUTPUT_DIR={params.filtered_output_dir} && \
+        export MUTATED_BOOLEAN_MODELS_DIR={params.mutated_models_pool} && \
         jupyter nbconvert --to notebook --execute \
         --allow-errors \
         --ExecutePreprocessor.timeout=-1 \
         --output-dir={params.output_dir} \
+        --filtered-output-dir={params.filtered_output_dir} \
         --output=sensitivity_analysis_output.ipynb \
         workflow/scripts/sensitivity_analysis.ipynb
                 """
