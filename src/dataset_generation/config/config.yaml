@@ -2,9 +2,9 @@
 # Generation of boolean models                     #
 #--------------------------------------------------#
 
-source_boolean_models_dir: "../source_data/base_boolean_models_v1"
-base_pool_dir: "../results/boolean_models/base_pool"
-mutated_boolean_models_dir: "../results/boolean_models/mutated"
+source_boolean_models_dir: "../../data/source_data/base_boolean_models_v1"
+base_pool_dir: "../../data/boolean_models/base_pool"
+mutated_boolean_models_dir: "../../data/boolean_models/mutated"
 target_number_of_models: 2115
 NUM_GENERICS_BY_FAMILY: 12
 
@@ -29,7 +29,7 @@ MAX_MUTATIONS: 2000
 #--------------------------------------------------#
 # Static distance measures                         #
 #--------------------------------------------------#
-static_distance_dir: "../results/boolean_models/static_distances"
+static_distance_dir: "../../results/static_distances"
 STATIC_DISTANCE_NUM_PROCESSES: 16
 STATIC_DISTANCE_MAX_GRAPHS: -1 # -1 to use all graphs
 STATIC_DISTANCE_USE_GLOBAL: 0
@@ -42,7 +42,7 @@ STATIC_DISTANCE_MEASURES:
 # Sensitivity Analysis / Sampling                  #
 #--------------------------------------------------#
 
-sampling_dir: "../results/sampling"
+sampling_dir: "../../results/sampling"
 sampling_number_of_contexts: 215
 sampling_number_of_subjects: 2115
 
@@ -58,7 +58,8 @@ max_jobs_resume: 210
 #--------------------------------------------------#
 # Filtering of models                              #
 #--------------------------------------------------#
-filtering_output_dir: "../results/filtering"
+filtering_output_dir: "../../results/filtering"
+filtered_output_dir: "../../data/boolean_models/filtered"
 mean_threshold: 0.0
 abs_std_threshold: 30.0
 norm_std_threshold: 0.2

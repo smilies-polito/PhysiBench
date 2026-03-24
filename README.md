@@ -45,7 +45,7 @@ Note: when working inside Singularity, the directories physiboss/config_template
 
 1. Build PhysiBoSS:
    ```bash
-   cd physiboss/Physiboss
+   cd src/bin/physiboss/Physiboss
    make
    ```
 

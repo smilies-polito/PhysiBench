@@ -1,5 +1,6 @@
 **/.snakemake/
-physiboss/PhysiCell
-results/
-container.sif
 **__pycache__/
+container.sif
+results/*
+data/*
+!data/source_data/
