@@ -120,19 +120,46 @@ def plot_heatmap(distances, path, family_boundaries=None, title="", size=None, f
         plt.savefig(path)
         plt.close()
 
-def plot_all_heatmaps(vector_of_distances, path, titles=[], N_ROWS=2, N_COLS=3, family_boundaries=None):
+def plot_all_heatmaps(vector_of_distances, path, titles=[], N_ROWS=2, N_COLS=3, family_boundaries=None, family_names=None, title=""):
     assert len(vector_of_distances) == len(titles), "Number of distance matrices must match number of titles"
     assert N_ROWS * N_COLS >= len(vector_of_distances), "Not enough subplots for all distance matrices"
+    assert family_names is None or family_boundaries is not None, "family_boundaries must be provided when family_names is set"
+
+    def _family_segments(n_items, boundaries):
+        if boundaries is None:
+            return [(0, n_items)]
+        internal_boundaries = sorted(set(int(b) for b in boundaries if 0 < int(b) < n_items))
+        edges = [0] + internal_boundaries + [n_items]
+        return [(edges[k], edges[k + 1]) for k in range(len(edges) - 1)]
     
-    fig, axes = plt.subplots(N_ROWS, N_COLS, figsize=(N_COLS * 6, N_ROWS * 9))
+    fig, axes = plt.subplots(
+        N_ROWS,
+        N_COLS,
+        figsize=(N_COLS * 6, N_ROWS * 8),
+    )
     axes = np.array(axes).flatten()
     
-    for i, (distances, title) in enumerate(zip(vector_of_distances, titles)):
+    for i, (distances, subplot_title) in enumerate(zip(vector_of_distances, titles)):
         ax = axes[i]
         im = ax.imshow(distances, cmap='hot', interpolation='nearest')
-        fig.colorbar(im, ax=ax, orientation='horizontal', fraction=0.05, pad=0.1)
-        ax.set_title(title, fontsize=18, pad=20)
-        ax.tick_params(axis='both', which='major', labelsize=10)
+        fig.colorbar(im, ax=ax, orientation='horizontal', fraction=0.05, pad=0.16)
+        ax.set_title(subplot_title, fontsize=18, pad=10)
+
+        if family_names is None:
+            # Remove numeric ticks when no semantic labels are provided.
+            ax.set_xticks([])
+            ax.set_yticks([])
+        else:
+            segments = _family_segments(distances.shape[0], family_boundaries)
+            assert len(family_names) == len(segments), "Number of family names must match number of families defined by boundaries"
+            centers = [((start + end - 1) / 2.0) for start, end in segments]
+            ax.set_xticks(centers)
+            ax.set_yticks(centers)
+            ax.xaxis.tick_top()
+            ax.set_xticklabels(family_names, rotation=90)
+            ax.set_yticklabels(family_names)
+            ax.tick_params(axis='x', which='major', labeltop=True, labelbottom=False, labelsize=10, pad=2)
+            ax.tick_params(axis='y', which='major', labelsize=10)
         
         if family_boundaries is not None:
             for boundary in family_boundaries:
@@ -144,8 +171,15 @@ def plot_all_heatmaps(vector_of_distances, path, titles=[], N_ROWS=2, N_COLS=3, 
     # Remove empty subplots
     for j in range(i + 1, len(axes)):
         fig.delaxes(axes[j])
-        
-    plt.tight_layout()
+
+    # Reserve a larger top band when family labels are shown on top of each heatmap.
+    top_limit = 0.78 if family_names is not None else 0.88
+    if title:
+        fig.suptitle(title, fontsize=22, y=0.995)
+        fig.tight_layout(rect=[0, 0, 1, top_limit])
+    else:
+        fig.tight_layout()
+
     if path is None:
         plt.show()
     else:
@@ -222,7 +256,7 @@ def test_metrics(mutated_models_path, out_dir):
     ]
     def run_with(measure):
         with warnings.catch_warnings():
-            distances, families = test_shuffle(models, type=measure, n_shuffles=2)
+            distances, families = test_shuffle(models, type=measure, n_shuffles=8)
             return distances, families
     distances, families = [], []
     for measure in ["DeltaCon", "IpsenMikhailov", "QuantumJSD"]:
@@ -236,7 +270,9 @@ def test_metrics(mutated_models_path, out_dir):
             f"Static Distances with {type}" for type in ["DeltaCon", "IpsenMikhailov", "QuantumJSD"]
         ], 
         N_ROWS=1, N_COLS=3,
-        family_boundaries=families[0]
+        family_boundaries=families[0],
+        family_names=[l.replace("_", " ") for l in list_of_dirs],
+        title="Distances between shuffled versions of one protocol by family"
     )
     
 
@@ -367,7 +403,11 @@ def main():
         titles=[
             f"Static Distances with {type}" for type in args.distance_types
         ], 
-        N_ROWS=1, N_COLS=3)
+        N_ROWS=1, N_COLS=3,
+        title="Pairwise distance between models of the dataset",
+        family_boundaries=family[:-1],
+        family_names=[d.replace8("_", " ") for d in dirs_in_path]
+        )
     
     
 
