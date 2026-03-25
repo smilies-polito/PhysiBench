@@ -301,7 +301,7 @@ class DEOptimizer(AbstractOptimizer):
         print("Refining best solution with multiple evaluations...")
         for _ in range(self.real_fitness_estimation_budget):
             print(f"Refinement run {_+1}/{self.real_fitness_estimation_budget}...")
-            refineds.append(fitness(result.x, self.model_parameters, self.physiboss_settings, shared_counters))
+            refineds.append(fitness(result.x, self.model_parameters, self.physiboss_settings, shared_counters, 1))
         refineds = [r for r in refineds if r is not None and r != float('inf')]
         self.refined_best_fitness = sum(refineds) / len(refineds) if refineds else float('inf')
         
