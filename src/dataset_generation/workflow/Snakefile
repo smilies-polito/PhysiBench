@@ -1,0 +1,20 @@
+configfile: "config/config.yaml"
+
+# Default rule - defines final outputs
+rule all:
+    input:
+        filtering = config["filtering_output_dir"],
+        static_distances = config["static_distance_dir"]
+
+
+
+# Boolean Model generation rules
+# -----------------------------------------------------
+include: "rules/boolean_models_mutations.smk"
+
+
+
+# Sensitivity Analysis and model filtering rules
+# -----------------------------------------------------
+include: "rules/boolean_models_filtering.smk"
+
