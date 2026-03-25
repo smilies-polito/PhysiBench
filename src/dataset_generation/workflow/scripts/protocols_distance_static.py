@@ -249,10 +249,15 @@ def plot_from_results(path, type):
     return distances, family, f_names
 
 def test_metrics(mutated_models_path, out_dir):
+    import random
+    def get_one(dir):
+        all_files = [f for f in os.listdir(os.path.join(mutated_models_path, dir)) if f.endswith(".bnd")]
+        idx = random.randint(0, len(all_files)-1)
+        return all_files[idx][:-4]
     list_of_dirs = os.listdir(mutated_models_path)
     list_of_dirs = [d for d in list_of_dirs if os.path.isdir(os.path.join(mutated_models_path, d))]
     models = [
-        os.path.join(mutated_models_path, d, "V0") for d in list_of_dirs
+        os.path.join(mutated_models_path, d, get_one(os.path.join(mutated_models_path, d))) for d in list_of_dirs
     ]
     def run_with(measure):
         with warnings.catch_warnings():
@@ -341,7 +346,6 @@ def main():
         "\nFound directories:", dirs_in_path,
         "\nWriting output in:", out_dir
     )
-
     for dir in dirs_in_path:
         dir_path = os.path.join(path, dir)
         files_ = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
