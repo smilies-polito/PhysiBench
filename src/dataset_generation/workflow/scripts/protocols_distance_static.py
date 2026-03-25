@@ -151,7 +151,7 @@ def plot_all_heatmaps(vector_of_distances, path, titles=[], N_ROWS=2, N_COLS=3, 
             ax.set_yticks([])
         else:
             segments = _family_segments(distances.shape[0], family_boundaries)
-            assert len(family_names) == len(segments), "Number of family names must match number of families defined by boundaries"
+            assert len(family_names) == len(segments), f"Number of family names must match number of families defined by boundaries. For {len(segments)} segments, expected {len(segments)} family names but got {family_names}."
             centers = [((start + end - 1) / 2.0) for start, end in segments]
             ax.set_xticks(centers)
             ax.set_yticks(centers)
@@ -405,7 +405,7 @@ def main():
         N_ROWS=1, N_COLS=3,
         title="Pairwise distance between models of the dataset",
         family_boundaries=family[:-1],
-        family_names=[d.replace8("_", " ") for d in dirs_in_path]
+        family_names=[d.replace("_", " ") for d in dirs_in_path]
         )
     
     

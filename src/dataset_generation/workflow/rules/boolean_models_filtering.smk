@@ -35,6 +35,7 @@ rule filtering:
         sampling = config["sampling_dir"],
     output:
         filtering = directory(config["filtering_output_dir"]),
+        filtered_models = directory(config["filtered_output_dir"]),
     params:
         mean_threshold = config["mean_threshold"],
         abs_std_threshold = config["abs_std_threshold"],
@@ -62,7 +63,7 @@ rule filtering:
 
 rule static_distances:
     input:
-        mutated_models = config["filtering_output_dir"]
+        mutated_models = config["filtered_output_dir"]
     output:
         static_distances_dir = directory(config["static_distance_dir"])
     params:
