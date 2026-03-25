@@ -41,27 +41,5 @@ rule pool:
             --min-mutations {params.min_mutations} \
             --max-mutations {params.max_mutations} \
             --mutation-probs {params.mutation_probs}
-        mv {output.tmp} {output.mutated_boolean_models}
-        """
-
-# 3- Compute graph-based static distance measures between generated models 
-rule static_distances:
-    input:
-        mutated_models = config["mutated_boolean_models_dir"]
-    output:
-        static_distances_dir = directory(config["static_distance_dir"])
-    params:
-        num_processes = config["STATIC_DISTANCE_NUM_PROCESSES"],
-        max_graphs = config["STATIC_DISTANCE_MAX_GRAPHS"],
-        use_global = config["STATIC_DISTANCE_USE_GLOBAL"],
-        distance_types = config["STATIC_DISTANCE_MEASURES"],
-    shell:
-        """
-            python workflow/scripts/protocols_distance_static.py \
-                {input.mutated_models} \
-                {output.static_distances_dir} \
-                {params.num_processes} \
-                {params.max_graphs} \
-                {params.use_global} \
-                {params.distance_types}
+        cp -r {output.tmp} {output.mutated_boolean_models}
         """

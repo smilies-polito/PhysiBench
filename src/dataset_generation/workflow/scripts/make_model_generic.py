@@ -9,8 +9,9 @@ from simulation_model_protocol import ModelParameters, Protocols, SimulationPara
 from pctk import multicellds
 MAX_ERRORS = 10
 
+NUM_TESTING_PROTOCOLS = 48
 POOL_OF_PROTOCOLS = [
-    Protocols.get_random() for _ in range(36)
+    Protocols.get_random() for _ in range(NUM_TESTING_PROTOCOLS)
 ]
 
 def alive_cells(output_folder):
@@ -58,11 +59,25 @@ def run_simulation_(cfg_filename, bnd_filename, out_dir):
 
                         except Exception as e:
                             print(f"Exception at try: {n_tries}")
+                            print(e)
+                            print(f"protocol:",
+                                protocol.treatment_duration,
+                                protocol.treatment_period,
+                                protocol.xmin,
+                                protocol.xmax,
+                                protocol.ymin,
+                                protocol.ymax,
+                                protocol.initial_positions.type,
+                                protocol.initial_positions.density,
+                                protocol.initial_positions.mode,
+                                protocol.initial_positions.center,
+                                protocol.initial_positions.length,
+                            )
                             n_tries += 1
-                            if n_tries > 3:
+                            if n_tries > 2:
                                 raise e
             except Exception as e:
-                print(e)
+                print("Exception:", e)
                 raise e
             finally:
                 os.remove(temp_dir + ".bnd")
@@ -76,7 +91,7 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
     errors = 0
     tries = 0
     while(pool < target):
-        print(f"Creating generic boolean model {pool+1}/{target} - tries {tries}")
+        print_and_log(f"Creating generic boolean model {pool+1}/{target} - tries {tries}")
         tries += 1
         if tries > target * 100:
             print_and_log("Too many tries without success, giving up.")
@@ -84,6 +99,7 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
 
         try:
             boolean_model, states = run_simulation_(cfg_filename, bnd_filename, out_dir)
+            print(f"States: {states}")
         except KeyboardInterrupt:
             exit()
         except Exception as e:
@@ -100,6 +116,7 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
             continue
 
         if pool == 0:
+            print_and_log("First model, adding to pool without distance check.")
             distances.add_element(states)
             save_to_file(boolean_model, out_dir + f"/P{pool}")
             pool += 1
@@ -107,13 +124,55 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
 
         dist = distances.test_element(states)
         if dist >= 0.2:
+            print_and_log(f"Distance {dist:.3f} is above threshold, adding model to pool.")
             save_to_file(boolean_model, out_dir + f"/P{pool}")
             pool += 1
             distances.add_element(states)
             continue 
-        print("Distance too small, retrying.")
+        print(f"Distance too small ({dist}), retrying. This was try n. {tries} for model {pool+1}/{target}.")
 
 
+def test_and_fix_test_proticols(original_path):
+
+
+    global POOL_OF_PROTOCOLS
+
+    # Find any random model
+    families = os.listdir(original_path)
+    if len(families) == 0:
+        print("No models found in the original path.")
+        return
+    family = families[0]
+    models = os.listdir(os.path.join(original_path, family))
+    if len(models) == 0:
+        print("No models found in the original path.")
+        return
+    model_name = models[0][:-4] # remove .cfg or .bnd extension
+
+    def test_protocol(protocol):
+        # Run the simulation
+        try:
+            model = ModelParameters(
+                family,
+                model_name
+            )
+            sim_params = SimulationParameters.get_test_defaults()
+            _ = LocalPhysiboss.run_local(model, protocol, sim_params, original_path)
+        except Exception as e:
+            print(e)
+            return False 
+        return True
+
+    for i in range(len(POOL_OF_PROTOCOLS)):
+        while True:
+            protocol = POOL_OF_PROTOCOLS[i]
+            is_working = test_protocol(protocol)
+            if is_working:
+                break
+            else:
+                print(f"Protocol {i} is not working, replacing with a new one.")
+                POOL_OF_PROTOCOLS[i] = Protocols.get_random()
+        
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
@@ -126,10 +185,16 @@ if __name__ == "__main__":
 
     set_log_Path(os.path.join(output_path, "make_model_generic.log"))
 
+    print("Testing the random test protocols before starting the generation of generic models.",
+        "Defective protocols will be replaced with new ones until all protocols are working.")
+    test_and_fix_test_proticols(original_path)
+    print("All protocols are working, starting the generation of generic models.")
+
     # Iterate over all models in the original path
     all_subdirectories = os.listdir(original_path)
     print(f"Found {len(all_subdirectories)} models to process:\n\t{', '.join(all_subdirectories)}")
     for model_file in os.listdir(original_path):
+        print(f"Processing model: {model_file}")
         cfg_file = os.path.join(original_path, model_file, model_file+".cfg")
         bnd_file = os.path.join(original_path, model_file, model_file+".bnd")
         if not os.path.isfile(cfg_file) or not os.path.isfile(bnd_file):

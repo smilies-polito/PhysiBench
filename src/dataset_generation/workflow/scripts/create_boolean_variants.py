@@ -10,8 +10,9 @@ from pctk import multicellds
 from physiboss import LocalPhysiboss
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
 
+NUM_TESTING_PROTOCOLS = 48
 POOL_OF_PROTOCOLS = [
-    Protocols.get_random() for _ in range(36)
+    Protocols.get_random() for _ in range(NUM_TESTING_PROTOCOLS)
 ]
 
 def alive_cells(output_folder):
@@ -208,6 +209,47 @@ def init_new(target_path, pool_path, max_created_nodes=45):
                 i += 1
     return pool 
 
+def test_and_fix_test_proticols(original_path):
+
+
+    global POOL_OF_PROTOCOLS
+
+    # Find any random model
+    families = os.listdir(original_path)
+    if len(families) == 0:
+        print("No models found in the original path.")
+        return
+    family = families[0]
+    models = os.listdir(os.path.join(original_path, family))
+    if len(models) == 0:
+        print("No models found in the original path.")
+        return
+    model_name = models[0][:-4] # remove .cfg or .bnd extension
+
+    def test_protocol(protocol):
+        # Run the simulation
+        try:
+            model = ModelParameters(
+                family,
+                model_name
+            )
+            sim_params = SimulationParameters.get_test_defaults()
+            _ = LocalPhysiboss.run_local(model, protocol, sim_params, original_path)
+        except Exception as e:
+            print(e)
+            return False 
+        return True
+
+    for i in range(len(POOL_OF_PROTOCOLS)):
+        while True:
+            protocol = POOL_OF_PROTOCOLS[i]
+            is_working = test_protocol(protocol)
+            if is_working:
+                break
+            else:
+                print(f"Protocol {i} is not working, replacing with a new one.")
+                POOL_OF_PROTOCOLS[i] = Protocols.get_random()
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -252,6 +294,8 @@ if __name__ == "__main__":
         print(f"Warning: Mutation probabilities sum to {prob_sum}, not 1.0. Normalizing...")
         args.mutation_probs = [p / prob_sum for p in args.mutation_probs]
     
+    test_and_fix_test_proticols(args.pool_directory)
+
     # Set global MUTATION_P (used by mutate function)
     MUTATION_P = args.mutation_probs
 

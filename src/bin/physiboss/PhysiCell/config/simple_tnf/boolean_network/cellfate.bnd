@@ -1,70 +1,203 @@
-node CycD
+node erk
 {
-	logic = CycD;
-	rate_up = ((! $CycD_del) ? 0.0 : 0.0);
-	rate_down = ($CycD_del ? $fast : 0.0);
+	logic = mek;
+	rate_up = (@logic ? $u_erk : 0);
+	rate_down = (@logic ? 0 : $d_erk);
 }
 
-node Rb
+node ikk
 {
-	logic = (((! CycD) & (! TNF)) & (p27 | (! (Survival | Apoptosis))));
-	rate_up = ((@logic & (! $Rb_del)) ? $fast : 0.0);
-	rate_down = ((@logic & (! $Rb_del)) ? 0.0 : $fast);
+	logic = nik;
+	rate_up = (@logic ? $u_ikk : 0);
+	rate_down = (@logic ? 0 : $d_ikk);
 }
 
-node E2F
+node gsk3
 {
-	logic = (((! Rb) & (! TNF)) & ((! Survival) | p27));
-	rate_up = (@logic ? $slow : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = (! akt);
+	rate_up = (@logic ? $u_gsk3 : 0);
+	rate_down = (@logic ? 0 : $d_gsk3);
 }
 
-node p27
+node ask1
 {
-	logic = (((! CycD) & (! TNF)) & ((! (Survival | Apoptosis)) | (p27 & (! (Apoptosis & Survival)))));
-	rate_up = (@logic ? $fast : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = (NODE_28 + traf2);
+	rate_up = (@logic ? $u_ask1 : 0);
+	rate_down = (@logic ? 0 : $d_ask1);
 }
 
-node UbcH10
+node ras
 {
-	logic = (((! (sec_activator & (! UbcH10))) & (Survival | TNF)) | (((! Survival) & (! TNF)) & ((! sec_activator) | (NonACD & UbcH10))));
-	rate_up = (@logic ? $slow : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = sos;
+	rate_up = (@logic ? $u_ras : 0);
+	rate_down = (@logic ? 0 : $d_ras);
+}
+
+node egf
+{
+	logic = egf;
+	rate_up = (@logic ? $u_egf : 0);
+	rate_down = (@logic ? 0 : $d_egf);
+}
+
+node traf2
+{
+	logic = (NODE_28 - tnfr);
+	rate_up = (@logic ? $u_traf2 : 0);
+	rate_down = (@logic ? 0 : $d_traf2);
+}
+
+node ikb
+{
+	logic = jnk;
+	rate_up = (@logic ? $u_ikb : 0);
+	rate_down = (@logic ? 0 : $d_ikb);
+}
+
+node map3k1
+{
+	logic = ras;
+	rate_up = (@logic ? $u_map3k1 : 0);
+	rate_down = (@logic ? 0 : $d_map3k1);
+}
+
+node tnfr
+{
+	logic = tnfa;
+	rate_up = (@logic ? $u_tnfr : 0);
+	rate_down = (@logic ? 0 : $d_tnfr);
+}
+
+node ap1
+{
+	logic = cjun;
+	rate_up = (@logic ? $u_ap1 : 0);
+	rate_down = (@logic ? 0 : $d_ap1);
+}
+
+node mek
+{
+	logic = TNF;
+	rate_up = (@logic ? $u_mek : 0);
+	rate_down = (@logic ? 0 : $d_mek);
+}
+
+node ex
+{
+	logic = NonACD;
+	rate_up = (@logic ? $u_ex : 0);
+	rate_down = (@logic ? 0 : $d_ex);
+}
+
+node tnfa
+{
+	logic = (ph + (pi3k - (ikb | akt)));
+	rate_up = (@logic ? $u_tnfa : 0);
+	rate_down = (@logic ? 0 : $d_tnfa);
+}
+
+node map3k7
+{
+	logic = traf2;
+	rate_up = (@logic ? $u_map3k7 : 0);
+	rate_down = (@logic ? 0 : $d_map3k7);
+}
+
+node cjun
+{
+	logic = ((! ikk) | (ikk & ex));
+	rate_up = (@logic ? $u_cjun : 0);
+	rate_down = (@logic ? 0 : $d_cjun);
+}
+
+node sos
+{
+	logic = tnfa;
+	rate_up = (@logic ? $u_sos : 0);
+	rate_down = (@logic ? 0 : $d_sos);
+}
+
+node jnk
+{
+	logic = Apoptosis;
+	rate_up = (@logic ? $u_jnk : 0);
+	rate_down = (@logic ? 0 : $d_jnk);
+}
+
+node pi3k
+{
+	logic = Survival;
+	rate_up = (@logic ? $u_pi3k : 0);
+	rate_down = (@logic ? 0 : $d_pi3k);
+}
+
+node p38
+{
+	logic = pi3k;
+	rate_up = (@logic ? $u_p38 : 0);
+	rate_down = (@logic ? 0 : $d_p38);
+}
+
+node akt
+{
+	logic = sec_activator;
+	rate_up = (@logic ? $u_akt : 0);
+	rate_down = (@logic ? 0 : $d_akt);
+}
+
+node ph
+{
+	logic = ((nik & ph) | erk);
+	rate_up = (@logic ? $u_ph : 0);
+	rate_down = (@logic ? 0 : $d_ph);
+}
+
+node nik
+{
+	logic = map3k7;
+	rate_up = (@logic ? $u_nik : 0);
+	rate_down = (@logic ? 0 : $d_nik);
 }
 
 node TNF
 {
-	logic = TNF;
-	rate_up = (@logic ? $slow : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = (NODE_28 - TNF);
+	rate_up = (@logic ? $u_raf1 : 0);
+	rate_down = (@logic ? 0 : $d_raf1);
 }
 
 node Survival
 {
-	logic = ((((! Rb) & (! NonACD)) & (! (UbcH10 & sec_activator))) & (Survival | E2F));
-	rate_up = (@logic ? $slow : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = egf;
+	rate_up = (@logic ? $u_egfr : 0);
+	rate_down = (@logic ? 0 : $d_egfr);
 }
 
 node sec_activator
 {
-	logic = (NonACD | ((! TNF) & ((! Survival) | p27)));
-	rate_up = (@logic ? $fast : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = (map3k1 & map3k7);
+	rate_up = (@logic ? $u_mkk4 : 0);
+	rate_down = (@logic ? 0 : $d_mkk4);
 }
 
 node NonACD
 {
-	logic = TNF;
-	rate_up = ((@logic & (! $Cdc20_del)) ? $slow : 0.0);
-	rate_down = ((@logic & (! $Cdc20_del)) ? 0.0 : $fast);
+	logic = (! ikb);
+	rate_up = (@logic ? $u_nfkb : 0);
+	rate_down = (@logic ? 0 : $d_nfkb);
 }
 
 node Apoptosis
 {
-	logic = ((! Rb) & E2F);
-	rate_up = (@logic ? $slow : 0.0);
-	rate_down = (@logic ? 0.0 : $fast);
+	logic = (((! ask1) & map3k1) | ask1);
+	rate_up = (@logic ? $u_mkk7 : 0);
+	rate_down = (@logic ? 0 : $d_mkk7);
+}
+
+node NODE_28
+{
+	logic = (ikb & (! (gsk3 / (sec_activator / tnfa))));
+	rate_up = (@logic ? 1 : 0);
+	rate_down = (@logic ? 0 : 1);
 }
 

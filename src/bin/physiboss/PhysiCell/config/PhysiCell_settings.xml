@@ -63,10 +63,10 @@
             <initial_condition units="mmHg">0.0</initial_condition>
             <Dirichlet_boundary_condition units="mmHg" enabled="True">10.0</Dirichlet_boundary_condition>
             <Dirichlet_options>
-                <boundary_value ID="xmin" enabled="True">2.5141678539268657</boundary_value>
-                <boundary_value ID="xmax" enabled="True">4.368057130941541</boundary_value>
-                <boundary_value ID="ymin" enabled="True">1.7519409341705172</boundary_value>
-                <boundary_value ID="ymax" enabled="True">0.28723773280559595</boundary_value>
+                <boundary_value ID="xmin" enabled="True">2.0</boundary_value>
+                <boundary_value ID="xmax" enabled="True">2.0</boundary_value>
+                <boundary_value ID="ymin" enabled="True">2.0</boundary_value>
+                <boundary_value ID="ymax" enabled="True">2.0</boundary_value>
                 <boundary_value ID="zmin" enabled="False">10.0</boundary_value>
                 <boundary_value ID="zmax" enabled="False">10.0</boundary_value>
             </Dirichlet_options>
@@ -257,10 +257,10 @@
 
     <user_parameters>
         <random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">94</number_of_cells>
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">14</number_of_cells>
         <treatment type="bool" units="dimensionless" description="">True</treatment>
         <treatment_substrate type="string" units="dimensionless" description="">TNF</treatment_substrate>
-        <treatment_period type="int" units="minutes" description="">149.78568020475154</treatment_period>
-        <treatment_duration type="int" units="minutes" description="">125.36564175010331</treatment_duration>
+        <treatment_period type="int" units="minutes" description="">170.0</treatment_period>
+        <treatment_duration type="int" units="minutes" description="">34.0</treatment_duration>
     </user_parameters>
 </PhysiCell_settings>

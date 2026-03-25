@@ -37,7 +37,7 @@ class InitialPosition:
     type: str #circle or square
     center: Tuple[float, float] #Diagonale superiore sinistra
     density: float = 0.1
-    cell_type: int = 0 #Se vogliamo usare + booleani 
+    cell_type: str = "default" #Se vogliamo usare + booleani 
     mode: str = "sparse" #dense, sparse, contour
     length: float = 0.0 #Lato del quadrato o raggio del cerchio
 
@@ -50,7 +50,7 @@ class InitialPosition:
         
         # Generate a random density
         density = random.uniform(0, 0.8)
-        cell_type = 0
+        cell_type = "default"
         mode = random.choice(["sparse", "contour"])
         type = random.choice(["circle", "square"])
         return InitialPosition(
@@ -87,7 +87,7 @@ def fill_circle(
     radius: float,
     spacing: float = SPACING_DEFAULT,
     density: float = 0.1,
-    cell_type: int = 0,
+    cell_type: str = "default",
     mode: str = "sparse"
 ) -> List[Cell]:
     
@@ -158,7 +158,7 @@ def fill_square(
     half: float,
     spacing: float = SPACING_DEFAULT,
     density: float = 0.1,
-    cell_type: int = 0,
+    cell_type: str = "default",
     mode: str = "sparse"
 ) -> List[Cell]:
     

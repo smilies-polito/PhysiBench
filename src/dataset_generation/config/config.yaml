@@ -5,8 +5,8 @@
 source_boolean_models_dir: "../../data/source_data/base_boolean_models_v1"
 base_pool_dir: "../../data/boolean_models/base_pool"
 mutated_boolean_models_dir: "../../data/boolean_models/mutated"
-target_number_of_models: 2115
-NUM_GENERICS_BY_FAMILY: 12
+target_number_of_models: 20 #2115
+NUM_GENERICS_BY_FAMILY: 2 #12
 
 MIN_DISTANCE: 0.0015 # Min. distance threshold to the closest existing model
 MAX_TESTED: 200000 # Quit after testing this number of mutations
@@ -27,24 +27,12 @@ MAX_MUTATIONS: 2000
 
 
 #--------------------------------------------------#
-# Static distance measures                         #
-#--------------------------------------------------#
-static_distance_dir: "../../results/static_distances"
-STATIC_DISTANCE_NUM_PROCESSES: 16
-STATIC_DISTANCE_MAX_GRAPHS: -1 # -1 to use all graphs
-STATIC_DISTANCE_USE_GLOBAL: 0
-STATIC_DISTANCE_MEASURES: 
-    - "DeltaCon"
-    - "IpsenMikhailov"
-    - "QuantumJSD"
-
-#--------------------------------------------------#
 # Sensitivity Analysis / Sampling                  #
 #--------------------------------------------------#
 
 sampling_dir: "../../results/sampling"
-sampling_number_of_contexts: 215
-sampling_number_of_subjects: 2115
+sampling_number_of_contexts: 2 #215
+sampling_number_of_subjects: 8 #2115
 
 # Remote execution settings (set use_remote to true to enable)
 use_remote: false
@@ -58,8 +46,21 @@ max_jobs_resume: 210
 #--------------------------------------------------#
 # Filtering of models                              #
 #--------------------------------------------------#
-filtering_output_dir: "../../results/filtering"
-filtered_output_dir: "../../data/boolean_models/filtered"
+filtering_output_dir: "../../results/filtering" # Store there filtering related
+filtered_output_dir: "../../data/boolean_models/filtered" # Store the final, filtered dataset and a manifest file
 mean_threshold: 0.0
-abs_std_threshold: 30.0
-norm_std_threshold: 0.2
+abs_std_threshold: 10 #30.0
+norm_std_threshold: 0.05 #0.2
+
+
+#--------------------------------------------------#
+# Static distance measures                         #
+#--------------------------------------------------#
+static_distance_dir: "../../results/static_distances"
+STATIC_DISTANCE_NUM_PROCESSES: 32
+STATIC_DISTANCE_MAX_GRAPHS: -1 # -1 to use all graphs
+STATIC_DISTANCE_USE_GLOBAL: 0
+STATIC_DISTANCE_MEASURES: 
+    - "DeltaCon"
+    - "IpsenMikhailov"
+    - "QuantumJSD"

@@ -3,8 +3,8 @@ configfile: "config/config.yaml"
 # Default rule - defines final outputs
 rule all:
     input:
-        static_distances = "results/boolean_models/static_distance",
-        filtering = config["filtering_output_dir"]
+        filtering = config["filtering_output_dir"],
+        static_distances = config["static_distance_dir"]
 
 
 
