@@ -77,8 +77,8 @@ extraction_max_concurrent: 100
 extraction_save_time: 60
 extraction_max_retries: 1
 extraction_stale_minutes: 1500
-extraction_results_dir: "../../data/extracted_data"
-extraction_init_pos_json: "src/dataset_generation/workflow/scripts_riki/initial_positions.json"
+extraction_results_dir: "../../data/multiscale_simulations"
+extraction_init_pos_json: "../../data/multiscale_simulations/initial_positions.json"
 extraction_times_dir: "../times"
 
 # Extra HPC settings

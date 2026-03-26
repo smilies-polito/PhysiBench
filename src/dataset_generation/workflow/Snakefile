@@ -5,7 +5,7 @@ rule all:
     input:
         filtering = config["filtering_output_dir"],
         static_distances = config["static_distance_dir"]
-        extraction_dir = directory(config["extraction_results_dir"])
+        extraction = config["extraction_results_dir"] + "/multiscale_simulations_manifest.json"
 
 
 
@@ -19,3 +19,6 @@ include: "rules/boolean_models_mutations.smk"
 # -----------------------------------------------------
 include: "rules/boolean_models_filtering.smk"
 
+# Data Extraction 
+# -----------------------------------------------------
+include: "rules/data_extraction.smk"
