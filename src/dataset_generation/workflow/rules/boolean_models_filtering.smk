@@ -14,9 +14,10 @@ rule sampling:
         remote_temp = lambda wildcards: f"--remote-temp-path {config['remote_temp_path']}" if config.get("remote_temp_path") else "",
         max_jobs_stop = config.get("max_jobs_stop", 480),
         max_jobs_resume = config.get("max_jobs_resume", 210),
+        hpc_script_name = config.get("hpc_script_name", "")
     shell:
         """
-        python workflow/scripts/sensitivity_analysis.py \
+        python workflow/scripts/offline_sampling.py \
             {params.n_contexts} \
             {params.n_subjects} \
             {input.pool} \
@@ -28,6 +29,7 @@ rule sampling:
             {params.remote_temp} \
             --max-jobs-stop {params.max_jobs_stop} \
             --max-jobs-resume {params.max_jobs_resume}
+            --remote-script-name {params.hpc_script_name}
         """
 
 rule filtering:
