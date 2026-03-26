@@ -10,6 +10,16 @@ Derived from seven open biological reference models, the dataset features:
 
 By coupling diverse intracellular Boolean networks with a consistent agent-based multicellular environment, VBMS retains key biological features—such as nonlinearity, stochasticity, feedback, and multiscale coupling—enabling robust, large-scale studies across a broad spectrum of bio-inspired systems.
 
+## Table of Contents
+- [Overview](#overview)
+- [Usage](#usage)
+  - [Project Structure](#project-structure)
+  - [Environment Setup](#environment-setup)
+  - [Configuration](#configuration)
+  - [Running the Workflow](#running-the-workflow)
+  - [Remote Execution (HPC)](#remote-execution-hpc)
+  - [Pipeline Steps](#pipeline-steps)
+
 ## Overview
 
 The workflow consists of several key stages designed to generate and validate a structurally diverse dataset of Boolean models and their multiscale simulations:
@@ -146,8 +156,64 @@ extraction_remote_results: "/home/rsmeriglio/masera/meta_model_rick/results" # D
 extraction_remote_script: "/home/rsmeriglio/masera/meta_model_rick/run_job.sh" # Remote script for this specific task
 
 
-TODO:
- - Step della pipeline: per ogni step:
-    - Descrizione leggermente più lunga.
-    - quali directory di input si usano e quali directory di output si popolano.
-    - Spiegazione degli iperparametri (tutti appartengono al config.yaml).
+### Pipeline Steps
+
+#### 1. Base Pool Generation (`rule base_pool`)
+**Description**: Transforms 7 open biological reference models into a harmonized set of generic Boolean networks. Each model is equipped with a minimal, consistent interface (one input node and three output nodes) to enable interoperable multiscale simulations.
+**Inputs**: `data/reference_models`
+**Outputs**: `data/boolean_models/base_pool`
+**Config Hyperparameters**:
+- `NUM_GENERICS_BY_FAMILY`: 12
+
+#### 2. Mutation Pipeline & On-line Evaluation (`rule pool`)
+**Description**: Applies a stochastic mutation-and-selection process to the base models to create structurally diverse candidate networks. Mutations alter network topology and update rules (e.g., rewiring logic, replacing operators, adding nodes). Candidate models are filtered dynamically during generation using a behavioral signature distance threshold to prevent dynamic redundancy, resulting in 2,122 candidate networks.
+**Inputs**: `data/boolean_models/base_pool`
+**Outputs**: `data/boolean_models/mutated`
+**Config Hyperparameters**:
+- `target_number_of_models`: 2115
+- `MIN_DISTANCE`: 0.15
+- `MAX_TESTED`: 200,000
+- `MAX_CREATED_NODES`: 45
+- `MIN_MUTATIONS`: 10
+- `MAX_MUTATIONS`: 2000
+- `MUTATION_P`: Probabilities for different mutation operations (Switch nodes logic, replace logical operator, etc.)
+
+#### 3. Sensitivity Analysis & Sampling (`rule sampling`)
+**Description**: Conducts an off-line sensitivity evaluation by simulating the variant models across hundreds of biological contexts. Uses the PhysiBoSS multiscale framework to evaluate each model under distinct combinations of stimulation and spatial parameters.
+**Inputs**: `data/boolean_models/mutated`
+**Outputs**: `results/sampling`
+**Config Hyperparameters**:
+- `sampling_number_of_contexts`: 215
+- `sampling_number_of_subjects`: 2115
+- `max_jobs_stop`: 480
+- `max_jobs_resume`: 210
+
+#### 4. Model Filtering (`rule filtering`)
+**Description**: Discards weakly informative models by analyzing their population-level fitness responses across the sampled parameter space. Models are retained only if they demonstrate sufficient absolute and relative variability. The subset is thus filtered down to the final 612 structurally and dynamically diverse Boolean regulatory networks.
+**Inputs**: `results/sampling` (plus the mutated string pool)
+**Outputs**: `results/filtering` (statistics and notebook), `data/boolean_models/filtered` (final models)
+**Config Hyperparameters**:
+- `mean_threshold`: 0.0
+- `abs_std_threshold`: 10
+- `norm_std_threshold`: 0.05
+
+#### 5. Static Distance Validation (`rule static_distances`)
+**Description**: Quantifies the true structural diversity of the curated model collection by converting the Boolean rules into graph representations. Calculates pairwise global distance metrics across models (DeltaCon, Ipsen-Mikhailov, Quantum Jensen-Shannon Divergence) to ensure topological distinction.
+**Inputs**: `data/boolean_models/filtered`
+**Outputs**: `results/static_distances`
+**Config Hyperparameters**:
+- `STATIC_DISTANCE_NUM_PROCESSES`: 32
+- `STATIC_DISTANCE_MAX_GRAPHS`: -1 (uses all graphs)
+- `STATIC_DISTANCE_USE_GLOBAL`: 0
+- `STATIC_DISTANCE_MEASURES`: DeltaCon, IpsenMikhailov, QuantumJSD
+
+#### 6. Multiscale Simulation Extraction (`rule data_extraction_hpc`)
+**Description**: Executes the final, large-scale dataset generation across High-Performance Computing (HPC) resources on 60 representative models. It runs a massive grid of parameterizations to extract and save 120,000 precomputed, time-resolved simulation trajectories for downstream analysis.
+**Inputs**: Base initial configurations (e.g. `initial_positions.json`)
+**Outputs**: `data/multiscale_simulations`
+**Config Hyperparameters**:
+- `extraction_grid_size`: 2000
+- `extraction_max_concurrent`: 100
+- `extraction_save_time`: 60
+- `extraction_max_retries`: 1
+- `extraction_stale_minutes`: 1500
