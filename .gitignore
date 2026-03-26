@@ -3,4 +3,4 @@
 container.sif
 results/*
 data/*
-!data/source_data/
+!data/reference_models/
