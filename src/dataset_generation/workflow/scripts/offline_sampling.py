@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import multiprocessing
 import os
 import sys
 import pickle
@@ -154,15 +155,35 @@ class Context:
 
 
 class RemotePhysibossInterface:
+
+    def __init__(self, 
+                boolean_model_pool: str, 
+                remote_hpc_results_path: str,
+                remote_hpc_failed_path: str,
+                hpc_temp_path: str,
+                hpc_login: str,
+                hpc_script_name: str
+                ):
+        self.lock = multiprocessing.Lock()
+        self.physiboss = RemotePhysiboss(
+            boolean_model_pool,
+            remote_hpc_results_path,
+            remote_hpc_failed_path,
+            hpc_temp_path,
+            hpc_login,
+            hpc_script_name,
+        )
+
     def run_job(self, model: ModelParameters, protocol: Protocols, job_name: str, sim_params: SimulationParameters):
-        RemotePhysiboss.run_remote(
-            model, protocol, job_name, sim_params
-            )
+        self.physiboss.run_remote_and_not_fetch(
+            model, protocol, job_name, sim_params, self.lock
+        )
+
     def get_job_list(self):
-        return Physiboss.get_remote_job_list()
+        return self.physiboss.get_remote_job_list()
     
     def retrieve_job_results(self, destination_folder: str):
-        subprocess.run(["rsync", "-avz", '--no-owner',  '--no-group', "rsmeriglio@hpc-lb.polito.it:/home/rsmeriglio/masera/results", destination_folder])   
+        self.physiboss.retrieve_all_remote_jobs(destination_folder)
 
 class LocalPhysibossInterface:
     def __init__(self, pool_path, results_path):
@@ -347,6 +368,8 @@ if __name__ == "__main__":
                         help='Maximum number of concurrent remote jobs before stopping (default: 480)')
     parser.add_argument('--max-jobs-resume', type=int, default=210,
                         help='Resume submitting jobs when count drops below this (default: 210)')
+    parser.add_argument('--remote-script-name', type=str, default="remote_job.sh",
+                        help='Name of the remote script to be used for job submission (default: remote_job.sh)')
     
     args = parser.parse_args()
     
@@ -360,14 +383,20 @@ if __name__ == "__main__":
             parser.error("--remote-failed-path is required when --use-remote is set")
         if not args.remote_temp_path:
             parser.error("--remote-temp-path is required when --use-remote is set")
+        if not args.remote_script_name:
+            parser.error("--remote-script-name is required when --use-remote is set")
 
     #Initialize the physiboss interface
     if args.use_remote:
-        RemotePhysiboss.BOOLEAN_MODEL_POOL = args.pool_path
-        RemotePhysiboss.HPC_LOGIN = args.remote_url
-        RemotePhysiboss.REMOTE_HPC_RESULTS_PATH = args.remote_results_path
-        RemotePhysiboss.REMOTE_HPC_FAILED_PATH = args.remote_failed_path
-        RemotePhysiboss.HPC_TEMP_PATH = args.remote_temp_path
+
+        physiboss = RemotePhysiboss(
+            boolean_model_pool=args.pool_path,
+            remote_hpc_results_path=args.remote_results_path,
+            remote_hpc_failed_path=args.remote_failed_path,
+            hpc_temp_path=args.remote_temp_path,
+            hpc_login=args.remote_url,
+            hpc_script_name=args.remote_script_name
+        )
         physiboss = RemotePhysibossInterface()
         max_jobs_stop = args.max_jobs_stop
         max_jobs_resume = args.max_jobs_resume

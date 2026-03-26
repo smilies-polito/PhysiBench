@@ -36,10 +36,11 @@ sampling_number_of_subjects: 2115
 
 # Remote execution settings (set use_remote to true to enable)
 use_remote: false
-remote_url: null  # e.g., "user@hpc-server.domain"
-remote_results_path: null  # e.g., "/home/user/results"
-remote_failed_path: null  # e.g., "/home/user/failed"
-remote_temp_path: null  # e.g., "/home/user/temp"
+remote_url: "rsmeriglio@hpc-legionlogin.polito.it"  # e.g., "user@hpc-server.domain"
+remote_results_path:  "/home/rsmeriglio/masera/results_new_dir"  # e.g., "/home/user/results"
+remote_failed_path: "/home/rsmeriglio/masera/failed_jobs"  # e.g., "/home/user/failed"
+remote_temp_path: "/home/rsmeriglio/masera/jobs"  # e.g., "/home/user/temp"
+hpc_script_name: "masera/run_job.sh"
 max_jobs_stop: 480
 max_jobs_resume: 210
 
