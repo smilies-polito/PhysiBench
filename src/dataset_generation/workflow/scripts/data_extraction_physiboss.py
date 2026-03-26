@@ -10,23 +10,17 @@ from initial_positions import InitialPosition
 
 PRJ_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
-# ==== REMOTE (HPC) CONFIG ====
-REMOTE_USER = "rsmeriglio"
-REMOTE_HOST = "hpc-legionlogin.polito.it"
-REMOTE_BASE = f"/home/{REMOTE_USER}/masera/meta_model_rick"
-RUN_SCRIPT  = f"{REMOTE_BASE}/run_job.sh"
-
 # ssh/scp options to avoid interactive prompts and host key issues
 SSH_OPTS = "-o BatchMode=yes -o StrictHostKeyChecking=accept-new"
 
-def _ssh(cmd: str) -> int:
+def _ssh(cmd: str, remote_user: str, remote_host: str) -> int:
     """Run a command on the remote HPC via ssh with safe options."""
-    return os.system(f"ssh {SSH_OPTS} {REMOTE_USER}@{REMOTE_HOST} '{cmd}'")
+    return os.system(f"ssh {SSH_OPTS} {remote_user}@{remote_host} '{cmd}'")
 
-def _scp(local: str, remote_subdir: str) -> int:
+def _scp(local: str, remote_subdir: str, remote_user: str, remote_host: str, remote_base: str) -> int:
     """Copy a local path to HPC REMOTE_BASE/remote_subdir via scp with safe options."""
     return os.system(
-        f"scp -r {SSH_OPTS} {local} {REMOTE_USER}@{REMOTE_HOST}:{REMOTE_BASE}/{remote_subdir}"
+        f"scp -r {SSH_OPTS} {local} {remote_user}@{remote_host}:{remote_base}/{remote_subdir}"
     )
 
 @dataclass
@@ -183,7 +177,8 @@ class Physiboss:
         os.system(f"mkdir {job_name}/output")
 
     @staticmethod
-    def run_remote_wt_settings(model: ModelParameters, protocol: Protocols, job_name: str, sim_params):
+    def run_remote_wt_settings(model: ModelParameters, protocol: Protocols, job_name: str, sim_params,
+                               remote_user: str, remote_host: str, remote_base: str, run_script: str):
         """
         Prepara config in locale (incluso save_time), copia al cluster e sottomette il job.
         """
@@ -191,7 +186,7 @@ class Physiboss:
 
         # Retry until the job folder is copied successfully.
         while True:
-            scp_rc = _scp(job_name, "jobs")
+            scp_rc = _scp(job_name, "jobs", remote_user, remote_host, remote_base)
             if scp_rc == 0:
                 break
             print(f"⚠️ scp failed for {job_name} (exit={scp_rc}). Retry in 60s...")
@@ -199,7 +194,7 @@ class Physiboss:
 
         # Retry until sbatch submission succeeds.
         while True:
-            ssh_rc = _ssh(f"sbatch {RUN_SCRIPT} {job_name}")
+            ssh_rc = _ssh(f"sbatch {run_script} {job_name}", remote_user, remote_host)
             if ssh_rc == 0:
                 break
             print(f"⚠️ sbatch failed for {job_name} (exit={ssh_rc}). Retry in 60s...")

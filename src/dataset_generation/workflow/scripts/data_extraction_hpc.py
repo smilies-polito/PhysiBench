@@ -1,6 +1,7 @@
 # simulations/data_extraction_hpc.py
 
 
+import argparse
 import os
 import time
 import random
@@ -12,28 +13,30 @@ from typing import List, Tuple, Dict, Optional
 
 import numpy as np
 
-from physiboss import Physiboss, ModelParameters, Protocols
+from data_extraction_physiboss import Physiboss, ModelParameters, Protocols
 from initial_positions import InitialPosition
 
-# ==================== CONFIG HPC ====================
-remote_user = "rsmeriglio"
-remote_host = "hpc-legionlogin.polito.it"
-remote_results_path = f"/home/{remote_user}/masera/meta_model_rick/results"
+# ==================== CONFIG HPC (GLOBAL VARIABLES FROM CLI) ====================
+remote_user = None
+remote_host = None
+remote_base = None
+remote_results_path = None
+run_script = None
 
-# ==================== SCHEDULING ====================
-GRID_SIZE       = 2000   # how many combinations total (after shuffle)
-MAX_CONCURRENT  = 100    # how many jobs in parallel
-SAVE_TIME       = 60     # save interval (min) written in XML by physiboss
+# ==================== SCHEDULING (GLOBAL VARIABLES FROM CLI) ====================
+GRID_SIZE       = None
+MAX_CONCURRENT  = None
+SAVE_TIME       = None
+MAX_RETRIES     = None
+STALE_MINUTES   = None
+base_mount_path = None
+INITIAL_POSITIONS_JSON_PATH = None
+times_dir = None
 
-# Fault-tolerance
-MAX_RETRIES     = 1      # how many retries for a failed job
-STALE_MINUTES   = 1500   # minutes without marker -> treated as "stale"
 
-
-# ==================== LISTA MODELLI E INITIAL POSITIONS DA JSON ====================
-INITIAL_POSITIONS_JSON_PATH = os.path.join(os.path.dirname(__file__), "initial_positions.json")
-with open(INITIAL_POSITIONS_JSON_PATH, "r") as f:
-    _initial_positions_data = json.load(f)
+# ==================== LISTA MODELLI E INITIAL POSITIONS ====================
+INITIAL_POSITIONS: Dict[Tuple[str, str, Optional[str]], InitialPosition] = {}
+MODELS: List[Tuple[str, str, Optional[str]]] = []
 
 def parse_model_key(model_key: str) -> Tuple[str, str, Optional[str]]:
     parts = model_key.split("_")
@@ -45,24 +48,25 @@ def parse_model_key(model_key: str) -> Tuple[str, str, Optional[str]]:
         raise ValueError(f"Invalid model key format: {model_key}")
     return "_".join(parts[:-2]), parts[-2], parts[-1]
 
-INITIAL_POSITIONS: Dict[Tuple[str, str, Optional[str]], InitialPosition] = {}
-MODELS: List[Tuple[str, str, Optional[str]]] = []
-seen_models = set()
-
-for k, v in _initial_positions_data.items():
-    name, version, model_id = parse_model_key(k)
-    key = (name, version, model_id)
-    if key not in seen_models:
-        MODELS.append(key)
-        seen_models.add(key)
-    INITIAL_POSITIONS[key] = InitialPosition(
-        type=v["type"],
-        center=tuple(v["center"]),
-        density=v["density"],
-        cell_type=v["cell_type"],
-        mode=v["mode"],
-        length=v["length"]
-    )
+def load_initial_positions():
+    global INITIAL_POSITIONS, MODELS
+    seen_models = set()
+    with open(INITIAL_POSITIONS_JSON_PATH, "r") as f:
+        _initial_positions_data = json.load(f)
+    for k, v in _initial_positions_data.items():
+        name, version, model_id = parse_model_key(k)
+        key = (name, version, model_id)
+        if key not in seen_models:
+            MODELS.append(key)
+            seen_models.add(key)
+        INITIAL_POSITIONS[key] = InitialPosition(
+            type=v["type"],
+            center=tuple(v["center"]),
+            density=v["density"],
+            cell_type=v["cell_type"],
+            mode=v["mode"],
+            length=v["length"]
+        )
 
 SSH_OPTS = [
     "-o", "BatchMode=yes",
@@ -144,11 +148,10 @@ def check_remote_status(job_name: str) -> str:
 # -------------------- CPU TIME HELPERS (no sacct) --------------------
 def _times_csv_path(base_model_dir: str) -> str:
     """
-    Build the per-model CSV path: ../times/data_extraction_hpc_time_<MODEL>.csv
+    Build the per-model CSV path: <times_dir>/data_extraction_hpc_time_<MODEL>.csv
     MODEL is inferred from base_model_dir basename (e.g., 'macrophage_V2').
     """
     model_tag = os.path.basename(base_model_dir.rstrip("/"))
-    times_dir = '../times'
     os.makedirs(times_dir, exist_ok=True)
     return os.path.join(times_dir, f"data_extraction_hpc_time_{model_tag}.csv")
 
@@ -373,7 +376,8 @@ def submit_one(sim_idx: int,
     )
     model_tag = f"{model.boolean_family}_{model.boolean_model}" if model_id is None else f"{model.boolean_family}_{model.boolean_model}_{model_id}"
     job_name  = f"{model_tag}_sim_{sim_idx}_TP{tp}_TD{td}"
-    Physiboss.run_remote_wt_settings(model, protocol, job_name, sim_params)
+    Physiboss.run_remote_wt_settings(model, protocol, job_name, sim_params,
+                                     remote_user, remote_host, remote_base, run_script)
     return (job_name, sim_idx)
 
 # ==================== RUN (CODA DINAMICA + FAULT TOLERANCE) ====================
@@ -382,7 +386,7 @@ def run_for_one_model(boolean_family: str, boolean_model: str, model_id: Optiona
     model = ModelParameters(boolean_family=boolean_family, boolean_model=boolean_model)
 
     model_tag = f"{boolean_family}_{boolean_model}" if model_id is None else f"{boolean_family}_{boolean_model}_{model_id}"
-    base_model_dir = os.path.join("/mnt", model_tag)
+    base_model_dir = os.path.join(base_mount_path, model_tag)
     data_dir = os.path.join(base_model_dir, "data")
     os.makedirs(os.path.join(data_dir, "cell_data"), exist_ok=True)
     os.makedirs(os.path.join(data_dir, "input_parameters"), exist_ok=True)
@@ -481,6 +485,41 @@ def main():
         run_for_one_model(fam, mod, model_id)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Data extraction HPC")
+    parser.add_argument("--remote-user", default="rsmeriglio", help="HPC username")
+    parser.add_argument("--remote-host", default="hpc-legionlogin.polito.it", help="HPC hostname")
+    parser.add_argument("--remote-base", default="", help="HPC base dir (default: /home/USER/masera/meta_model_rick)")
+    parser.add_argument("--remote-results", default="", help="HPC results dir (default: REMOTE_BASE/results)")
+    parser.add_argument("--run-script", default="", help="HPC run script path (default: REMOTE_BASE/run_job.sh)")
+    parser.add_argument("--grid-size", type=int, default=2000, help="Grid size combinations")
+    parser.add_argument("--max-concurrent", type=int, default=100, help="Max parallel jobs")
+    parser.add_argument("--save-time", type=int, default=60, help="Save interval (min) written in XML")
+    parser.add_argument("--max-retries", type=int, default=1, help="Max retries for failed job")
+    parser.add_argument("--stale-minutes", type=int, default=1500, help="Minutes without marker -> stale")
+    parser.add_argument("--base-mount-path", default="/mnt", help="Local mount path for results")
+    parser.add_argument("--init-pos-json", default=os.path.join(os.path.dirname(__file__), "initial_positions.json"), help="Initial positions JSON")
+    parser.add_argument("--times-dir", default="../times", help="Directory for times CSV")
+
+    args = parser.parse_args()
+
+    # Apply arguments to global configs
+    remote_user = args.remote_user
+    remote_host = args.remote_host
+    remote_base = args.remote_base or f"/home/{remote_user}/masera/meta_model_rick"
+    remote_results_path = args.remote_results or f"{remote_base}/results"
+    run_script = args.run_script or f"{remote_base}/run_job.sh"
+
+    GRID_SIZE = args.grid_size
+    MAX_CONCURRENT = args.max_concurrent
+    SAVE_TIME = args.save_time
+    MAX_RETRIES = args.max_retries
+    STALE_MINUTES = args.stale_minutes
+    base_mount_path = args.base_mount_path
+    INITIAL_POSITIONS_JSON_PATH = args.init_pos_json
+    times_dir = args.times_dir
+    
+    load_initial_positions()
+
     # We keep a small global wall/CPU time for the orchestrator itself (not used in per-model CSVs)
     start = time.time()
     main()
@@ -488,5 +527,6 @@ if __name__ == "__main__":
 
     # Orchestrator timings (optional; not requested in per-model CSVs)
     print(f"\n=== ALL DONE in {total} seconds ===")
-    with open("../times/data_extraction_effective_time.txt", "w", encoding="utf-8") as f:
+    os.makedirs(times_dir, exist_ok=True)
+    with open(os.path.join(times_dir, "data_extraction_effective_time.txt"), "w", encoding="utf-8") as f:
         f.write(f"Total wall time: {total:.2f} seconds\n")

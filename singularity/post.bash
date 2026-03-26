@@ -14,4 +14,4 @@ else
 fi
 # Fill this file with your environment creation
 mamba env create --file /root/env.yml
-conda activate bidms
+conda activate VBMS

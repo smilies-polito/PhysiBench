@@ -36,6 +36,8 @@ sampling_number_of_subjects: 2115
 
 # Remote execution settings (set use_remote to true to enable)
 use_remote: false
+remote_user: "rsmeriglio"  # e.g., "user"
+remote_host: "hpc-legionlogin.polito.it"  # e.g., "hpc-server.domain"
 remote_url: "rsmeriglio@hpc-legionlogin.polito.it"  # e.g., "user@hpc-server.domain"
 remote_results_path:  "/home/rsmeriglio/masera/results_new_dir"  # e.g., "/home/user/results"
 remote_failed_path: "/home/rsmeriglio/masera/failed_jobs"  # e.g., "/home/user/failed"
@@ -65,3 +67,21 @@ STATIC_DISTANCE_MEASURES:
     - "DeltaCon"
     - "IpsenMikhailov"
     - "QuantumJSD"
+
+
+#--------------------------------------------------#
+# Data extraction                                  #
+#--------------------------------------------------#
+extraction_grid_size: 2000
+extraction_max_concurrent: 100
+extraction_save_time: 60
+extraction_max_retries: 1
+extraction_stale_minutes: 1500
+extraction_results_dir: "../../data/extracted_data"
+extraction_init_pos_json: "src/dataset_generation/workflow/scripts_riki/initial_positions.json"
+extraction_times_dir: "../times"
+
+# Extra HPC settings
+extraction_remote_base: "/home/rsmeriglio/masera/meta_model_rick" # Base directory on the HPC
+extraction_remote_results: "/home/rsmeriglio/masera/meta_model_rick/results" # Directory on the HPC where to store results
+extraction_remote_script: "/home/rsmeriglio/masera/meta_model_rick/run_job.sh"

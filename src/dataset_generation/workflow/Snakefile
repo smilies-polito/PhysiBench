@@ -5,6 +5,7 @@ rule all:
     input:
         filtering = config["filtering_output_dir"],
         static_distances = config["static_distance_dir"]
+        extraction_dir = directory(config["extraction_results_dir"])
 
 
 
