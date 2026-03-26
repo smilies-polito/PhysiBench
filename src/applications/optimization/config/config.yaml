@@ -2,8 +2,8 @@
 # Generation of boolean models                     #
 #--------------------------------------------------#
 
-base_pool_dir: "../../results/boolean_models/base_pool"
-optimization_results_dir: "../../results/optimization"
+base_pool_dir: "../../../data/boolean_models/base_pool"
+optimization_results_dir: "../../../results/optimization"
 
 #--------------------------------------------------#
 # Remote execution                                 #

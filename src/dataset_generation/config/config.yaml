@@ -2,7 +2,7 @@
 # Generation of boolean models                     #
 #--------------------------------------------------#
 
-source_boolean_models_dir: "../../data/source_data/base_boolean_models_v1"
+source_boolean_models_dir: "../../data/reference_models"
 base_pool_dir: "../../data/boolean_models/base_pool"
 mutated_boolean_models_dir: "../../data/boolean_models/mutated"
 target_number_of_models: 2115

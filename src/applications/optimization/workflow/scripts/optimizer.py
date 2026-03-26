@@ -35,11 +35,6 @@ REAL_FITNESS_ESTIMATION_BUDGET = None
 PHYSIBOSS_DIR_LOCK = multiprocessing.Lock()
 
 def executor(protocol: Protocols, model: ModelParameters, settings: SimulationParameters) -> float:
-    time.sleep(5)
-    v = random.random() * 100  # Mocked fitness value, replace with actual job execution and result parsing logic
-    if v < 20:  # Simulate a 20% chance of job failure
-        return None
-    return v
     job_name = f"optimization_n{time.time()}_{random.randint(0,10000)}"
     try:
         physiboss = RemotePhysiboss(
