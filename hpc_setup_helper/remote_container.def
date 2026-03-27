@@ -1,0 +1,33 @@
+Bootstrap: library
+From: ubuntu:20.04
+
+
+%runscript
+    cd /opt/PhysiCell
+    /usr/bin/time -o output/time.txt -f "Real: %e\nUser: %U\nSys: %S" ./project
+
+%files
+    ../src/bin/physiboss/PhysiCell /opt/PhysiCell
+
+%post
+    export TZ=America/Los_Angeles
+    apt update 
+    apt install -y python3 pip wget
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ=Etc/UTC
+    apt -y install git
+    apt -y install tzdata
+    apt -y install python3-setuptools
+    apt install -y libcurl4-gnutls-dev libxml2-dev libssl-dev
+    apt install -y bison flex
+    apt install -y libc6
+    apt install -y --only-upgrade libstdc++6
+    apt install -y graphviz
+    apt install -y apt 
+    apt install -y time
+    cd /opt/PhysiCell && make
+    rm -rf /opt/PhysiCell/config
+    rm -rf /opt/PhysiCell/output
+    ln  -s "/mounted/config" "/opt/PhysiCell/config"
+    ln -s "/mounted/output" "/opt/PhysiCell/output"
+

@@ -7,19 +7,18 @@
 #SBATCH --mem=2G
 #SBATCH --oversubscribe
 #SBATCH --time=24:00:00
-# alternativa nodo: compute-4-12 o 7-2, 7-3
 
 job_name="$1"
-job_path="/home/rsmeriglio/masera/jobs/$job_name"
+job_path="/home/.../jobs/$job_name"
 
 echo "SLURM Job ID: $SLURM_JOB_ID"
 echo "Job Name: $job_name"
 echo "Job started at: $(date)"
 
-result_path="/home/rsmeriglio/masera/results_new_dir/$job_name"
-failed_job_path="/home/rsmeriglio/masera/failed_jobs/$job_name"
+result_path="/home/..../results/$job_name"
+failed_job_path="/home/.../failed_jobs/$job_name"
 
-apptainer run --bind "$job_path:/mounted/" /home/rsmeriglio/masera/physiboss_container/container.sif
+apptainer run --bind "$job_path:/mounted/" /home/.../physiboss_container/container.sif
 exit_code=$?
 
 echo "$job_name,$SLURM_JOB_ID" >> "$job_path/job_info.txt"
