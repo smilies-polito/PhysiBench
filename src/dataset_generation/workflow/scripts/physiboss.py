@@ -58,11 +58,13 @@ class LocalPhysiboss:
     PHYSICELL_PATH = "../bin/physiboss/PhysiCell/"
     CONFIG_PATH = os.path.join(PHYSICELL_PATH, "config")
     NETWORK_PATH = os.path.join(CONFIG_PATH, "simple_tnf", "boolean_network")
+    OUTPUT_DIR = os.path.join(PHYSICELL_PATH, "output")
     
     if is_singularity():
         NETWORK_PATH = "/virtualconfig/simple_tnf/boolean_network"
         CONFIG_PATH = "/virtualconfig"
         PHYSICELL_PATH = "/bin/PhysiCell"
+        OUTPUT_DIR = "/virtualoutput"
     
     def run_local(model: ModelParameters, protocol: Protocols, sim_params: SimulationParameters, pool_path: str):
         if (protocol is not None):
@@ -77,6 +79,7 @@ class LocalPhysiboss:
         bnd_file = f"{base_path}.bnd"
         run_command(f"cp {cfg_file} {LocalPhysiboss.NETWORK_PATH}/{LocalPhysiboss.NETWORK_BASE_NAME}.cfg")
         run_command(f"cp {bnd_file} {LocalPhysiboss.NETWORK_PATH}/{LocalPhysiboss.NETWORK_BASE_NAME}.bnd")
+
         for ext in ['cfg', 'bnd']:
             file_path = f"{LocalPhysiboss.NETWORK_PATH}/{LocalPhysiboss.NETWORK_BASE_NAME}.{ext}"
             # Booleans were built for a different version of physiboss with 2 different nodes names.

@@ -1,203 +1,441 @@
-node erk
+node CSF2RA
 {
-	logic = mek;
-	rate_up = (@logic ? $u_erk : 0);
-	rate_down = (@logic ? 0 : $d_erk);
+	logic = IFNa;
+	rate_up = (@logic ? $u_CSF2RA : 0);
+	rate_down = (@logic ? 0 : $d_CSF2RA);
 }
 
-node ikk
+node TLR2
 {
-	logic = nik;
-	rate_up = (@logic ? $u_ikk : 0);
-	rate_down = (@logic ? 0 : $d_ikk);
+	logic = Apoptotic_cell;
+	rate_up = (@logic ? $u_TLR2 : 0);
+	rate_down = (@logic ? 0 : $d_TLR2);
 }
 
-node gsk3
+node TNFOLDR
 {
-	logic = (! akt);
-	rate_up = (@logic ? $u_gsk3 : 0);
-	rate_down = (@logic ? 0 : $d_gsk3);
+	logic = Neutrophil_recruitment;
+	rate_up = (@logic ? $u_TNFOLDR : 0);
+	rate_down = (@logic ? 0 : $d_TNFOLDR);
 }
 
-node ask1
+node TGFb_e
 {
-	logic = (NODE_28 + traf2);
-	rate_up = (@logic ? $u_ask1 : 0);
-	rate_down = (@logic ? 0 : $d_ask1);
+	logic = TGFb_e;
+	rate_up = (@logic ? $u_TGFb_e : 0);
+	rate_down = (@logic ? 0 : $d_TGFb_e);
 }
 
-node ras
+node IL4
 {
-	logic = sos;
-	rate_up = (@logic ? $u_ras : 0);
-	rate_down = (@logic ? 0 : $d_ras);
+	logic = (TRAF3 | (IL4 & (! (Survival | (MYD88 & (JMJD3 * (TGFb & (IRF5 / (TIMD4 - (! (TNFOLDR & (MAVS + STAT3))))))))))));
+	rate_up = (@logic ? $u_IL4 : 0);
+	rate_down = (@logic ? 0 : $d_IL4);
 }
 
-node egf
+node IL4RA
 {
-	logic = egf;
-	rate_up = (@logic ? $u_egf : 0);
-	rate_down = (@logic ? 0 : $d_egf);
+	logic = (((((! IRF4) & (! IL4)) & NonACD) | ((! IRF4) & IL4)) | IRF4);
+	rate_up = (@logic ? $u_IL4RA : 0);
+	rate_down = (@logic ? 0 : $d_IL4RA);
 }
 
-node traf2
+node IL10_e
 {
-	logic = (NODE_28 - tnfr);
-	rate_up = (@logic ? $u_traf2 : 0);
-	rate_down = (@logic ? 0 : $d_traf2);
+	logic = IL10_e;
+	rate_up = (@logic ? $u_IL10_e : 0);
+	rate_down = (@logic ? 0 : $d_IL10_e);
 }
 
-node ikb
+node Nsp15
 {
-	logic = jnk;
-	rate_up = (@logic ? $u_ikb : 0);
-	rate_down = (@logic ? 0 : $d_ikb);
+	logic = SARS_CoV_2;
+	rate_up = (@logic ? $u_Nsp15 : 0);
+	rate_down = (@logic ? 0 : $d_Nsp15);
 }
 
-node map3k1
+node E
 {
-	logic = ras;
-	rate_up = (@logic ? $u_map3k1 : 0);
-	rate_down = (@logic ? 0 : $d_map3k1);
+	logic = (Orf3a * (Apoptotic_cell & (TRAF3 - (Nsp15 & (GULP1 + (SMAD7 - ACE))))));
+	rate_up = (@logic ? $u_E : 0);
+	rate_down = (@logic ? 0 : $d_E);
 }
 
-node tnfr
+node N
 {
-	logic = tnfa;
-	rate_up = (@logic ? $u_tnfr : 0);
-	rate_down = (@logic ? 0 : $d_tnfr);
+	logic = SARS_CoV_2;
+	rate_up = (@logic ? $u_N : 0);
+	rate_down = (@logic ? 0 : $d_N);
 }
 
-node ap1
+node Orf3a
 {
-	logic = cjun;
-	rate_up = (@logic ? $u_ap1 : 0);
-	rate_down = (@logic ? 0 : $d_ap1);
+	logic = SARS_CoV_2;
+	rate_up = (@logic ? $u_Orf3a : 0);
+	rate_down = (@logic ? 0 : $d_Orf3a);
 }
 
-node mek
+node Orf8
 {
-	logic = TNF;
-	rate_up = (@logic ? $u_mek : 0);
-	rate_down = (@logic ? 0 : $d_mek);
+	logic = SARS_CoV_2;
+	rate_up = (@logic ? $u_Orf8 : 0);
+	rate_down = (@logic ? 0 : $d_Orf8);
 }
 
-node ex
+node CaM
 {
-	logic = NonACD;
-	rate_up = (@logic ? $u_ex : 0);
-	rate_down = (@logic ? 0 : $d_ex);
+	logic = TRAF3;
+	rate_up = (@logic ? $u_CaM : 0);
+	rate_down = (@logic ? 0 : $d_CaM);
 }
 
-node tnfa
+node ACE
 {
-	logic = (ph + (pi3k - (ikb | akt)));
-	rate_up = (@logic ? $u_tnfa : 0);
-	rate_down = (@logic ? 0 : $d_tnfa);
+	logic = RhoA_Rac1_Rac2;
+	rate_up = (@logic ? $u_ACE : 0);
+	rate_down = (@logic ? 0 : $d_ACE);
 }
 
-node map3k7
+node AngII
 {
-	logic = traf2;
-	rate_up = (@logic ? $u_map3k7 : 0);
-	rate_down = (@logic ? 0 : $d_map3k7);
+	logic = ACE;
+	rate_up = (@logic ? $u_AngII : 0);
+	rate_down = (@logic ? 0 : $d_AngII);
 }
 
-node cjun
+node ADAM17
 {
-	logic = ((! ikk) | (ikk & ex));
-	rate_up = (@logic ? $u_cjun : 0);
-	rate_down = (@logic ? 0 : $d_cjun);
+	logic = AngII;
+	rate_up = (@logic ? $u_ADAM17 : 0);
+	rate_down = (@logic ? 0 : $d_ADAM17);
 }
 
-node sos
+node NLRP3
 {
-	logic = tnfa;
-	rate_up = (@logic ? $u_sos : 0);
-	rate_down = (@logic ? 0 : $d_sos);
+	logic = ((((((((! AngII) & (! Orf8)) & (! IL4)) & TRAF3) & TAK1K158) | ((((! AngII) & (! Orf8)) & IL4) & TAK1K158)) | (((! AngII) & Orf8) & TAK1K158)) | (AngII & TAK1K158));
+	rate_up = (@logic ? $u_NLRP3 : 0);
+	rate_down = (@logic ? 0 : $d_NLRP3);
 }
 
-node jnk
+node TRAF3_Orf3a
+{
+	logic = Orf3a;
+	rate_up = (@logic ? $u_TRAF3_Orf3a : 0);
+	rate_down = (@logic ? 0 : $d_TRAF3_Orf3a);
+}
+
+node Casp1
+{
+	logic = TRAF3_Orf3a;
+	rate_up = (@logic ? $u_Casp1 : 0);
+	rate_down = (@logic ? 0 : $d_Casp1);
+}
+
+node GSDMD
+{
+	logic = Casp1;
+	rate_up = (@logic ? $u_GSDMD : 0);
+	rate_down = (@logic ? 0 : $d_GSDMD);
+}
+
+node TRAF3
+{
+	logic = ((((((((! STAT3) & (! E)) & (! CCL22)) & (! MAVS)) & (! RhoA_Rac1_Rac2)) & IRF5) | (((((! STAT3) & (! E)) & (! CCL22)) & MAVS) & (! RhoA_Rac1_Rac2))) | ((((! STAT3) & (! E)) & CCL22) & (! RhoA_Rac1_Rac2)));
+	rate_up = (@logic ? $u_TRAF3 : 0);
+	rate_down = (@logic ? 0 : $d_TRAF3);
+}
+
+node OAS1
+{
+	logic = ((TNFOLD & IRF5) & Neutrophil_recruitment);
+	rate_up = (@logic ? $u_OAS1 : 0);
+	rate_down = (@logic ? 0 : $d_OAS1);
+}
+
+node OAS2
+{
+	logic = (GULP1 | (! (IL4RA & (IL6 * (TGFb * (! (IRF4 + (IRF5 / (IL10_e + (TNFOLDR + (CaM / (JNK - (! (TAK1K158 + (TNF + (CSF1 & (CCL22 / (CCL2 + (Active + (NonACD + (TRAF3 * (SARS_CoV_2 - (Nsp15 + (CD163 - (Neutrophil_activation / Neutrophil_recruitment)))))))))))))))))))))))));
+	rate_up = (@logic ? $u_OAS2 : 0);
+	rate_down = (@logic ? 0 : $d_OAS2);
+}
+
+node MAVS
+{
+	logic = (NonACD & (! ACE));
+	rate_up = (@logic ? $u_MAVS : 0);
+	rate_down = (@logic ? 0 : $d_MAVS);
+}
+
+node MYD88
+{
+	logic = ((((((! IFNa) & (! CCL22)) & TLR2) & (! IRF4)) | (((! IFNa) & CCL22) & (! IRF4))) | (IFNa & (! IRF4)));
+	rate_up = (@logic ? $u_MYD88 : 0);
+	rate_down = (@logic ? 0 : $d_MYD88);
+}
+
+node IRF5
+{
+	logic = ((((((! CSF1) - (! TRAF3_Orf3a)) & CD80) & (! IRF4)) | (((! CSF1) & TRAF3_Orf3a) & (! IRF4))) | (CSF1 & (! IRF4)));
+	rate_up = (@logic ? $u_IRF5 : 0);
+	rate_down = (@logic ? 0 : $d_IRF5);
+}
+
+node IFNa
+{
+	logic = (((((((((! IRF5) & (! IRF5)) & (! CD80)) & (! TAK1K158)) & Apoptotic_cell) | (((IRF5 & (! IRF5)) & (! CD80)) & TAK1K158)) | (((! IRF5) & (! IRF5)) & CD80)) | ((! IRF5) & IRF5)) | IRF5);
+	rate_up = (@logic ? $u_IFNa : 0);
+	rate_down = (@logic ? 0 : $d_IFNa);
+}
+
+node TNFOLD
+{
+	logic = (((((((! Apoptotic_cell) & (! IL4RA)) & (! TAK1K158)) & (! CCL22)) & IRF5) | ((((! Apoptotic_cell) & (! IL4RA)) & (! TAK1K158)) & CCL22)) | (((! Apoptotic_cell) & (! IL4RA)) & TAK1K158));
+	rate_up = (@logic ? $u_TNFOLD : 0);
+	rate_down = (@logic ? 0 : $d_TNFOLD);
+}
+
+node CCL4
+{
+	logic = TAK1K158;
+	rate_up = (@logic ? $u_CCL4 : 0);
+	rate_down = (@logic ? 0 : $d_CCL4);
+}
+
+node CCL2
+{
+	logic = (TRAF3 | (CaM | (CD80 - (! (Antiinflammation & (KLF4 & (RhoA_Rac1_Rac2 | (! (IL4 + (Survival + (N - (CD8_Tcell_activation + (! (IRF5 | (CD200R1 + (IAVB5 / (NLRP3 - (OAS2 + (GSDMD * (ACE / (TNFOLD / TRAF3_Orf3a)))))))))))))))))))));
+	rate_up = (@logic ? $u_CCL2 : 0);
+	rate_down = (@logic ? 0 : $d_CCL2);
+}
+
+node CD80
+{
+	logic = (((((((((((((((! SOCS1) & NLRP3) & CD200R1) & (! CCL17)) & (! TLR2)) & (! CCL22)) & Survival) & (! IFNa)) & TGFb) & CD163) | (((((((((! SOCS1) & NLRP3) & CD200R1) & (! CCL17)) & (! TLR2)) & (! CCL22)) & Survival) & IFNa) & CD163)) | ((((((((! SOCS1) & NLRP3) & CD200R1) & (! CCL17)) & (! TLR2)) & CCL22) & Survival) & CD163)) | (((((((! SOCS1) & NLRP3) & CD200R1) & (! CCL17)) & TLR2) & Survival) & CD163)) | ((((((! SOCS1) & NLRP3) & CD200R1) & CCL17) & Survival) & E)) | ((((SOCS1 & NLRP3) & CD200R1) & Survival) & CD163));
+	rate_up = (@logic ? $u_CD80 : 0);
+	rate_down = (@logic ? 0 : $d_CD80);
+}
+
+node CSF1
+{
+	logic = ADAM17;
+	rate_up = (@logic ? $u_CSF1 : 0);
+	rate_down = (@logic ? 0 : $d_CSF1);
+}
+
+node JNK
+{
+	logic = (((! SARS_CoV_2) & TAK1K158) | SARS_CoV_2);
+	rate_up = (@logic ? $u_JNK : 0);
+	rate_down = (@logic ? 0 : $d_JNK);
+}
+
+node IL6
+{
+	logic = ((((! Apoptotic_cell) & (! TAK1K158)) & Apoptotic_cell) | ((! Apoptotic_cell) & TAK1K158));
+	rate_up = (@logic ? $u_IL6 : 0);
+	rate_down = (@logic ? 0 : $d_IL6);
+}
+
+node SMAD7
 {
 	logic = Apoptosis;
-	rate_up = (@logic ? $u_jnk : 0);
-	rate_down = (@logic ? 0 : $d_jnk);
+	rate_up = (@logic ? $u_SMAD7 : 0);
+	rate_down = (@logic ? 0 : $d_SMAD7);
 }
 
-node pi3k
+node TAK1K158
 {
-	logic = Survival;
-	rate_up = (@logic ? $u_pi3k : 0);
-	rate_down = (@logic ? 0 : $d_pi3k);
+	logic = IRF5;
+	rate_up = (@logic ? $u_TAK1K158 : 0);
+	rate_down = (@logic ? 0 : $d_TAK1K158);
 }
 
-node p38
+node JMJD3
 {
-	logic = pi3k;
-	rate_up = (@logic ? $u_p38 : 0);
-	rate_down = (@logic ? 0 : $d_p38);
+	logic = (((! CSF2RA) & IL4RA) | CSF2RA);
+	rate_up = (@logic ? $u_JMJD3 : 0);
+	rate_down = (@logic ? 0 : $d_JMJD3);
 }
 
-node akt
+node SOCS1
 {
-	logic = sec_activator;
-	rate_up = (@logic ? $u_akt : 0);
-	rate_down = (@logic ? 0 : $d_akt);
+	logic = IL4RA;
+	rate_up = (@logic ? $u_SOCS1 : 0);
+	rate_down = (@logic ? 0 : $d_SOCS1);
 }
 
-node ph
+node KLF4
 {
-	logic = ((nik & ph) | erk);
-	rate_up = (@logic ? $u_ph : 0);
-	rate_down = (@logic ? 0 : $d_ph);
+	logic = IL4RA;
+	rate_up = (@logic ? $u_KLF4 : 0);
+	rate_down = (@logic ? 0 : $d_KLF4);
 }
 
-node nik
+node IRF4
 {
-	logic = map3k7;
-	rate_up = (@logic ? $u_nik : 0);
-	rate_down = (@logic ? 0 : $d_nik);
+	logic = (JMJD3 & IL4RA);
+	rate_up = (@logic ? $u_IRF4 : 0);
+	rate_down = (@logic ? 0 : $d_IRF4);
+}
+
+node CD200R1
+{
+	logic = IL4RA;
+	rate_up = (@logic ? $u_CD200R1 : 0);
+	rate_down = (@logic ? 0 : $d_CD200R1);
+}
+
+node CCL17
+{
+	logic = (((TGFb | Neutrophil_recruitment) | sec_activator) | CD8_Tcell_activation);
+	rate_up = (@logic ? $u_CCL17 : 0);
+	rate_down = (@logic ? 0 : $d_CCL17);
+}
+
+node CCL22
+{
+	logic = IRF4;
+	rate_up = (@logic ? $u_CCL22 : 0);
+	rate_down = (@logic ? 0 : $d_CCL22);
+}
+
+node STAT3
+{
+	logic = ((((((! IRF4) & (! TGFb)) & (! TRAF3_Orf3a)) & IRF5) | (((! IRF4) & TGFb) & (! TRAF3_Orf3a))) | (IRF4 & (! TRAF3_Orf3a)));
+	rate_up = (@logic ? $u_STAT3 : 0);
+	rate_down = (@logic ? 0 : $d_STAT3);
+}
+
+node TGFb
+{
+	logic = STAT3;
+	rate_up = (@logic ? $u_TGFb : 0);
+	rate_down = (@logic ? 0 : $d_TGFb);
+}
+
+node CD163
+{
+	logic = STAT3;
+	rate_up = (@logic ? $u_CD163 : 0);
+	rate_down = (@logic ? 0 : $d_CD163);
+}
+
+node Antiinflammation
+{
+	logic = TAK1K158;
+	rate_up = (@logic ? $u_Antiinflammation : 0);
+	rate_down = (@logic ? 0 : $d_Antiinflammation);
+}
+
+node SARS_CoV_2
+{
+	logic = SARS_CoV_2;
+	rate_up = (@logic ? $u_SARS_CoV_2 : 0);
+	rate_down = (@logic ? 0 : $d_SARS_CoV_2);
+}
+
+node CD8_Tcell_activation
+{
+	logic = ((CD80 & OAS2) & TRAF3_Orf3a);
+	rate_up = (@logic ? $u_CD8_Tcell_activation : 0);
+	rate_down = (@logic ? 0 : $d_CD8_Tcell_activation);
+}
+
+node Neutrophil_recruitment
+{
+	logic = IRF5;
+	rate_up = (@logic ? $u_Neutrophil_recruitment : 0);
+	rate_down = (@logic ? 0 : $d_Neutrophil_recruitment);
+}
+
+node Neutrophil_activation
+{
+	logic = ((IFNa & (! Nsp15)) & IRF5);
+	rate_up = (@logic ? $u_Neutrophil_activation : 0);
+	rate_down = (@logic ? 0 : $d_Neutrophil_activation);
+}
+
+node Apoptotic_cell
+{
+	logic = Apoptotic_cell;
+	rate_up = (@logic ? $u_Apoptotic_cell : 0);
+	rate_down = (@logic ? 0 : $d_Apoptotic_cell);
+}
+
+node IAVB5
+{
+	logic = Apoptotic_cell;
+	rate_up = (@logic ? $u_IAVB5 : 0);
+	rate_down = (@logic ? 0 : $d_IAVB5);
+}
+
+node GULP1
+{
+	logic = JNK;
+	rate_up = (@logic ? $u_GULP1 : 0);
+	rate_down = (@logic ? 0 : $d_GULP1);
+}
+
+node ADGRB1
+{
+	logic = (TNF - (TRAF3_Orf3a + (! (Neutrophil_recruitment & (CSF2RA / (MAVS + (E / (AngII & (NLRP3 - (! (JNK - (NonACD & (! (JMJD3 + (! (Antiinflammation & (! ((! TGFb_e) + (OAS2 & (Apoptosis * CCL4))))))))))))))))))));
+	rate_up = (@logic ? $u_ADGRB1 : 0);
+	rate_down = (@logic ? 0 : $d_ADGRB1);
+}
+
+node TIMD4
+{
+	logic = IFNa;
+	rate_up = (@logic ? $u_TIMD4 : 0);
+	rate_down = (@logic ? 0 : $d_TIMD4);
+}
+
+node RhoA_Rac1_Rac2
+{
+	logic = TIMD4;
+	rate_up = (@logic ? $u_RhoA_Rac1_Rac2 : 0);
+	rate_down = (@logic ? 0 : $d_RhoA_Rac1_Rac2);
+}
+
+node Active
+{
+	logic = (TNF * IRF4);
+	rate_up = (@logic ? 1.0 : 0.0);
+	rate_down = (@logic ? 0.0 : 1.0);
 }
 
 node TNF
 {
-	logic = (NODE_28 - TNF);
-	rate_up = (@logic ? $u_raf1 : 0);
-	rate_down = (@logic ? 0 : $d_raf1);
+	logic = TNF;
+	rate_up = (@logic ? $u_IL1b_e : 0);
+	rate_down = (@logic ? 0 : $d_IL1b_e);
 }
 
 node Survival
 {
-	logic = egf;
-	rate_up = (@logic ? $u_egfr : 0);
-	rate_down = (@logic ? 0 : $d_egfr);
+	logic = (((! (((! IRF5) & (! KLF4)) & STAT3)) | ((! IRF5) & KLF4)) | IRF5);
+	rate_up = (@logic ? $u_CD206 : 0);
+	rate_down = (@logic ? 0 : $d_CD206);
 }
 
 node sec_activator
 {
-	logic = (map3k1 & map3k7);
-	rate_up = (@logic ? $u_mkk4 : 0);
-	rate_down = (@logic ? 0 : $d_mkk4);
+	logic = (((MAVS & CD80) & OAS2) & Apoptosis);
+	rate_up = (@logic ? $u_CD4_Tcell_activation : 0);
+	rate_down = (@logic ? 0 : $d_CD4_Tcell_activation);
 }
 
 node NonACD
 {
-	logic = (! ikb);
-	rate_up = (@logic ? $u_nfkb : 0);
-	rate_down = (@logic ? 0 : $d_nfkb);
+	logic = NonACD;
+	rate_up = (@logic ? $u_IL13 : 0);
+	rate_down = (@logic ? 0 : $d_IL13);
 }
 
 node Apoptosis
 {
-	logic = (((! ask1) & map3k1) | ask1);
-	rate_up = (@logic ? $u_mkk7 : 0);
-	rate_down = (@logic ? 0 : $d_mkk7);
-}
-
-node NODE_28
-{
-	logic = (ikb & (! (gsk3 / (sec_activator / tnfa))));
-	rate_up = (@logic ? 1 : 0);
-	rate_down = (@logic ? 0 : 1);
+	logic = IRF5;
+	rate_up = (@logic ? $u_SMADhtc : 0);
+	rate_down = (@logic ? 0 : $d_SMADhtc);
 }
 

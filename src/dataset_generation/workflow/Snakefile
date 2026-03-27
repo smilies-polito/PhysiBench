@@ -4,7 +4,7 @@ configfile: "config/config.yaml"
 rule all:
     input:
         filtering = config["filtering_output_dir"],
-        static_distances = config["static_distance_dir"]
+        static_distances = config["static_distance_dir"],
         extraction = config["extraction_results_dir"] + "/multiscale_simulations_manifest.json"
 
 

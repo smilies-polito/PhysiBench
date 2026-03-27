@@ -112,7 +112,7 @@ make launch_container
 ```
 Note: This automatically binds the necessary PhysiCell configuration directories and your current working directory. From the container shell:
 ```bash
-conda activate VVBMS
+conda activate VBMS
 cd src/data_generation
 ```
 

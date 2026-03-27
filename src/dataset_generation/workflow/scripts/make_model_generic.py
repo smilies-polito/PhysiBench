@@ -132,29 +132,33 @@ def create_generics(cfg_filename, bnd_filename, out_dir, target):
         print(f"Distance too small ({dist}), retrying. This was try n. {tries} for model {pool+1}/{target}.")
 
 
-def test_and_fix_test_proticols(original_path):
-
-
+def test_and_fix_test_protocols(original_path):
     global POOL_OF_PROTOCOLS
 
     # Find any random model
-    families = os.listdir(original_path)
-    if len(families) == 0:
-        print("No models found in the original path.")
-        return
-    family = families[0]
+    family = "cell_cycle"
     models = os.listdir(os.path.join(original_path, family))
     if len(models) == 0:
-        print("No models found in the original path.")
-        return
+        print("No models found in the path: ", os.path.join(original_path, family))
+        exit(1)
     model_name = models[0][:-4] # remove .cfg or .bnd extension
+    # Make it generic
+    temp_dir_path = os.path.join(original_path, "temp_path")
+    os.makedirs(temp_dir_path)
+    with open(os.path.join(original_path, family, f"{model_name}.cfg"), 'r') as cfg_file:
+        with open(os.path.join(original_path, family, f"{model_name}.bnd"), 'r') as bnd_file:
+            boolean_model = BooleanModel()
+            boolean_model.import_from_bnd(bnd_file, cfg_file)
+            boolean_model.make_generic()
+            save_path = os.path.join(temp_dir_path, "test")
+            save_to_file(boolean_model, save_path)
 
     def test_protocol(protocol):
         # Run the simulation
         try:
             model = ModelParameters(
-                family,
-                model_name
+                "temp_path",
+                "test"
             )
             sim_params = SimulationParameters.get_test_defaults()
             _ = LocalPhysiboss.run_local(model, protocol, sim_params, original_path)
@@ -164,6 +168,7 @@ def test_and_fix_test_proticols(original_path):
         return True
 
     for i in range(len(POOL_OF_PROTOCOLS)):
+        print(f"Testing protocol {i}/{len(POOL_OF_PROTOCOLS)}")
         while True:
             protocol = POOL_OF_PROTOCOLS[i]
             is_working = test_protocol(protocol)
@@ -172,7 +177,7 @@ def test_and_fix_test_proticols(original_path):
             else:
                 print(f"Protocol {i} is not working, replacing with a new one.")
                 POOL_OF_PROTOCOLS[i] = Protocols.get_random()
-        
+    os.system(f"rm -rf {temp_dir_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
@@ -185,10 +190,9 @@ if __name__ == "__main__":
 
     set_log_Path(os.path.join(output_path, "make_model_generic.log"))
 
-    print("Testing the random test protocols before starting the generation of generic models.",
-        "Defective protocols will be replaced with new ones until all protocols are working.")
-    test_and_fix_test_proticols(original_path)
-    print("All protocols are working, starting the generation of generic models.")
+    print("Testing random protocols")
+    test_and_fix_test_protocols(original_path)
+    print("Random protocols are OK")
 
     # Iterate over all models in the original path
     all_subdirectories = os.listdir(original_path)
