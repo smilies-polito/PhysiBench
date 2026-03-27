@@ -1,0 +1,662 @@
+{
+    "gastric_cancer_V14_12": {
+        "type": "square",
+        "center": [
+            -84.97447830253162,
+            -266.2574083306051
+        ],
+        "density": 0.34972268194718775,
+        "cell_type": "default",
+        "mode": "sparse",
+        "length": 383.06483688144215
+    },
+    "EGFTNF_V5_1": {
+        "type": "circle",
+        "center": [
+            272.3168559401444,
+            -111.71958753851038
+        ],
+        "density": 0.08376745060043414,
+        "cell_type": "default",
+        "mode": "sparse",
+        "length": 133.6857689608022
+    },
+    "EGFTNF_V242_15": {
+        "type": "circle",
+        "center": [
+            66.15530984032074,
+            -144.18677564702222
+        ],
+        "density": 0.6045072893329967,
+        "cell_type": "default",
+        "mode": "sparse",
+        "length": 55.24167340549261
+    },
+    "cell_cycle_V24_601": {
+        "type": "circle",
+        "center": [
+            -333.4620209244147,
+            278.446942138845
+        ],
+        "density": 0.600953853108483,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 314.34930839901375
+    },
+    "macrophage_V33_27": {
+        "type": "square",
+        "center": [
+            120.33579604245745,
+            -135.28557587786713
+        ],
+        "density": 0.031199215171407516,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 202.98175295491137
+    },
+    "tnf_cell_fate_V1118_498": {
+        "type": "circle",
+        "center": [
+            -169.01494046630063,
+            -73.502705240267
+        ],
+        "density": 0.043227163247748474,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 51.53314930087488
+    },
+    "tnf_cell_fate_V476_265": {
+        "type": "circle",
+        "center": [
+            88.48789747428611,
+            256.4585061952881
+        ],
+        "density": 0.4672971966187093,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 107.68345396595231
+    },
+    "tnf_cell_fate_V143_361": {
+        "type": "square",
+        "center": [
+            353.77237915851816,
+            199.76732587043597
+        ],
+        "density": 0.1359954734192593,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 93.5604490382201
+    },
+    "tnf_cell_fate_V376_521": {
+        "type": "square",
+        "center": [
+            375.69079299484724,
+            467.43236365750454
+        ],
+        "density": 0.7818784772176531,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 62.06637786421133
+    },
+    "cell_cycle_V29_589": {
+        "type": "square",
+        "center": [
+            353.02268148867813,
+            304.8719147268448
+        ],
+        "density": 0.11846723409407103,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 65.40880895238776
+    },
+    "tnf_cell_fate_V123_318": {
+        "type": "square",
+        "center": [
+            290.74151059185795,
+            227.53014453626736
+        ],
+        "density": 0.042341086876258684,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 192.00857808776888
+    },
+    "tnf_cell_fate_V1254_346": {
+        "type": "circle",
+        "center": [
+            -330.4214804892259,
+            472.99431256143737
+        ],
+        "density": 0.42795162923147,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 52.267272325859494
+    },
+    "tnf_cell_fate_V758_326": {
+        "type": "circle",
+        "center": [
+            285.84613680689563,
+            -192.31407656499675
+        ],
+        "density": 0.20727886645019425,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 61.03812108505553
+    },
+    "cell_cycle_V6_591": {
+        "type": "circle",
+        "center": [
+            128.9928961200257,
+            61.93830575671308
+        ],
+        "density": 0.3799072781297098,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 368.21172067223085
+    },
+    "tnf_cell_fate_V1156_371": {
+        "type": "circle",
+        "center": [
+            100.93518840715046,
+            -268.85869249058715
+        ],
+        "density": 0.45720629707055,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 86.89490209450463
+    },
+    "tnf_cell_fate_V885_507": {
+        "type": "circle",
+        "center": [
+            -354.23558563787213,
+            -172.83315484970467
+        ],
+        "density": 0.2734698441546125,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 52.59939020876725
+    },
+    "tnf_cell_fate_V390_509": {
+        "type": "square",
+        "center": [
+            107.52707428364084,
+            104.1026496896996
+        ],
+        "density": 0.6929869534567316,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 371.6658096996383
+    },
+    "tnf_cell_fate_V1115_544": {
+        "type": "circle",
+        "center": [
+            -93.27870531515276,
+            -42.18921828677668
+        ],
+        "density": 0.36846854313416344,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 103.3189252790681
+    },
+    "tnf_cell_fate_V905_348": {
+        "type": "circle",
+        "center": [
+            152.37938621250447,
+            54.31700923323302
+        ],
+        "density": 0.31549268109944856,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 89.67240586936771
+    },
+    "EGFTNF_V0_48": {
+        "type": "square",
+        "center": [
+            -194.66853836574222,
+            265.5240880632034
+        ],
+        "density": 0.7049044607845834,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 221.3262275160876
+    },
+    "cell_cycle_V2_592": {
+        "type": "square",
+        "center": [
+            210.72465086613113,
+            94.92039908082563
+        ],
+        "density": 0.08939320415156074,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 61.048863823043305
+    },
+    "tnf_cell_fate_V55_425": {
+        "type": "circle",
+        "center": [
+            150.13141948024725,
+            71.0760537374722
+        ],
+        "density": 0.23083746538664301,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 56.400935078499046
+    },
+    "cell_cycle_V195_554": {
+        "type": "circle",
+        "center": [
+            -229.07592767812258,
+            268.3863906024427
+        ],
+        "density": 0.3607873895250941,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 344.74538086377447
+    },
+    "tnf_cell_fate_V254_527": {
+        "type": "square",
+        "center": [
+            -332.32326797764,
+            66.78605840726237
+        ],
+        "density": 0.458636362200281,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 320.1651213264846
+    },
+    "tnf_cell_fate_V27_477": {
+        "type": "circle",
+        "center": [
+            -323.1497257247329,
+            -43.30900312570458
+        ],
+        "density": 0.6504885136625651,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 270.9375703026386
+    },
+    "tnf_cell_fate_V1029_231": {
+        "type": "circle",
+        "center": [
+            -79.24064767538562,
+            298.717070547803
+        ],
+        "density": 0.5201366029917075,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 88.75106302968246
+    },
+    "tnf_cell_fate_V1195_244": {
+        "type": "circle",
+        "center": [
+            181.41404812938202,
+            34.1130618849175
+        ],
+        "density": 0.19346230584172908,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 90.90530191257665
+    },
+    "macrophage_V15_50": {
+        "type": "circle",
+        "center": [
+            269.32580867148783,
+            -133.10866031154302
+        ],
+        "density": 0.4785212843439136,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 94.20165720111615
+    },
+    "tnf_cell_fate_V304_263": {
+        "type": "circle",
+        "center": [
+            -214.25915415934745,
+            -254.16432935127168
+        ],
+        "density": 0.028942005589230657,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 116.76881262181337
+    },
+    "tnf_cell_fate_V676_248": {
+        "type": "circle",
+        "center": [
+            -63.73243995972689,
+            37.57051475463362
+        ],
+        "density": 0.1741067321718619,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 174.76857996808974
+    },
+    "cell_cycle_V198_563": {
+        "type": "circle",
+        "center": [
+            -371.4984498661351,
+            107.01063623023452
+        ],
+        "density": 0.038138231672522775,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 93.68835791469785
+    },
+    "cell_cycle_V11_560": {
+        "type": "circle",
+        "center": [
+            -250.96177963974822,
+            100.38416358757644
+        ],
+        "density": 0.3048831179251608,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 302.91824666693844
+    },
+    "EGFTNF_V261_2": {
+        "type": "circle",
+        "center": [
+            75.72180529642867,
+            -175.5598313608702
+        ],
+        "density": 0.2807226427331572,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 298.29168738744465
+    },
+    "EGFTNF_V234_60": {
+        "type": "circle",
+        "center": [
+            3.323056779032072,
+            -425.8242221353226
+        ],
+        "density": 0.5440083264425526,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 74.00220413361029
+    },
+    "macrophage_V10_21": {
+        "type": "circle",
+        "center": [
+            14.509113309938755,
+            -11.47741867331132
+        ],
+        "density": 0.28403508977492137,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 347.5561312739531
+    },
+    "tnf_cell_fate_V1009_419": {
+        "type": "circle",
+        "center": [
+            410.1554596036898,
+            -458.6796405196422
+        ],
+        "density": 0.7675952130816146,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 81.29222770724819
+    },
+    "EGFTNF_V132_91": {
+        "type": "circle",
+        "center": [
+            -242.1378184864321,
+            256.91673354462694
+        ],
+        "density": 0.468936532384428,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 350.0655609128639
+    },
+    "drosophila_V55_169": {
+        "type": "circle",
+        "center": [
+            315.2873815201343,
+            270.9766514579194
+        ],
+        "density": 0.565394160576367,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 208.78136701189027
+    },
+    "EGFTNF_V105_6": {
+        "type": "square",
+        "center": [
+            -282.9667310300156,
+            63.496598957809965
+        ],
+        "density": 0.4979231914084634,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 295.5430969245487
+    },
+    "tnf_cell_fate_V1070_236": {
+        "type": "square",
+        "center": [
+            -26.12884683328656,
+            200.75623916882944
+        ],
+        "density": 0.739456139400134,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 72.14499852341035
+    },
+    "EGFTNF_V211_89": {
+        "type": "square",
+        "center": [
+            -358.89935626857243,
+            -178.55379554202142
+        ],
+        "density": 0.2120810600416709,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 86.5898818519099
+    },
+    "cell_cycle_V176_586": {
+        "type": "circle",
+        "center": [
+            283.2597942095216,
+            -66.40179692054522
+        ],
+        "density": 0.16332086613196273,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 329.1294707333197
+    },
+    "tnf_cell_fate_V1058_505": {
+        "type": "circle",
+        "center": [
+            222.41721207949257,
+            -411.0112110236361
+        ],
+        "density": 0.009410001286444914,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 127.27957675372394
+    },
+    "EGFTNF_V226_38": {
+        "type": "circle",
+        "center": [
+            -211.39730180530245,
+            164.31309879280974
+        ],
+        "density": 0.5823752509434635,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 349.6657381242683
+    },
+    "EGFTNF_V256_31": {
+        "type": "circle",
+        "center": [
+            274.2391912290992,
+            21.39881107940664
+        ],
+        "density": 0.5177690713682599,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 66.1721007254596
+    },
+    "drosophila_V33_163": {
+        "type": "square",
+        "center": [
+            -87.54332685561468,
+            -252.69929781509282
+        ],
+        "density": 0.015319353564416539,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 115.8255733050526
+    },
+    "prostate_cancer_V19_226": {
+        "type": "square",
+        "center": [
+            374.00373346227167,
+            -319.3649795056953
+        ],
+        "density": 0.016943735330845124,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 238.07849564040347
+    },
+    "drosophila_V150_155": {
+        "type": "circle",
+        "center": [
+            161.13692098987974,
+            -121.72573557462096
+        ],
+        "density": 0.6244996091150801,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 109.58008403857204
+    },
+    "prostate_cancer_V13_222": {
+        "type": "circle",
+        "center": [
+            49.25942203172201,
+            -41.04391935332302
+        ],
+        "density": 0.6882760579681215,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 78.73380320623275
+    },
+    "drosophila_V15_209": {
+        "type": "circle",
+        "center": [
+            32.39049141165435,
+            -26.2270742751615
+        ],
+        "density": 0.7004660308457624,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 287.2258338113752
+    },
+    "drosophila_V0_145": {
+        "type": "square",
+        "center": [
+            -207.00136513841053,
+            -311.51139407111214
+        ],
+        "density": 0.5753943104712316,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 167.6719448880462
+    },
+    "drosophila_V51_164": {
+        "type": "circle",
+        "center": [
+            73.37904468121741,
+            -114.16216133238498
+        ],
+        "density": 0.5810273500748969,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 66.71115869018482
+    },
+    "drosophila_V189_195": {
+        "type": "circle",
+        "center": [
+            -432.8024689920189,
+            17.700096026508504
+        ],
+        "density": 0.32322844058068667,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 62.02983818916891
+    },
+    "tnf_cell_fate_V774_230": {
+        "type": "circle",
+        "center": [
+            -237.98254739279815,
+            100.24834161536904
+        ],
+        "density": 0.7692349560180798,
+        "cell_type": 0,
+        "mode": "contour",
+        "length": 305.80433248579595
+    },
+    "drosophila_V152_138": {
+        "type": "circle",
+        "center": [
+            186.33908392307944,
+            68.86538359555954
+        ],
+        "density": 0.5019911369284051,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 339.2527982124952
+    },
+    "drosophila_V102_173": {
+        "type": "circle",
+        "center": [
+            327.3805539080534,
+            -234.07761054223178
+        ],
+        "density": 0.3694670772707198,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 143.31544195889555
+    },
+    "cell_cycle_V174_574": {
+        "type": "circle",
+        "center": [
+            -155.4678840313758,
+            -180.12630933552254
+        ],
+        "density": 0.7558278163387984,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 260.38236043869057
+    },
+    "EGFTNF_V78_56": {
+        "type": "square",
+        "center": [
+            -10.166144816650501,
+            -273.658951709454
+        ],
+        "density": 0.6845120878747006,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 58.41353205100687
+    },
+    "EGFTNF_V247_19": {
+        "type": "circle",
+        "center": [
+            2.758948356789233,
+            -83.6906451864354
+        ],
+        "density": 0.5561949291262599,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 58.34224118307578
+    },
+    "drosophila_V219_162": {
+        "type": "square",
+        "center": [
+            432.3806632523761,
+            49.516638233157494
+        ],
+        "density": 0.34034373330766937,
+        "cell_type": 0,
+        "mode": "sparse",
+        "length": 66.44707795249258
+    }
+}

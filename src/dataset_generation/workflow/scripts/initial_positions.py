@@ -170,7 +170,7 @@ def fill_square(
     side = half * 2
 
     if cx <= X_MIN or cx >= X_MAX or cy<=Y_MIN or cy>=Y_MAX:
-        raise ValueError(f"Center must be within domain boundaries: center: {center} X_MIN={X_MIN};X_MAX={X_MAX};Y_MIN={Y_MIN};Y_MAX={Y_MAX};Z_MIN={Z_MIN};Z_MAX={Z_MAX}")
+        raise ValueError(f"Center must be within domain boundaries: center: {center} X_MIN={X_MIN};X_MAX={X_MAX};Y_MIN={Y_MIN};Y_MAX={Y_MAX};")
 
     x_min, x_max = cx - half, cx + half
     y_min, y_max = cy - half, cy + half

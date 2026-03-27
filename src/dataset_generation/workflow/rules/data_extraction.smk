@@ -1,6 +1,8 @@
 rule data_extraction_hpc:
+    input:
+        filtered_models = config["filtered_output_dir"],
     output:
-        extraction_dir = directory(config["extraction_results_dir"])
+        extraction_dir = directory(config["extraction_results_dir"] + "/data")
     params:
         remote_user = config["remote_user"],
         remote_host = config["remote_host"],
@@ -13,10 +15,11 @@ rule data_extraction_hpc:
         max_retries = config["extraction_max_retries"],
         stale_minutes = config["extraction_stale_minutes"],
         init_pos_json = config["extraction_init_pos_json"],
-        times_dir = config["extraction_times_dir"]
+        times_dir = config["extraction_times_dir"],
+        base_output_dir = config["extraction_results_dir"]
     shell:
         """
-        python src/dataset_generation/workflow/scripts/data_extraction_hpc.py \\
+        python workflow/scripts/data_extraction_hpc.py \\
             --remote-user '{params.remote_user}' \\
             --remote-host '{params.remote_host}' \\
             --remote-base '{params.remote_base}' \\
@@ -27,8 +30,9 @@ rule data_extraction_hpc:
             --save-time {params.save_time} \\
             --max-retries {params.max_retries} \\
             --stale-minutes {params.stale_minutes} \\
-            --base-mount-path '{output.extraction_dir}' \\
-            --init-pos-json '{params.init_pos_json}' \
+            --base-mount-path '{params.base_output_dir}' \\
+            --init-pos-json '{params.init_pos_json}' \\
+            --input-pool {input.filtered_models} \\
             --times-dir '{params.times_dir}'
         """
 
@@ -39,7 +43,7 @@ rule data_extraction_generate_manifest:
         manifest = config["extraction_results_dir"] + "/multiscale_simulations_manifest.json"
     shell:
         """
-        python src/dataset_generation/workflow/scripts/data_extraction_generate_manifest.py \
+        python workflow/scripts/data_extraction_generate_manifest.py \
             --mnt-root '{input.extraction_dir}' \
             --output '{output.manifest}'
         """

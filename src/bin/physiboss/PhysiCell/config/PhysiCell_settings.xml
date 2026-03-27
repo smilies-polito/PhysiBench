@@ -57,16 +57,16 @@
     <microenvironment_setup>
         <variable name="TNF" units="dimensionless" ID="0">
             <physical_parameter_set>
-                <diffusion_coefficient units="micron^2/min">1070.0</diffusion_coefficient>
+                <diffusion_coefficient units="micron^2/min">1070</diffusion_coefficient>
                 <decay_rate units="1/min">0.0275</decay_rate>
             </physical_parameter_set>
             <initial_condition units="mmHg">0.0</initial_condition>
             <Dirichlet_boundary_condition units="mmHg" enabled="True">10.0</Dirichlet_boundary_condition>
             <Dirichlet_options>
-                <boundary_value ID="xmin" enabled="True">8.627452957014754</boundary_value>
-                <boundary_value ID="xmax" enabled="True">4.711302774181638</boundary_value>
-                <boundary_value ID="ymin" enabled="True">8.471940044003878</boundary_value>
-                <boundary_value ID="ymax" enabled="True">0.6559164206984636</boundary_value>
+                <boundary_value ID="xmin" enabled="True">4.444444444444445</boundary_value>
+                <boundary_value ID="xmax" enabled="True">7.777777777777779</boundary_value>
+                <boundary_value ID="ymin" enabled="True">1.1111111111111112</boundary_value>
+                <boundary_value ID="ymax" enabled="True">0.0</boundary_value>
                 <boundary_value ID="zmin" enabled="False">10.0</boundary_value>
                 <boundary_value ID="zmax" enabled="False">10.0</boundary_value>
             </Dirichlet_options>
@@ -257,10 +257,10 @@
 
     <user_parameters>
         <random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">42</number_of_cells>
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">740</number_of_cells>
         <treatment type="bool" units="dimensionless" description="">True</treatment>
         <treatment_substrate type="string" units="dimensionless" description="">TNF</treatment_substrate>
-        <treatment_period type="int" units="minutes" description="">788.884304297975</treatment_period>
-        <treatment_duration type="int" units="minutes" description="">121.49174917982516</treatment_duration>
+        <treatment_period type="int" units="minutes" description="">446.66666666666663</treatment_period>
+        <treatment_duration type="int" units="minutes" description="">91.66666666666667</treatment_duration>
     </user_parameters>
 </PhysiCell_settings>

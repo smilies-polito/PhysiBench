@@ -48,7 +48,7 @@ def parse_model_key(model_key: str) -> Tuple[str, str, Optional[str]]:
         raise ValueError(f"Invalid model key format: {model_key}")
     return "_".join(parts[:-2]), parts[-2], parts[-1]
 
-def load_initial_positions():
+def load_initial_positions(pool_directory):
     global INITIAL_POSITIONS, MODELS
     seen_models = set()
     with open(INITIAL_POSITIONS_JSON_PATH, "r") as f:
@@ -67,6 +67,14 @@ def load_initial_positions():
             mode=v["mode"],
             length=v["length"]
         )
+    for model in MODELS:
+        family, version, _ = model 
+        original_path = os.path.join(pool_directory, family)
+        destination_dir = os.path.join(base_mount_path, family)
+        os.makedirs(destination_dir, exist_ok=True)
+        print(f"Copying {original_path}/{version}(.bnd, .cfg) to {destination_dir}/{version}(.bnd, .cfg)")
+        os.system(f"cp -r {original_path}/{version}.bnd {destination_dir}/{version}.bnd")
+        os.system(f"cp -r {original_path}/{version}.cfg {destination_dir}/{version}.cfg")
 
 SSH_OPTS = [
     "-o", "BatchMode=yes",
@@ -377,7 +385,7 @@ def submit_one(sim_idx: int,
     model_tag = f"{model.boolean_family}_{model.boolean_model}" if model_id is None else f"{model.boolean_family}_{model.boolean_model}_{model_id}"
     job_name  = f"{model_tag}_sim_{sim_idx}_TP{tp}_TD{td}"
     Physiboss.run_remote_wt_settings(model, protocol, job_name, sim_params,
-                                     remote_user, remote_host, remote_base, run_script)
+                                     remote_user, remote_host, remote_base, run_script, base_mount_path)
     return (job_name, sim_idx)
 
 # ==================== RUN (CODA DINAMICA + FAULT TOLERANCE) ====================
@@ -386,7 +394,7 @@ def run_for_one_model(boolean_family: str, boolean_model: str, model_id: Optiona
     model = ModelParameters(boolean_family=boolean_family, boolean_model=boolean_model)
 
     model_tag = f"{boolean_family}_{boolean_model}" if model_id is None else f"{boolean_family}_{boolean_model}_{model_id}"
-    base_model_dir = os.path.join(base_mount_path, model_tag)
+    base_model_dir = os.path.join(base_mount_path, model_tag) 
     data_dir = os.path.join(base_model_dir, "data")
     os.makedirs(os.path.join(data_dir, "cell_data"), exist_ok=True)
     os.makedirs(os.path.join(data_dir, "input_parameters"), exist_ok=True)
@@ -498,7 +506,8 @@ if __name__ == "__main__":
     parser.add_argument("--stale-minutes", type=int, default=1500, help="Minutes without marker -> stale")
     parser.add_argument("--base-mount-path", default="/mnt", help="Local mount path for results")
     parser.add_argument("--init-pos-json", default=os.path.join(os.path.dirname(__file__), "initial_positions.json"), help="Initial positions JSON")
-    parser.add_argument("--times-dir", default="../times", help="Directory for times CSV")
+    parser.add_argument("--input-pool", help="Where to find boolean models")
+    parser.add_argument("--times-dir", help="Directory to store times")
 
     args = parser.parse_args()
 
@@ -517,8 +526,14 @@ if __name__ == "__main__":
     base_mount_path = args.base_mount_path
     INITIAL_POSITIONS_JSON_PATH = args.init_pos_json
     times_dir = args.times_dir
+
+    input_directory = args.input_pool
     
-    load_initial_positions()
+    print(
+        "Running data extraction from input directory: ", input_directory,
+        "\nStoring results in: ", base_mount_path
+    )
+    load_initial_positions(input_directory)
 
     # We keep a small global wall/CPU time for the orchestrator itself (not used in per-model CSVs)
     start = time.time()

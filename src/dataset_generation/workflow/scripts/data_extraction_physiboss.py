@@ -10,6 +10,11 @@ from initial_positions import InitialPosition
 
 PRJ_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+def is_singularity():
+    """Check if running inside a Singularity container"""
+    return 'SINGULARITY_CONTAINER' in os.environ or \
+           'SINGULARITY_NAME' in os.environ
+
 # ssh/scp options to avoid interactive prompts and host key issues
 SSH_OPTS = "-o BatchMode=yes -o StrictHostKeyChecking=accept-new"
 
@@ -64,18 +69,26 @@ class Protocols:
         ]
 
 class Physiboss:
-    PHYSIBOSS_PATH = f"{PRJ_ROOT}/bin/PhysiCell/"
+    PHYSIBOSS_PATH = "../bin/physiboss/PhysiCell/"
     CONFIG_PATH = os.path.join(PHYSIBOSS_PATH, "config")
     NETWORK_PATH = os.path.join(CONFIG_PATH, "simple_tnf", "boolean_network")
     BIN_NAME = "project"
     BOOLEAN_NAME = "cellfate"
+    OUTPUT_DIR = os.path.join(PHYSIBOSS_PATH, "output")
+
+    if is_singularity():
+        NETWORK_PATH = "/virtualconfig/simple_tnf/boolean_network"
+        CONFIG_PATH = "/virtualconfig"
+        PHYSIBOSS_PATH = "/bin/PhysiCell"
+        OUTPUT_DIR = "/virtualoutput"
+    
 
     @staticmethod
-    def _prepare_boolean_files(model: ModelParameters) -> None:
+    def _prepare_boolean_files(model: ModelParameters, pool_dir) -> None:
         os.system("rm -rf " + Physiboss.NETWORK_PATH)
         os.system(f"mkdir -p {Physiboss.NETWORK_PATH}")
 
-        base_path = f"{PRJ_ROOT}/protocols/v1/pool/{model.boolean_family}/{model.boolean_model}"
+        base_path = f"{pool_dir}/{model.boolean_family}/{model.boolean_model}"
         cfg_file = f"{base_path}.cfg"
         bnd_file = f"{base_path}.bnd"
         os.system(f"cp {cfg_file} {Physiboss.NETWORK_PATH}/{Physiboss.BOOLEAN_NAME}.cfg")
@@ -102,7 +115,7 @@ class Physiboss:
         return len(initial_position_cells)
 
     @staticmethod
-    def _prepare_local_config(model: ModelParameters, protocol: Protocols, job_name: str, sim_params) -> None:
+    def _prepare_local_config(model: ModelParameters, protocol: Protocols, job_name: str, sim_params, base_path) -> None:
         """
         Prepara la cartella locale del job:
         - aggiorna boolean network
@@ -114,7 +127,7 @@ class Physiboss:
         """
 
         # Boolean network
-        Physiboss._prepare_boolean_files(model)
+        Physiboss._prepare_boolean_files(model, base_path)
 
         # Initial positions
         n_cells = Physiboss._write_initial_positions(protocol)
@@ -178,11 +191,11 @@ class Physiboss:
 
     @staticmethod
     def run_remote_wt_settings(model: ModelParameters, protocol: Protocols, job_name: str, sim_params,
-                               remote_user: str, remote_host: str, remote_base: str, run_script: str):
+                               remote_user: str, remote_host: str, remote_base: str, run_script: str, base_path):
         """
         Prepara config in locale (incluso save_time), copia al cluster e sottomette il job.
         """
-        Physiboss._prepare_local_config(model, protocol, job_name, sim_params)
+        Physiboss._prepare_local_config(model, protocol, job_name, sim_params, base_path) # TODO
 
         # Retry until the job folder is copied successfully.
         while True:
@@ -204,7 +217,7 @@ class Physiboss:
 
     # --- utility per l’esecuzione locale (opzionale) ---
     @staticmethod
-    def run(model: ModelParameters, protocol: Protocols):
+    def run(model: ModelParameters, protocol: Protocols, base_path):
         """
         Run the Physiboss simulation locally (non-HPC).
         """
@@ -219,7 +232,7 @@ class Physiboss:
             "speed": 1.0,
             "intracellular_dt": 1,
             "save_time": 30,
-        })())
+        })(), base_path)
 
         os.chdir(Physiboss.PHYSIBOSS_PATH)
         cleanup = ["make", 'data-cleanup']
@@ -227,5 +240,5 @@ class Physiboss:
         execute_command = ["./" + Physiboss.BIN_NAME]
         subprocess.run(execute_command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-        output_folder = f"{Physiboss.PHYSIBOSS_PATH}/output"
+        output_folder = Physiboss.OUTPUT_DIR
         return os.path.abspath(output_folder)
