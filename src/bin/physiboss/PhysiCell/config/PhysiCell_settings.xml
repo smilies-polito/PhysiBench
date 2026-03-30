@@ -63,10 +63,10 @@
             <initial_condition units="mmHg">0.0</initial_condition>
             <Dirichlet_boundary_condition units="mmHg" enabled="True">10.0</Dirichlet_boundary_condition>
             <Dirichlet_options>
-                <boundary_value ID="xmin" enabled="True">4.444444444444445</boundary_value>
-                <boundary_value ID="xmax" enabled="True">7.777777777777779</boundary_value>
+                <boundary_value ID="xmin" enabled="True">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="True">6.666666666666667</boundary_value>
                 <boundary_value ID="ymin" enabled="True">1.1111111111111112</boundary_value>
-                <boundary_value ID="ymax" enabled="True">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="True">10.0</boundary_value>
                 <boundary_value ID="zmin" enabled="False">10.0</boundary_value>
                 <boundary_value ID="zmax" enabled="False">10.0</boundary_value>
             </Dirichlet_options>
@@ -260,7 +260,7 @@
         <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">740</number_of_cells>
         <treatment type="bool" units="dimensionless" description="">True</treatment>
         <treatment_substrate type="string" units="dimensionless" description="">TNF</treatment_substrate>
-        <treatment_period type="int" units="minutes" description="">446.66666666666663</treatment_period>
-        <treatment_duration type="int" units="minutes" description="">91.66666666666667</treatment_duration>
+        <treatment_period type="int" units="minutes" description="">623.3333333333333</treatment_period>
+        <treatment_duration type="int" units="minutes" description="">135.0</treatment_duration>
     </user_parameters>
 </PhysiCell_settings>

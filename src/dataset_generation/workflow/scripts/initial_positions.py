@@ -41,6 +41,12 @@ class InitialPosition:
     mode: str = "sparse" #dense, sparse, contour
     length: float = 0.0 #Lato del quadrato o raggio del cerchio
 
+    def test_boundaries(self):
+        cx, cy = self.center
+        if cx <= X_MIN or cx >= X_MAX or cy<=Y_MIN or cy>=Y_MAX:
+            return False 
+        return True
+
     def get_random():
         # Generate a random length or radius
         length = random.uniform(50, (X_MAX - X_MIN) / 2.6)
@@ -98,7 +104,7 @@ def fill_circle(
      
     # affirming domain boundaries
     if cx <= X_MIN or cx >= X_MAX or cy<=Y_MIN or cy>=Y_MAX:
-        raise ValueError(f"Center must be within domain boundaries: center: {center} X_MIN={X_MIN};X_MAX={X_MAX};Y_MIN={Y_MIN};Y_MAX={Y_MAX};Z_MIN={Z_MIN};Z_MAX={Z_MAX}")
+        raise ValueError(f"Center must be within domain boundaries: center: {center} X_MIN={X_MIN};X_MAX={X_MAX};Y_MIN={Y_MIN};Y_MAX={Y_MAX};")
 
     cells: List[Cell] = []
     possible_cells: List[Cell] = []

@@ -79,7 +79,7 @@ extraction_max_retries: 1
 extraction_stale_minutes: 1500
 extraction_results_dir: "../../data/multiscale_simulations"
 extraction_init_pos_json: "../../data/multiscale_simulations/initial_positions.json"
-extraction_times_dir: "../../multiscale_simulations/times"
+extraction_times_dir: "../../data/multiscale_simulations/times"
 
 # Extra HPC settings
 extraction_remote_base: "/home/rsmeriglio/masera/meta_model_rick" # Base directory on the HPC

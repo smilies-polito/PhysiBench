@@ -2,7 +2,7 @@ rule data_extraction_hpc:
     input:
         filtered_models = config["filtered_output_dir"],
     output:
-        extraction_dir = directory(config["extraction_results_dir"] + "/data")
+        extraction_dir = directory(config["extraction_times_dir"])
     params:
         remote_user = config["remote_user"],
         remote_host = config["remote_host"],

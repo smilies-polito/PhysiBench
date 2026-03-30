@@ -59,14 +59,21 @@ def load_initial_positions(pool_directory):
         if key not in seen_models:
             MODELS.append(key)
             seen_models.add(key)
+        center = tuple(
+            (
+                v["center"][0] / 5,
+                v["center"][1] / 5
+            )
+        )
         INITIAL_POSITIONS[key] = InitialPosition(
             type=v["type"],
-            center=tuple(v["center"]),
-            density=v["density"],
+            center=center,
+            density=v["density"]/5,
             cell_type=v["cell_type"],
             mode=v["mode"],
             length=v["length"]
         )
+        assert INITIAL_POSITIONS[key].test_boundaries()==True
     for model in MODELS:
         family, version, _ = model 
         original_path = os.path.join(pool_directory, family)
@@ -101,7 +108,7 @@ class SimParams:
     speed: float = 3.3
     intracellular_dt: float = 518
     save_time: int = SAVE_TIME  # used by Physiboss to write XML
-
+    
 # ==================== GRID (ASSOLUTA) ====================
 def get_values_and_intermediates(start: float, stop: float, num: int):
     lin = np.linspace(start, stop, num)

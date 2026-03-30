@@ -187,6 +187,8 @@ class Physiboss:
         os.system(f"rm -rf {job_name}")
         os.system(f"mkdir {job_name}")
         os.system(f"cp -r {Physiboss.CONFIG_PATH} {job_name}/")
+        if (is_singularity()):
+            os.system(f"mv {job_name}/virtualconfig {job_name}/config")
         os.system(f"mkdir {job_name}/output")
 
     @staticmethod
