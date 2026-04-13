@@ -173,6 +173,14 @@ class Physiboss:
         ic  = root.find('.//intracellular_dt');        ic.text = str(int(sim_params.intracellular_dt))
         nc  = root.find('.//number_of_cells');         nc.text = str(n_cells)
 
+        # Specific for data extraction, we increase the simulation duration and reduce the full data save interval
+        max_time = root.find(".//max_time")
+        print(f"Max time: {max_time.text}")
+        max_time.text = "12000"
+        fd_interval = root.find('./save/full_data/interval')
+        print(f"fd interval: {fd_interval.text}")
+        fd_interval.text = "30"
+
         # save interval
         interval_node = root.find('.//save/full_data/interval')
         if interval_node is None:

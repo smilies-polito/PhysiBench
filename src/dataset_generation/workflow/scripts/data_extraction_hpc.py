@@ -67,8 +67,8 @@ def load_initial_positions(pool_directory):
         )
         INITIAL_POSITIONS[key] = InitialPosition(
             type=v["type"],
-            center=center,
-            density=v["density"]/5,
+            center= center,
+            density=v["density"],
             cell_type=v["cell_type"],
             mode=v["mode"],
             length=v["length"]
