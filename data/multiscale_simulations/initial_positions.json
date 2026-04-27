@@ -184,7 +184,7 @@
         "density": 0.6929869534567316,
         "cell_type": 0,
         "mode": "contour",
-        "length": 371.6658096996383
+        "length": 61.6658096996383
     },
     "tnf_cell_fate_V1115_544": {
         "type": "circle",
@@ -272,7 +272,7 @@
         "density": 0.6504885136625651,
         "cell_type": 0,
         "mode": "contour",
-        "length": 270.9375703026386
+        "length": 54.9375703026386
     },
     "tnf_cell_fate_V1029_231": {
         "type": "circle",
@@ -349,7 +349,7 @@
         "density": 0.3048831179251608,
         "cell_type": 0,
         "mode": "contour",
-        "length": 302.91824666693844
+        "length": 60.91824666693844
     },
     "EGFTNF_V261_2": {
         "type": "circle",
@@ -426,7 +426,7 @@
         "density": 0.4979231914084634,
         "cell_type": 0,
         "mode": "contour",
-        "length": 295.5430969245487
+        "length": 58.5430969245487
     },
     "tnf_cell_fate_V1070_236": {
         "type": "square",
@@ -459,7 +459,7 @@
         "density": 0.16332086613196273,
         "cell_type": 0,
         "mode": "contour",
-        "length": 329.1294707333197
+        "length": 64.1294707333197
     },
     "tnf_cell_fate_V1058_505": {
         "type": "circle",
@@ -481,7 +481,7 @@
         "density": 0.5823752509434635,
         "cell_type": 0,
         "mode": "contour",
-        "length": 349.6657381242683
+        "length": 68.6657381242683
     },
     "EGFTNF_V256_31": {
         "type": "circle",
@@ -503,7 +503,7 @@
         "density": 0.015319353564416539,
         "cell_type": 0,
         "mode": "contour",
-        "length": 115.8255733050526
+        "length": 42.8255733050526
     },
     "prostate_cancer_V19_226": {
         "type": "square",
@@ -547,7 +547,7 @@
         "density": 0.7004660308457624,
         "cell_type": 0,
         "mode": "contour",
-        "length": 287.2258338113752
+        "length": 56.2258338113752
     },
     "drosophila_V0_145": {
         "type": "square",
@@ -591,7 +591,7 @@
         "density": 0.7692349560180798,
         "cell_type": 0,
         "mode": "contour",
-        "length": 305.80433248579595
+        "length": 60.80433248579595
     },
     "drosophila_V152_138": {
         "type": "circle",

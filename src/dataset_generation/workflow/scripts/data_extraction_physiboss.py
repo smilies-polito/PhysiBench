@@ -176,10 +176,10 @@ class Physiboss:
         # Specific for data extraction, we increase the simulation duration and reduce the full data save interval
         max_time = root.find(".//max_time")
         print(f"Max time: {max_time.text}")
-        max_time.text = "12000"
+        max_time.text = "4030"
         fd_interval = root.find('./save/full_data/interval')
         print(f"fd interval: {fd_interval.text}")
-        fd_interval.text = "30"
+        fd_interval.text = "60"
 
         # save interval
         interval_node = root.find('.//save/full_data/interval')
@@ -205,7 +205,7 @@ class Physiboss:
         """
         Prepara config in locale (incluso save_time), copia al cluster e sottomette il job.
         """
-        Physiboss._prepare_local_config(model, protocol, job_name, sim_params, base_path) # TODO
+        Physiboss._prepare_local_config(model, protocol, job_name, sim_params, base_path) 
 
         # Retry until the job folder is copied successfully.
         while True:
@@ -217,6 +217,7 @@ class Physiboss:
 
         # Retry until sbatch submission succeeds.
         while True:
+            print("Running sbatch...")
             ssh_rc = _ssh(f"sbatch {run_script} {job_name}", remote_user, remote_host)
             if ssh_rc == 0:
                 break

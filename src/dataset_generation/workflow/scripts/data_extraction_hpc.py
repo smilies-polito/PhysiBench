@@ -267,7 +267,20 @@ def _update_total_row(times_csv: str) -> None:
         w.writerow(totals)
 
 # ==================== FETCH (JSON + TEMPI) ====================
+def check_if_featched(sim_id: int, base_model_dir: str) -> None:
+    # Local data dirs
+    data_dir = os.path.join(base_model_dir, "data")
+    cell_dir = os.path.join(data_dir, "cell_data")
+    cell_data_path = os.path.join(cell_dir, f"cell_data_{sim_id}.json.gz")
+    print(f"  {cell_data_path}")
+    return os.path.exists(cell_data_path)
+
 def fetch_jsons(job_name: str, sim_id: int, base_model_dir: str) -> None:
+    # Local data dirs
+    data_dir = os.path.join(base_model_dir, "data")
+    cell_dir = os.path.join(data_dir, "cell_data")
+    ip_dir   = os.path.join(data_dir, "input_parameters")
+    
     """
     Download ONLY postprocessed JSONs (and CPU time CSV), then clean remote.
     Rename locally with 'sim_id':
@@ -418,7 +431,16 @@ def run_for_one_model(boolean_family: str, boolean_model: str, model_id: Optiona
 
     def maybe_submit():
         nonlocal submitted
+        nonlocal completed
         while submitted < total and len(in_flight) < MAX_CONCURRENT:
+            # Verify the data isn't already there
+            exists = check_if_featched(submitted, base_model_dir)
+            if exists:
+                #print(f"{base_model_dir}-{submitted}: Skipping - exists already.")
+                submitted += 1
+                completed += 1
+                continue
+
             job_name, sim_id = submit_one(submitted, combinations[submitted], sim_params, model, model_id, base_model_dir)
             in_flight[job_name] = {
                 "sim_id": sim_id,
@@ -427,12 +449,15 @@ def run_for_one_model(boolean_family: str, boolean_model: str, model_id: Optiona
             }
             submitted += 1
             print(f"➡️ submit {job_name} | running:{len(in_flight)}/{MAX_CONCURRENT} | left:{total-submitted}")
-
     # First wave
     maybe_submit()
 
     while completed < total:
         progressed = False
+
+        if len(in_flight.keys()) == 0:
+            maybe_submit()
+            continue
 
         for job_name in list(in_flight.keys()):
             status = check_remote_status(job_name)
@@ -496,7 +521,7 @@ def run_for_one_model(boolean_family: str, boolean_model: str, model_id: Optiona
     print(f"🎉 Completed {boolean_family}/{boolean_model}. Data in: {data_dir}")
 
 def main():
-    for fam, mod, model_id in MODELS:
+    for fam, mod, model_id in reversed(MODELS):
         run_for_one_model(fam, mod, model_id)
 
 if __name__ == "__main__":
@@ -540,6 +565,31 @@ if __name__ == "__main__":
         "Running data extraction from input directory: ", input_directory,
         "\nStoring results in: ", base_mount_path
     )
+
+    print(f"""
+    === CONFIGURATION ===
+    remote_user: {remote_user}
+    remote_host: {remote_host}
+    remote_base: {remote_base}
+    remote_results_path: {remote_results_path}
+    run_script: {run_script}
+
+    GRID_SIZE: {GRID_SIZE}
+    MAX_CONCURRENT: {MAX_CONCURRENT}
+    SAVE_TIME: {SAVE_TIME}
+    MAX_RETRIES: {MAX_RETRIES}
+    STALE_MINUTES: {STALE_MINUTES}
+
+    base_mount_path: {base_mount_path}
+    INITIAL_POSITIONS_JSON_PATH: {INITIAL_POSITIONS_JSON_PATH}
+    times_dir: {times_dir}
+    input_directory: {input_directory}
+    ======================
+
+    Starting in 60 seconds
+""")
+
+    time.sleep(60)
     load_initial_positions(input_directory)
 
     # We keep a small global wall/CPU time for the orchestrator itself (not used in per-model CSVs)

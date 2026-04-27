@@ -73,7 +73,7 @@ STATIC_DISTANCE_MEASURES:
 # Data extraction                                  #
 #--------------------------------------------------#
 extraction_grid_size: 2000
-extraction_max_concurrent: 100
+extraction_max_concurrent: 90
 extraction_save_time: 60
 extraction_max_retries: 1
 extraction_stale_minutes: 1500

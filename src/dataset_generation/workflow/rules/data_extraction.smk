@@ -1,8 +1,10 @@
+# Note: as data extraction is expensive, the output is protected. Upon changes in upstream data, or config. changes, it must be explicitly
+# overwritten.
 rule data_extraction_hpc:
     input:
         filtered_models = config["filtered_output_dir"],
     output:
-        extraction_dir = directory(config["extraction_times_dir"])
+        extraction_dir = protected(directory(config["extraction_times_dir"]))
     params:
         remote_user = config["remote_user"],
         remote_host = config["remote_host"],
