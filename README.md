@@ -10,7 +10,7 @@ Derived from seven open biological reference models, the dataset features:
 
 By coupling diverse intracellular Boolean networks with a consistent agent-based multicellular environment, VBMS retains key biological features—such as nonlinearity, stochasticity, feedback, and multiscale coupling—enabling robust, large-scale studies across a broad spectrum of bio-inspired systems.
 
-![Mutation-based variant Boolean models generation](.img/Mutation_based_variant_Boolean_models_generation.png)
+![Overview of VBMS generation](.img/Pipeline.png)
 
 <br>
 <br>
