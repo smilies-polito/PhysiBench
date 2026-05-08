@@ -15,7 +15,7 @@
     </domain>
 
     <overall>
-        <max_time units="min">1700</max_time>
+        <max_time units="min">4030</max_time>
         <time_units>min</time_units>
         <space_units>micron</space_units>
         <dt_diffusion units="min">0.256</dt_diffusion>
@@ -30,7 +30,7 @@
     <save>
         <folder>output</folder>
         <full_data>
-            <interval units="min">100</interval>
+            <interval units="min">60</interval>
             <enable>true</enable>
         </full_data>
         <SVG>
@@ -63,8 +63,8 @@
             <initial_condition units="mmHg">0.0</initial_condition>
             <Dirichlet_boundary_condition units="mmHg" enabled="True">10.0</Dirichlet_boundary_condition>
             <Dirichlet_options>
-                <boundary_value ID="xmin" enabled="True">0.0</boundary_value>
-                <boundary_value ID="xmax" enabled="True">6.666666666666667</boundary_value>
+                <boundary_value ID="xmin" enabled="True">10.0</boundary_value>
+                <boundary_value ID="xmax" enabled="True">0.0</boundary_value>
                 <boundary_value ID="ymin" enabled="True">1.1111111111111112</boundary_value>
                 <boundary_value ID="ymax" enabled="True">10.0</boundary_value>
                 <boundary_value ID="zmin" enabled="False">10.0</boundary_value>
@@ -257,10 +257,10 @@
 
     <user_parameters>
         <random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">740</number_of_cells>
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">21</number_of_cells>
         <treatment type="bool" units="dimensionless" description="">True</treatment>
         <treatment_substrate type="string" units="dimensionless" description="">TNF</treatment_substrate>
-        <treatment_period type="int" units="minutes" description="">623.3333333333333</treatment_period>
-        <treatment_duration type="int" units="minutes" description="">135.0</treatment_duration>
+        <treatment_period type="int" units="minutes" description="">800.0</treatment_period>
+        <treatment_duration type="int" units="minutes" description="">200.0</treatment_duration>
     </user_parameters>
 </PhysiCell_settings>

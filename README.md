@@ -5,7 +5,7 @@ The development of computational methodologies for analyzing biological dynamics
 **VBMS (Variant Boolean Models and Multiscale Simulations)** addresses this gap by providing a curated dataset of simulation-ready intracellular models embedded in a uniform multiscale framework. Designed to accelerate data-driven method development, surrogate modeling, and comparative benchmarking, this resource allows researchers to generate, compare, and analyze multiscale biological simulations under consistent conditions.
 
 Derived from seven open biological reference models, the dataset features:
-* **612 variant MaBoSS Boolean regulatory networks:** Filtered from a mutation-based pipeline of 2,122 candidate networks to maximize structural and dynamical diversity. All models are provided with the code required for direct execution within the shared PhysiBoSS/PhysiCell framework.
+* **612 variant MaBoSS Boolean regulatory networks:** Filtered from the output of 2,122 candidate networks from a mutation-based pipeline, to maximize structural and dynamical diversity. All models are provided with the code required for direct execution within the shared PhysiBoSS/PhysiCell framework.
 * **120,000 precomputed time-resolved trajectories:** Generated from 60 representative models under multiple stimulation parameterizations and environmental conditions, dramatically lowering the computational barrier to immediate reuse.
 
 By coupling diverse intracellular Boolean networks with a consistent agent-based multicellular environment, VBMS retains key biological features—such as nonlinearity, stochasticity, feedback, and multiscale coupling—enabling robust, large-scale studies across a broad spectrum of bio-inspired systems.
@@ -171,7 +171,7 @@ Communication between the machine running the pipeline and the remote HPC server
 * Checks for completed and failed jobs by checking specific remote directories.
 
 In order to set up the HPC server:
-* Ensure the remote server is accessible through SSH.
+* Ensure the remote server is accessible through SSH, with SSH keys set up to prevent login prompts.
 * Create directories for `running jobs` (temp directory), for `completed jobs` and for `failed jobs`.
 * Create a `submission script` in the HPC server. This scripts must:
   * Accept a CLI argument *job_name*
@@ -181,9 +181,12 @@ In order to set up the HPC server:
 
 #### Submission Script and Singularity Container
 
-An example submission script (`run_job.sh`) is available in the hpc_setup_helper directory.
+Two examples submission script are available in the hpc_setup_helper directory:
+ * `run_job.sh`: Used to execute Physiboss simulations, and preserve the entire simulation output. This is the behavior expected by the simulation and filtering pipeline.
+  * `run_job_data_extraction.sh`: Used to execute Physiboss simulations, and produce a synthetic and compressed JSON output. This is the behavior expected by the data_extraction pipeline, and is preferred as it reduces the size of the generated data.
 
-This script uses a Singularty container to actually execute the jobs. The definition for the container is provided in `hpc_setup_helper/remote_container.def`
+
+The scripts use a Singularty container to actually execute the jobs. The definition for the container is provided in `hpc_setup_helper/remote_container.def`.
 
 
 The script must be personalized:
