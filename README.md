@@ -194,6 +194,9 @@ The script must be personalized:
 * Set the desired paths for the input and output directories.
 * Set the path to the image of the singularity container built with `hpc_setup_helper/remote_container.def`.
 
+#### Python tools on the HPC
+
+The remote execution script also look for two python scripts: postprocess_time.py and postprocess.py. These scripts can be moved into any directory of the HPC, and their path can be specified in the `hpc_setup_helper/remote_container.def` script under the variable ``
 
 ### Config.yaml fields
 
