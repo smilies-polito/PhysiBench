@@ -241,12 +241,12 @@ extraction_remote_script: "/home/your-user/.../run_job.sh" # Remote script for t
 **Inputs**: `data/boolean_models/base_pool`
 **Outputs**: `data/boolean_models/mutated`
 **Config Hyperparameters**:
-- `target_number_of_models`: 2115
+- `target_number_of_models`: 2,122
 - `MIN_DISTANCE`: 0.15
 - `MAX_TESTED`: 200,000
 - `MAX_CREATED_NODES`: 45
 - `MIN_MUTATIONS`: 10
-- `MAX_MUTATIONS`: 2000
+- `MAX_MUTATIONS`: 2,000
 - `MUTATION_P`: Probabilities for different mutation operations (Switch nodes logic, replace logical operator, etc.)
 
 ## 3. Sensitivity Analysis & Sampling (`rule sampling`)
@@ -255,7 +255,7 @@ extraction_remote_script: "/home/your-user/.../run_job.sh" # Remote script for t
 **Outputs**: `results/sampling`
 **Config Hyperparameters**:
 - `sampling_number_of_contexts`: 215
-- `sampling_number_of_subjects`: 2115
+- `sampling_number_of_subjects`: 2,122
 - `max_jobs_stop`: 480
 - `max_jobs_resume`: 210
 

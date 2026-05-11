@@ -5,7 +5,7 @@
 source_boolean_models_dir: "../../data/reference_models"
 base_pool_dir: "../../data/boolean_models/base_pool"
 mutated_boolean_models_dir: "../../data/boolean_models/mutated"
-target_number_of_models: 2115
+target_number_of_models: 2122
 NUM_GENERICS_BY_FAMILY: 12
 
 MIN_DISTANCE: 0.15 # Min. distance threshold to the closest existing model
@@ -32,7 +32,7 @@ MAX_MUTATIONS: 2000
 
 sampling_dir: "../../results/sampling"
 sampling_number_of_contexts: 215
-sampling_number_of_subjects: 2115
+sampling_number_of_subjects: 2122
 
 # Remote execution settings (set use_remote to true to enable)
 use_remote: false
