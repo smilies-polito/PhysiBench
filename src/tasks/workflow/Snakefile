@@ -22,3 +22,7 @@ include: "rules/boolean_models_filtering.smk"
 # Data Extraction 
 # -----------------------------------------------------
 include: "rules/data_extraction.smk"
+
+# Individual Simulations Run
+# -----------------------------------------------------
+include: "rules/run_simulations.smk"

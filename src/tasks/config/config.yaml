@@ -85,3 +85,22 @@ extraction_times_dir: "../../data/multiscale_simulations/times"
 extraction_remote_base: "/home/rsmeriglio/masera/meta_model_rick" # Base directory on the HPC
 extraction_remote_results: "/home/rsmeriglio/masera/meta_model_rick/results" # Directory on the HPC where to store results
 extraction_remote_script: "/home/rsmeriglio/masera/meta_model_rick/run_job.sh"
+
+#--------------------------------------------------#
+# Individual Simulations Run                       #
+#--------------------------------------------------#
+simulations_run_base_output: "../../results/simulations_run"
+protocol_treatment_duration: 0.5
+protocol_treatment_period: 0.1
+protocol_xmin: 0
+protocol_xmax: 10
+protocol_ymin: 0
+protocol_ymax: 10
+
+ip_type: "circle"
+ip_center_x: 0
+ip_center_y: 0
+ip_density: 0.1
+ip_cell_type: "default"
+ip_mode: "sparse"
+ip_length: 50.0
