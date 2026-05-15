@@ -117,7 +117,7 @@ cd src/data_generation
 ```
 
 ### Manual Setup (Conda)
-If you prefer not to use Singularity, you can recreate the environment using the provided YAML file:
+If you prefer to work outside Singularity, you can create the environment with Conda using the provided YAML file:
 
 ```bash
 conda env create -f src/tasks/workflow/env/env.yaml
@@ -181,7 +181,7 @@ In order to set up the HPC server:
 
 #### Submission Script and Singularity Container
 
-Two examples submission script are available in the hpc_setup_helper directory:
+Two models for submission scripts are available in the hpc_setup_helper directory:
  * `run_job.sh`: Used to execute Physiboss simulations, and preserve the entire simulation output. This is the behavior expected by the simulation and filtering pipeline.
   * `run_job_data_extraction.sh`: Used to execute Physiboss simulations, and produce a synthetic and compressed JSON output. This is the behavior expected by the data_extraction pipeline, and is preferred as it reduces the size of the generated data.
 
@@ -196,7 +196,7 @@ The script must be personalized:
 
 #### Python tools on the HPC
 
-The remote execution script also look for two python scripts: postprocess_time.py and postprocess.py. These scripts can be moved into any directory of the HPC, and their path can be specified in the `hpc_setup_helper/remote_container.def` script under the variable ``
+The remote execution script also look for two python scripts: postprocess_time.py and postprocess.py. These scripts can be moved into any directory of the HPC, and their path can be specified in the `hpc_setup_helper/run_job_data_extraction.sh` script under the variable `PYTHON_TOOLS_PATH`
 
 ### Config.yaml fields
 

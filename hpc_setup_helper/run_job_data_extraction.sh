@@ -1,16 +1,16 @@
 #!/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --partition=gpu_a40
-#SBATCH --job-name=PHYSIBOSS_metamodel
+#SBATCH --job-name=VBMS
 #SBATCH --time=24:00:00
 #SBATCH --mem=2G
-#SBATCH --chdir=/home/rsmeriglio/masera/meta_model_rick
-#SBATCH --output=/home/rsmeriglio/masera/meta_model_rick/slurm_logs/%x_%j.out
-#SBATCH --error=/home/rsmeriglio/masera/meta_model_rick/slurm_logs/%x_%j.err
+#SBATCH --chdir=/home/<..>
+#SBATCH --output=/home/<..>
+#SBATCH --error=/home/<..>
 
 set -euo pipefail
 
-base="/home/rsmeriglio/masera/meta_model_rick"
+base="/home/" # Please setup
 job_name="${1:?Usage: run_job.sh <job_name> [suffix]}"
 SUFFIX="${2:-SIM}"  # opzionale, default SIM
 
