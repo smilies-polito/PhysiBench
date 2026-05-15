@@ -36,13 +36,13 @@ sampling_number_of_subjects: 2122
 
 # Remote execution settings (set use_remote to true to enable)
 use_remote: false
-remote_user: "rsmeriglio"  # e.g., "user"
-remote_host: "hpc-legionlogin.polito.it"  # e.g., "hpc-server.domain"
-remote_url: "rsmeriglio@hpc-legionlogin.polito.it"  # e.g., "user@hpc-server.domain"
-remote_results_path:  "/home/rsmeriglio/masera/results_new_dir"  # e.g., "/home/user/results"
-remote_failed_path: "/home/rsmeriglio/masera/failed_jobs"  # e.g., "/home/user/failed"
-remote_temp_path: "/home/rsmeriglio/masera/jobs"  # e.g., "/home/user/temp"
-hpc_script_name: "masera/run_job.sh"
+remote_user: "<user>"  # e.g., "user"
+remote_host: "<domain>"  # e.g., "hpc-server.domain"
+remote_url: "<user>@<domain>"  # e.g., "user@hpc-server.domain"
+remote_results_path:  "/home/<user>/<some_path>/results_dir"  # e.g., "/home/user/results"
+remote_failed_path: "/home/<user>/<some_path>/failed_jobs"  # e.g., "/home/user/failed"
+remote_temp_path: "/home/<user>/<some_path>/jobs"  # e.g., "/home/user/temp"
+hpc_script_name: "/home/<user>/<some_path>/run_job.sh"
 max_jobs_stop: 480
 max_jobs_resume: 210
 
@@ -82,9 +82,9 @@ extraction_init_pos_json: "../../data/multiscale_simulations/initial_positions.j
 extraction_times_dir: "../../data/multiscale_simulations/times"
 
 # Extra HPC settings
-extraction_remote_base: "/home/rsmeriglio/masera/meta_model_rick" # Base directory on the HPC
-extraction_remote_results: "/home/rsmeriglio/masera/meta_model_rick/results" # Directory on the HPC where to store results
-extraction_remote_script: "/home/rsmeriglio/masera/meta_model_rick/run_job.sh"
+extraction_remote_base: "/home/<user>/<some_path>" # Base directory on the HPC
+extraction_remote_results: "/home/<user>/<some_path>/results" # Directory on the HPC where to store results
+extraction_remote_script: "/home/<user>/<some_path>/run_job_data_extraction.sh"
 
 #--------------------------------------------------#
 # Individual Simulations Run                       #
