@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import os
 from boolean_model_mutation import *
-from distances import CorrelationDistances, EuclideanDistance
+from distances import CorrelationDistances
 from utils import print_and_log, set_log_Path
 from physiboss import LocalPhysiboss
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters

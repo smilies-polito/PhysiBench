@@ -44,7 +44,7 @@ The workflow consists of several key stages designed to generate and validate a 
 
 3. **Sensitivity Analysis & Sampling** (rule `sampling`): Conducts an off-line sensitivity evaluation by simulating the variant models across hundreds of biological contexts. This step uses the PhysiBoSS multiscale framework to evaluate each model under distinct combinations of stimulation and spatial parameters.
 
-4. **Model Filtering** (rule `filtering`): Discards weakly informative models by analyzing their population-level fitness responses across the sampled parameter space. Models are retained only if they demonstrate sufficient absolute and relative variability, evaluated via standard deviation and coefficient of variation thresholds.
+4. **Model Filtering** (rule `filtering`): Discards weakly informative models by analyzing their population-level responses in a set of evaluation functions across the sampled parameter space. Models are retained only if they demonstrate sufficient absolute and relative variability, evaluated via standard deviation and coefficient of variation thresholds.
 
 5. **Static Distance Validation** (rule `static_distances`): Quantifies the true structural diversity of the curated model collection by converting the Boolean rules into graph representations. It calculates pairwise global distance metrics—DeltaCon, Ipsen-Mikhailov, and Quantum Jensen-Shannon Divergence—to ensure topological distinction.
 
@@ -58,7 +58,7 @@ The workflow consists of several key stages designed to generate and validate a 
 
 This project follows the standard Snakemake workflow structure, organizing configurations, rules, and scripts into dedicated directories. 
 
-All workflow executions should be run from the root of the Snakemake pipeline, which is located in `src/dataset_generation`. 
+All workflow executions should be run from the root of the Snakemake pipeline, which is located in `src/tasks`. 
 
 ## Project Structure
 
@@ -82,7 +82,7 @@ The repository is organized as follows:
 └── src/
     ├── bin/
     │   └── physiboss/          # PhysiBoss executables and source
-    └── dataset_generation/     # Root directory to run the Snakemake pipeline
+    └── tasks/     # Root directory to run the Snakemake pipeline
         ├── config/
         │   └── config.yaml     # All configurable hyperparameters and remote settings
         └── workflow/
@@ -120,7 +120,7 @@ cd src/data_generation
 If you prefer not to use Singularity, you can recreate the environment using the provided YAML file:
 
 ```bash
-conda env create -f src/dataset_generation/workflow/env/env.yaml
+conda env create -f src/tasks/workflow/env/env.yaml
 conda activate <env_name>
 ```
 
@@ -131,7 +131,7 @@ make
 ```
 
 ### Pipeline Configuration
-All hyperparameters and pipeline settings are centralized in src/dataset_generation/config/config.yaml. This file dictates the behavior of the entire workflow. 
+All hyperparameters and pipeline settings are centralized in src/tasks/config/config.yaml. This file dictates the behavior of the entire workflow. 
 
 The specific hyperparameters of individual steps of the pipeline will be documented below.
 
@@ -142,7 +142,7 @@ The specific hyperparameters of individual steps of the pipeline will be documen
 To execute the pipeline, first navigate to the workflow root directory:
 
 ```bash
-cd src/dataset_generation
+cd src/tasks
 snakemake -j<n> all
 ```
 
@@ -260,7 +260,7 @@ extraction_remote_script: "/home/your-user/.../run_job.sh" # Remote script for t
 - `max_jobs_resume`: 210
 
 #### 4. Model Filtering (`rule filtering`)
-**Description**: Discards weakly informative models by analyzing their population-level fitness responses across the sampled parameter space. Models are retained only if they demonstrate sufficient absolute and relative variability. The subset is thus filtered down to the final 612 structurally and dynamically diverse Boolean regulatory networks.
+**Description**: Discards weakly informative models by analyzing their population-level responses to a set of evaluation functions across the sampled parameter space. Models are retained only if they demonstrate sufficient absolute and relative variability. The subset is thus filtered down to the final 612 structurally and dynamically diverse Boolean regulatory networks.
 **Inputs**: `results/sampling` (plus the mutated string pool)
 **Outputs**: `results/filtering` (statistics and notebook), `data/boolean_models/filtered` (final models)
 **Config Hyperparameters**:

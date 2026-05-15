@@ -1,6 +1,5 @@
 import numpy as np
 import re
-import sys
 
 
 """
@@ -155,6 +154,7 @@ class Parser:
         self.nodes = nodes 
         self.variables = variables
 
+    @staticmethod
     def tokenize(expression):
         tokens = []
         pos = 0

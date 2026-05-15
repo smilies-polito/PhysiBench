@@ -47,6 +47,7 @@ class InitialPosition:
             return False 
         return True
 
+    @staticmethod
     def get_random():
         # Generate a random length or radius
         length = random.uniform(50, (X_MAX - X_MIN) / 2.6)
@@ -86,7 +87,6 @@ class InitialPosition:
             )
         else:
             raise ValueError("Type must be 'circle' or 'square'.")
-
 
 def fill_circle(
     center: Tuple[float, float],

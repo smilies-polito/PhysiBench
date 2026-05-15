@@ -4,23 +4,23 @@ import numpy as np
 from enum import Enum
 import scipy.io
 
-class Fitness(ABC):
+class EvaluationFunction(ABC):
     @abstractmethod
-    def fitness(output_path) -> float:
+    def run(_, output_path) -> float:
         pass
 
-class AliveCellsFitness(Fitness):
-    def fitness(self, output_path) -> float:
+class AliveCellsFunction(EvaluationFunction):
+    def run(self, output_path) -> float:
         cells = scipy.io.loadmat(output_path)['cells'][7,:]
         return (cells==14).sum()
     
 
-class Apoptotic(Fitness):
-    def fitness(self, output_path) -> float:
+class Apoptotic(EvaluationFunction):
+    def run(self, output_path) -> float:
         cells = scipy.io.loadmat(output_path)['cells'][7,:]
         return (cells==100).sum()
 
-### Spatial fitness functions
+### Spatial functions
 from scipy import stats
 
 
@@ -32,16 +32,17 @@ def load_alive_cells(output_path):
     return cells
 
 
-class SpatialFitnessType(Enum):
+class SpatialEvaluationFunctionType(Enum):
     LINEAR = 1  # num cells outside - Num cells inside  (smaller is always better)
     LINEAR_WT_DISTRIBUTION = 2  # As linear, but penalizes the distribution of cells if not uniform
 
-class CircularFitness(Fitness):
-    def __init__(self, center: tuple, radius: float, fitness_type: SpatialFitnessType = SpatialFitnessType.LINEAR):
+class CircularEvaluationFunction(EvaluationFunction):
+    def __init__(self, center: tuple, radius: float, function_type: SpatialEvaluationFunctionType = SpatialEvaluationFunctionType.LINEAR):
         self.center = center
         self.radius = radius
-        self.fitness_type = fitness_type
-
+        self.function_type = function_type
+    
+    @staticmethod
     def test_distance_uniformity(squared_distances, radius_squared):
         # Normalize squared distances - should be uniform if points are evenly distributed
         normalized_squared_distances = squared_distances / radius_squared
@@ -51,6 +52,7 @@ class CircularFitness(Fitness):
             return 0
         return 1 - ks_statistic
 
+    @staticmethod
     def test_angle_uniformity(angles): #Kolmogorov-Smirnov Test
         normalized_angles = (angles + np.pi) / (2 * np.pi)
         ks_statistic, _ = stats.kstest(normalized_angles, 'uniform')
@@ -58,13 +60,13 @@ class CircularFitness(Fitness):
             return 0
         return 1 - ks_statistic
 
-    def fitness(self, output_path) -> float:
+    def run(self, output_path) -> float:
         cells = load_alive_cells(output_path)
         if (len(cells) == 0):
             return 0
         inside = 0
         outside = 0
-        if (self.fitness_type == SpatialFitnessType.LINEAR):
+        if (self.function_type == SpatialEvaluationFunctionType.LINEAR):
             for cell in cells:
                 x = cell[0]
                 y = cell[1]
@@ -89,20 +91,20 @@ class CircularFitness(Fitness):
                 return outside
             distance_from_center = np.array(distance_from_center)
             angle = np.array(angle)
-            distance_uniformity = CircularFitness.test_distance_uniformity(
+            distance_uniformity = CircularEvaluationFunction.test_distance_uniformity(
                 np.array(distance_from_center), 
                 self.radius**2
             )
-            angle_uniformity = CircularFitness.test_angle_uniformity(angle)
+            angle_uniformity = CircularEvaluationFunction.test_angle_uniformity(angle)
             score = (distance_uniformity + angle_uniformity) / 2
             return outside - (inside * score)
 
-class SquaredFitness(Fitness):
-    def __init__(self, center: tuple, side_length: float, fitness_type: SpatialFitnessType = SpatialFitnessType.LINEAR):
+class SquaredEvaluationFunction(EvaluationFunction):
+    def __init__(self, center: tuple, side_length: float, function_type: SpatialEvaluationFunctionType = SpatialEvaluationFunctionType.LINEAR):
         self.center = center
         self.side_length = side_length
         self.half_side = side_length / 2
-        self.fitness_type = fitness_type
+        self.function_type = function_type
 
     @staticmethod
     def test_x_uniformity(x_positions, half_side):
@@ -124,14 +126,14 @@ class SquaredFitness(Fitness):
             return 0
         return 1 - ks_statistic
 
-    def fitness(self, output_path) -> float:
+    def run(self, output_path) -> float:
         cells = load_alive_cells(output_path)
         if (len(cells) == 0):
             return 0
         inside = 0
         outside = 0
         total = len(cells)
-        if (self.fitness_type == SpatialFitnessType.LINEAR):
+        if (self.function_type == SpatialEvaluationFunctionType.LINEAR):
             for cell in cells:
                 x = cell[0]
                 y = cell[1]
@@ -157,8 +159,8 @@ class SquaredFitness(Fitness):
             x_positions = np.array(x_positions)
             y_positions = np.array(y_positions)
             
-            x_uniformity = SquaredFitness.test_x_uniformity(x_positions, self.half_side)
-            y_uniformity = SquaredFitness.test_y_uniformity(y_positions, self.half_side)
+            x_uniformity = SquaredEvaluationFunction.test_x_uniformity(x_positions, self.half_side)
+            y_uniformity = SquaredEvaluationFunction.test_y_uniformity(y_positions, self.half_side)
             
             score = (x_uniformity + y_uniformity) / 2            
             return outside - (inside * score)
@@ -169,6 +171,6 @@ if __name__== "__main__":
     import sys
     path = sys.argv[1] if len(sys.argv) > 1 else "path_to_output"
     print("Path: ", path)
-    fitness_function = CircularFitness(center=(0, 0), radius=100, fitness_type=SpatialFitnessType.LINEAR)
-    score = fitness_function.fitness(path)
-    print(f"Fitness score: {score}")
+    evaluation_function = CircularEvaluationFunction(center=(0, 0), radius=100, function_type=SpatialEvaluationFunctionType.LINEAR)
+    score = evaluation_function.run(path)
+    print(f"Function score: {score}")

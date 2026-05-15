@@ -1,10 +1,7 @@
 import os
 from dataclasses import dataclass
-import random
 import subprocess
-from typing import Tuple
 import xml.etree.ElementTree as ET
-from initial_positions import Cell, InitialPosition
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
 import subprocess
 import traceback

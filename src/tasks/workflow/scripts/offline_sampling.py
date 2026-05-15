@@ -7,13 +7,13 @@ import random
 import time
 import argparse
 from simulation_model_protocol import SimulationParameters
-from fitness_functions import AliveCellsFitness, CircularFitness, SpatialFitnessType, SquaredFitness
+from evaluation_functions import AliveCellsFunction, CircularEvaluationFunction, SpatialEvaluationFunctionType, SquaredEvaluationFunction
 from initial_positions import InitialPosition
 from physiboss import ModelParameters, Protocols, RemotePhysiboss, LocalPhysiboss
 import subprocess
 import numpy as np
 import time
-### Produce a pool of << Subject of analysis; Context>, Fitness>
+### Produce a pool of << Subject of analysis; Context>, Function Value>
 MAX_REMOTE_JOBS_STOPS_AT = 160*3
 MAX_REMOTE_JOBS_RESUME_AT = 70*3
 
@@ -22,6 +22,7 @@ MAX_REMOTE_JOBS_RESUME_AT = 70*3
 class Subjects:
     initial_positions: InitialPosition
     model: ModelParameters
+    @staticmethod
     def get_random_vector(multiplicator, pool_path):
         subjects = []
         families = os.listdir(pool_path)
@@ -44,6 +45,7 @@ class Subjects:
                     subjects.append(subject)
         return subjects
 
+    @staticmethod
     def get_random():
         initial_positions_type = InitialPosition.get_random()
         boolean_family = random.choice([
@@ -102,6 +104,7 @@ class Context:
     #protocol.initial position is ignored and replaced by the one in the Subject 
     protocol: Protocols
     
+    @staticmethod
     def get_random_vector(N):
         X = int(N**(1/6))
         xmin_values = np.linspace(2, 8, X)
@@ -134,6 +137,7 @@ class Context:
         contexts = random.sample(contexts, N)
         return contexts
 
+    @staticmethod
     def get_random():
         xmin = random.random()*10
         xmax = random.random()*10
@@ -216,28 +220,28 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, pool_path, physiboss, max_jobs
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     
-    # Define fitness functions
-    fitnesses = [
-        AliveCellsFitness(),
-        CircularFitness(center=(0, 0), radius=100, fitness_type=SpatialFitnessType.LINEAR),
-        CircularFitness(center=(0, 0), radius=100, fitness_type=SpatialFitnessType.LINEAR_WT_DISTRIBUTION),
-        SquaredFitness(center=(0, 0), side_length=100, fitness_type=SpatialFitnessType.LINEAR),
-        SquaredFitness(center=(0, 0), side_length=100, fitness_type=SpatialFitnessType.LINEAR_WT_DISTRIBUTION),
-        CircularFitness(center=(-50, -50), radius=100, fitness_type=SpatialFitnessType.LINEAR),
-        CircularFitness(center=(-50, -50), radius=100, fitness_type=SpatialFitnessType.LINEAR_WT_DISTRIBUTION),
-        SquaredFitness(center=(-50, -50), side_length=100, fitness_type=SpatialFitnessType.LINEAR),
-        SquaredFitness(center=(-50, -50), side_length=100, fitness_type=SpatialFitnessType.LINEAR_WT_DISTRIBUTION),
+    # Define evaluation functions
+    evaluation_functions = [
+        AliveCellsFunction(),
+        CircularEvaluationFunction(center=(0, 0), radius=100, function_type=SpatialEvaluationFunctionType.LINEAR),
+        CircularEvaluationFunction(center=(0, 0), radius=100, function_type=SpatialEvaluationFunctionType.LINEAR_WT_DISTRIBUTION),
+        SquaredEvaluationFunction(center=(0, 0), side_length=100, function_type=SpatialEvaluationFunctionType.LINEAR),
+        SquaredEvaluationFunction(center=(0, 0), side_length=100, function_type=SpatialEvaluationFunctionType.LINEAR_WT_DISTRIBUTION),
+        CircularEvaluationFunction(center=(-50, -50), radius=100, function_type=SpatialEvaluationFunctionType.LINEAR),
+        CircularEvaluationFunction(center=(-50, -50), radius=100, function_type=SpatialEvaluationFunctionType.LINEAR_WT_DISTRIBUTION),
+        SquaredEvaluationFunction(center=(-50, -50), side_length=100, function_type=SpatialEvaluationFunctionType.LINEAR),
+        SquaredEvaluationFunction(center=(-50, -50), side_length=100, function_type=SpatialEvaluationFunctionType.LINEAR_WT_DISTRIBUTION),
     ]
-    fitnesses_names = [
-        "AliveCellsFitness",
-        "CircularFitness",
-        "CircularFitness_WT_DISTRIBUTION",
-        "SquaredFitness",
-        "SquaredFitness_WT_DISTRIBUTION",
-        "CircularFitness_2",
-        "CircularFitness_2_WT_DISTRIBUTION",
-        "SquaredFitness_2",
-        "SquaredFitness_2_WT_DISTRIBUTION"
+    evaluation_functions_names = [
+        "AliveCells",
+        "Circular",
+        "Circular_WT_DISTRIBUTION",
+        "Squared",
+        "Squared_WT_DISTRIBUTION",
+        "Circular_2",
+        "Circular_2_WT_DISTRIBUTION",
+        "Squared_2",
+        "Squared_2_WT_DISTRIBUTION"
     ]
 
     # Load or generate subjects and contexts
@@ -275,8 +279,8 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, pool_path, physiboss, max_jobs
 
     #Compute the raw simulation putouts
     for i, subject in enumerate(subjects):
-        with open(f"{output_dir}/{i}_fitness.csv", "a") as f:
-            f.write(",".join(fitnesses_names) + "\n")
+        with open(f"{output_dir}/{i}_evaluations.csv", "a") as f:
+            f.write(",".join(evaluation_functions_names) + "\n")
         for context_index, context in enumerate(contexts):
             # Test the model and protocol
             context.protocol.initial_positions = subject.initial_positions
@@ -310,15 +314,15 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, pool_path, physiboss, max_jobs
         results = physiboss.get_job_list()
         num_received = len(results)
     
-    #Compute the fitness
-    print("Computing fitness scores...")
+    #Compute the evaluation scores
+    print("Computing evaluation scores...")
     physiboss.retrieve_job_results(destination_folder=result_dir)
     MAX_STEP = 10
 
     for step in range(0, MAX_STEP + 1):
         for i, subject in enumerate(subjects):
-            with open(f"{output_dir}/{i}_fitness_step_{step}.csv", "w") as f:
-                f.write(",".join(fitnesses_names) + "\n")
+            with open(f"{output_dir}/{i}_evaluation_step_{step}.csv", "w") as f:
+                f.write(",".join(evaluation_functions_names) + "\n")
             for context_index, context in enumerate(contexts):
                 file_index = step
                 if (file_index < MAX_STEP):
@@ -335,17 +339,17 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, pool_path, physiboss, max_jobs
                 path = f"{result_dir}/{job_name}"
                 if not os.path.exists(path):
                     print(f"Path {path} does not exist. Skipping...")
-                    fitness_scores = [np.nan] * len(fitnesses)
+                    evaluation_scores = [np.nan] * len(evaluation_functions)
                 else:
-                    fitness_scores = []
+                    evaluation_scores = []
                     try:
-                        for fitness in fitnesses:
-                            fitness_scores.append(fitness.fitness(path))
+                        for evaluation in evaluation_functions:
+                            evaluation_scores.append(evaluation.run(path))
                     except Exception as e:
-                        fitness_scores = [np.nan] * len(fitnesses)
-                # Save the fitness scores
-                with open(f"{output_dir}/{i}_fitness_step_{step}.csv", "a") as f:
-                    f.write(",".join(map(str, fitness_scores)) + "\n")
+                        evaluation_scores = [np.nan] * len(evaluation_functions)
+                # Save the scores
+                with open(f"{output_dir}/{i}_evaluation_step_{step}.csv", "a") as f:
+                    f.write(",".join(map(str, evaluation_scores)) + "\n")
 
 
 if __name__ == "__main__":
