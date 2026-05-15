@@ -63,6 +63,7 @@ class LocalPhysiboss:
         PHYSICELL_PATH = "/bin/PhysiCell"
         OUTPUT_DIR = "/virtualoutput"
     
+    @staticmethod
     def run_local(model: ModelParameters, protocol: Protocols, sim_params: SimulationParameters, pool_path: str):
         if (protocol is not None):
             protocol.test()

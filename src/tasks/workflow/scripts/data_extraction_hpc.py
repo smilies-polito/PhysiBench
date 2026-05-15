@@ -267,7 +267,7 @@ def _update_total_row(times_csv: str) -> None:
         w.writerow(totals)
 
 # ==================== FETCH (JSON + TEMPI) ====================
-def check_if_featched(sim_id: int, base_model_dir: str) -> None:
+def check_if_featched(sim_id: int, base_model_dir: str) -> bool:
     # Local data dirs
     data_dir = os.path.join(base_model_dir, "data")
     cell_dir = os.path.join(data_dir, "cell_data")

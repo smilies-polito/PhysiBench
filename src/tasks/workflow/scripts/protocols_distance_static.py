@@ -1,5 +1,3 @@
-import multiprocessing.pool
-import multiprocessing.shared_memory
 import multiprocessing as mp
 
 from boolean_model_mutation import *
@@ -7,7 +5,6 @@ import networkx as nx
 import numpy as np
 import netrd
 import matplotlib.pyplot as plt
-from multiprocessing import Pool, shared_memory
 import argparse
 import os
 from tqdm import tqdm

@@ -1,4 +1,3 @@
-from sklearn.neighbors import NearestNeighbors
 import numpy as np 
 
 """
@@ -76,16 +75,20 @@ class CorrelationDistancesAll:
 
     
 class EuclideanDistance:
+    @staticmethod
     def linear_distance_single_step(p1, p2):
         # p1, p2 are 1D numpy arrays
         return np.linalg.norm(p1 - p2)
     # Compute avg over all time steps
+    @staticmethod
     def linear_distance_avg(p1, p2):
         # p1, p2 are 2D numpy arrays
         return np.mean([EuclideanDistance.linear_distance_single_step(p1[i], p2[i]) for i in range(p1.shape[0])])
     # Consider different time steps as different states - distance on unique 1D vector
+    @staticmethod
     def linear_distance_flattened(p1, p2):
         # p1, p2 are 2D numpy arrays
         return EuclideanDistance.linear_distance_single_step(p1.flatten(), p2.flatten()) / p1.shape[0]
+    @staticmethod
     def test_element(pool, element):
         return [EuclideanDistance.linear_distance_avg(pool[i], element) for i in range(len(pool))]

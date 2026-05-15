@@ -55,7 +55,7 @@ class Protocols:
     initial_positions: InitialPosition
 
 
-
+    @staticmethod
     def get_random():
         return Protocols(
             treatment_duration=random.uniform(0, 1),
@@ -114,7 +114,7 @@ class SimulationParameters:
     intracellular_dt: int = 1000 #500 - 1800
 
     save_interval: int = 1000
-
+    @staticmethod
     def get_defaults():
         return SimulationParameters(
             domain_size=206,
@@ -128,7 +128,7 @@ class SimulationParameters:
             intracellular_dt=518,
             save_interval=1000
         )
-
+    @staticmethod
     def get_test_defaults():
         return SimulationParameters(
             domain_size=206,

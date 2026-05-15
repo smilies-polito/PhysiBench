@@ -1,11 +1,9 @@
 from boolean_model_mutation import *
-from distances import CorrelationDistances, EuclideanDistance
+from distances import CorrelationDistances
 from utils import print_and_log, set_log_Path
 import numpy as np
-import sys
 import os
 import argparse
-import subprocess
 from pctk import multicellds
 from physiboss import LocalPhysiboss
 from simulation_model_protocol import ModelParameters, Protocols, SimulationParameters
