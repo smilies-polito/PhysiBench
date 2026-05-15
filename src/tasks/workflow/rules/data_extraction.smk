@@ -40,7 +40,7 @@ rule data_extraction_hpc:
 
 rule data_extraction_generate_manifest:
     input:
-        extraction_dir = config["extraction_results_dir"]
+        extraction_dir = config["extraction_results_dir"],
         times = rules.data_extraction_hpc.output.extraction_dir
     output:
         manifest = config["extraction_results_dir"] + "/multiscale_simulations_manifest.json"
