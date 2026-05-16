@@ -40,6 +40,6 @@ rule pool:
             --max-created-nodes {params.max_created_nodes} \
             --min-mutations {params.min_mutations} \
             --max-mutations {params.max_mutations} \
-            --mutation-probs {params.mutation_probs}
+            --mutation-probs {params.mutation_probs} 
         cp -r {output.tmp} {output.mutated_boolean_models}
         """
