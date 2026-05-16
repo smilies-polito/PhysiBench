@@ -145,7 +145,7 @@ class LocalPhysiboss:
         run_command(f"rm -rf output/*", path=LocalPhysiboss.PHYSICELL_PATH)
         # Run the simulation
         run_command(f"./{LocalPhysiboss.BIN_NAME}", path=LocalPhysiboss.PHYSICELL_PATH)
-        return os.path.join(LocalPhysiboss.PHYSICELL_PATH, "output")
+        return LocalPhysiboss.OUTPUT_DIR
 
 class RemotePhysiboss:
     def __init__(

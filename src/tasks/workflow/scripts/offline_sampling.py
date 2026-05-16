@@ -199,7 +199,7 @@ class LocalPhysibossInterface:
             model, protocol, sim_params, self.pool_path
         )
         os.system(f"mkdir -p {self.results_path}/{job_name}")
-        os.system(f"mv {out} {self.results_path}/{job_name}")
+        os.system(f"cp -r {out} {self.results_path}/{job_name}/output")
 
 
     def get_job_list(self):
@@ -306,7 +306,8 @@ def run_sampling(N_CONTEXT, N_SUBJECT, work_path, pool_path, physiboss, max_jobs
             except Exception as e:
                 print(f"Error: {e} - Skipping subject {i}, context {context_index}.")
 
-
+    results = physiboss.get_job_list()
+    num_received = len(results)
     while (num_sent != num_received):
         print("Waiting for all jobs to complete...")
         print(f"Sent {num_sent} jobs, received {num_received} results. Waiting for results...")
@@ -392,8 +393,7 @@ if __name__ == "__main__":
 
     #Initialize the physiboss interface
     if args.use_remote:
-
-        physiboss = RemotePhysiboss(
+        physiboss = RemotePhysibossInterface(
             boolean_model_pool=args.pool_path,
             remote_hpc_results_path=args.remote_results_path,
             remote_hpc_failed_path=args.remote_failed_path,
@@ -401,13 +401,18 @@ if __name__ == "__main__":
             hpc_login=args.remote_url,
             hpc_script_name=args.remote_script_name
         )
-        physiboss = RemotePhysibossInterface()
         max_jobs_stop = args.max_jobs_stop
         max_jobs_resume = args.max_jobs_resume
     else:
         physiboss = LocalPhysibossInterface(args.pool_path, args.work_path + "/results")
         max_jobs_stop = None
         max_jobs_resume = None
+        
+    print("==================================================")
+    print("Starting sampling with parameters:")
+    for arg, value in vars(args).items():
+        print(f"  {arg}: {value}")
+    print("==================================================")
     
     run_sampling(args.N_Context, args.N_Subject, args.work_path, args.pool_path, physiboss, max_jobs_stop, max_jobs_resume)
 

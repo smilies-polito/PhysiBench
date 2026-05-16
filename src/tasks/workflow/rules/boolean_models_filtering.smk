@@ -28,7 +28,7 @@ rule sampling:
             {params.remote_failed} \
             {params.remote_temp} \
             --max-jobs-stop {params.max_jobs_stop} \
-            --max-jobs-resume {params.max_jobs_resume}
+            --max-jobs-resume {params.max_jobs_resume} \
             --remote-script-name {params.hpc_script_name}
         """
 
