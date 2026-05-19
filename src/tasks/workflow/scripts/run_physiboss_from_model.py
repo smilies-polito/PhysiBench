@@ -121,12 +121,12 @@ def main():
         with open(manifest_path, 'r') as f:
             manifest_data = json.load(f)
             
-        entry = next((item for item in manifest_data if item.get("ID") == args.manifest_id), None)
+        entry = next((item for item in manifest_data if item.get("variant_ID") == args.manifest_id), None)
         if entry is None:
             sys.exit(f"Error: Manifest entry with ID {args.manifest_id} not found.")
             
-        family = entry["family"]
-        name = entry["V"]
+        family = entry["reference_model"]
+        name = entry["variant_ID"]
     else:
         if not has_family or not has_name:
             sys.exit("Error: Must provide either --manifest-id OR both --model-family and --model-name.")
