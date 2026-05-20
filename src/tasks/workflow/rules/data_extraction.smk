@@ -2,7 +2,7 @@
 # overwritten.
 rule data_extraction_hpc:
     input:
-        filtered_models = config["filtered_output_dir"],
+        filtered_models = config["filtered_output_dir_flattened"],
     output:
         extraction_dir = protected(directory(config["extraction_times_dir"]))
     params:

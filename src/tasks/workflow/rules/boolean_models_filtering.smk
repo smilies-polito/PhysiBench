@@ -64,10 +64,19 @@ rule filtering:
         workflow/scripts/sensitivity_analysis.ipynb
         """
 
+rule filtered_flattened:
+    input:
+        filtered_models = directory(config["filtered_output_dir"])
+    output:
+        filtered_models_flattened = config["filtered_output_dir_flattened"]
+    shell:
+        """
+        python workflow/scripts/make_benchmark_suite_flat.py {input.filtered_models} {output.filtered_models_flattened}
+        """
 
 rule static_distances:
     input:
-        mutated_models = config["filtered_output_dir"]
+        mutated_models = config["filtered_output_dir_flattened"]
     output:
         static_distances_dir = directory(config["static_distance_dir"])
     params:

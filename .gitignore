@@ -3,5 +3,4 @@
 container.sif
 results/*
 data/*
-!data/reference_models/
-!data/multiscale_simulations/initial_positions.json
+!data/simulation_dataset/initial_positions.json
