@@ -2,8 +2,8 @@ rule run_physiboss_by_id:
     output:
         out_dir = directory(config["simulations_run_base_output"] + "/by_id/{manifest_id}")
     params:
-        script = "scripts/run_physiboss_from_model.py",
-        base_models_dir = config["filtered_output_dir"],
+        script = "workflow/scripts/run_physiboss_from_model.py",
+        base_models_dir = config["filtered_output_dir_flattened"],
         treatment_duration = config["protocol_treatment_duration"],
         treatment_period = config["protocol_treatment_period"],
         xmin = config["protocol_xmin"],
@@ -42,8 +42,8 @@ rule run_physiboss_by_name:
     output:
         out_dir = directory(config["simulations_run_base_output"] + "/by_name/{model_family}/{model_name}")
     params:
-        script = "scripts/run_physiboss_from_model.py",
-        base_models_dir = config["filtered_output_dir"],
+        script = "workflow/scripts/run_physiboss_from_model.py",
+        base_models_dir = config["filtered_output_dir_flattened"],
         treatment_duration = config["protocol_treatment_duration"],
         treatment_period = config["protocol_treatment_period"],
         xmin = config["protocol_xmin"],

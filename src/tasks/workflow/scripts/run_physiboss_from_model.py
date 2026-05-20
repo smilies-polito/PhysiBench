@@ -26,7 +26,7 @@ def run(base_path: Path, family: str, name: str, output_dir: Path, protocol: Pro
     base_path_str = str(base_path)
 
     physiboss_output_dir = LocalPhysiboss.run_local(model, protocol, sim_params, base_path_str)
-    os.system(f"cp -r {physiboss_output_dir}/* {output_dir}/..")
+    os.system(f"cp -r {physiboss_output_dir}/* {output_dir}")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -121,7 +121,7 @@ def main():
         with open(manifest_path, 'r') as f:
             manifest_data = json.load(f)
             
-        entry = next((item for item in manifest_data if item.get("variant_ID") == args.manifest_id), None)
+        entry = next((item for item in manifest_data if item.get("model_ID") == args.manifest_id), None)
         if entry is None:
             sys.exit(f"Error: Manifest entry with ID {args.manifest_id} not found.")
             
