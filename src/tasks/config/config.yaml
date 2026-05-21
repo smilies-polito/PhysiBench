@@ -51,7 +51,7 @@ max_jobs_resume: 210
 #--------------------------------------------------#
 filtering_output_dir: "../../results/filtering" # Store there filtering related
 filtered_output_dir: "../../data/boolean_models/benchmark_suite" # Store the final, filtered dataset and a manifest file
-filtered_output_dir_flattened: "../../data/boolean_models/filtered" # Store the final, filtered dataset and a manifest file
+filtered_output_dir_flattened: "../../data/boolean_models/filtered" 
 mean_threshold: 0.0
 abs_std_threshold: 10 #30.0
 norm_std_threshold: 0.05 #0.2
