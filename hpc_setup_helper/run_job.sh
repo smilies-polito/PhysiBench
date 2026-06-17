@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --partition=gpu_a40
-#SBATCH --job-name=VBMS
-#SBATCH --output=VBMS_stdout.out
-#SBATCH --error=VBMS_stderr.err
+#SBATCH --job-name=PhysiBench
+#SBATCH --output=PhysiBench_stdout.out
+#SBATCH --error=PhysiBench_stderr.err
 #SBATCH --mem=2G
 #SBATCH --oversubscribe
 #SBATCH --time=24:00:00

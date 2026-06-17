@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --partition=gpu_a40
-#SBATCH --job-name=VBMS
+#SBATCH --job-name=PhysiBench
 #SBATCH --time=24:00:00
 #SBATCH --mem=2G
 #SBATCH --chdir=/home/<..>

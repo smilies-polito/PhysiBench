@@ -1,16 +1,16 @@
-# VBMS: Variant Boolean Models and Multiscale Simulations
+# PhysiBench: A benchmark suite of intracellular Boolean model variants and multiscale simulations for computational biology
 
 The development of computational methodologies for analyzing biological dynamics is constrained by the limited availability and complexity of time-resolved datasets. Acquiring longitudinal data is costly, and its downstream use is often complicated by missing observations or irregular sampling. While large-scale simulation benchmark datasets exist for physical systems, they do not capture the emergent, stochastic, and hybrid multiscale nature of biological biology. 
 
-**VBMS (Variant Boolean Models and Multiscale Simulations)** addresses this gap by providing a curated dataset of simulation-ready intracellular models embedded in a uniform multiscale framework. Designed to accelerate data-driven method development, surrogate modeling, and comparative benchmarking, this resource allows researchers to generate, compare, and analyze multiscale biological simulations under consistent conditions.
+**PhysiBench (A benchmark suite of intracellular Boolean model variants and multiscale simulations for computational biology)** addresses this gap by providing a curated dataset of simulation-ready intracellular models embedded in a uniform multiscale framework. Designed to accelerate data-driven method development, surrogate modeling, and comparative benchmarking, this resource allows researchers to generate, compare, and analyze multiscale biological simulations under consistent conditions.
 
 Derived from seven open biological reference models, the dataset features:
 * **612 variant MaBoSS Boolean regulatory networks:** Filtered from the output of 2,122 candidate networks from a mutation-based pipeline, to maximize structural and dynamical diversity. All models are provided with the code required for direct execution within the shared PhysiBoSS/PhysiCell framework.
 * **120,000 precomputed time-resolved trajectories:** Generated from 60 representative models under multiple stimulation parameterizations and environmental conditions, dramatically lowering the computational barrier to immediate reuse.
 
-By coupling diverse intracellular Boolean networks with a consistent agent-based multicellular environment, VBMS retains key biological features—such as nonlinearity, stochasticity, feedback, and multiscale coupling—enabling robust, large-scale studies across a broad spectrum of bio-inspired systems.
+By coupling diverse intracellular Boolean networks with a consistent agent-based multicellular environment, PhysiBench retains key biological features—such as nonlinearity, stochasticity, feedback, and multiscale coupling—enabling robust, large-scale studies across a broad spectrum of bio-inspired systems.
 
-![Overview of VBMS generation](.img/Pipeline.png)
+![Overview of PhysiBench generation](.img/Pipeline.png)
 
 <br>
 <br>
@@ -112,7 +112,7 @@ make launch_container
 ```
 Note: This automatically binds the necessary PhysiCell configuration directories and your current working directory. From the container shell:
 ```bash
-conda activate VBMS
+conda activate PhysiBench
 cd src/data_generation
 ```
 
