@@ -4,3 +4,4 @@ container.sif
 results/*
 data/*
 !data/simulation_dataset/initial_positions.json
+src/bin/physiboss/

@@ -75,13 +75,14 @@ The repository is organized as follows:
 │   └── multiscale_simulations/ # Results of the multi-scale simulations
 ├── results/
 │   ├── sampling/               # Raw data (sensitivity analysis)
-│   ├── filtering/              # Statistics for the sampling step (sensitivity analysis)
+│   └── filtering/              # Statistics for the sampling step (sensitivity analysis)
 │   └── static_distances/       # Raw results and plots for the static distance measures
 ├── singularity/
 │   └── container.def           # Definition file to build the Singularity container
 └── src/
     ├── bin/
-    │   └── physiboss/          # PhysiBoss executables and source
+    │   ├── PhysiBench/          # PhysiBench Project directory
+    │   └── physiboss/           # (created by src/bin/physiboss rule)
     └── tasks/     # Root directory to run the Snakemake pipeline
         ├── config/
         │   └── config.yaml     # All configurable hyperparameters and remote settings
@@ -126,8 +127,7 @@ conda activate <env_name>
 
 And manually build PhysiCell
 ```bash
-cd src/bin/physiboss/PhysiCell
-make
+make src/bin/physiboss
 ```
 
 ### Pipeline Configuration
