@@ -1,5 +1,11 @@
 # PhysiBench: A benchmark suite of intracellular Boolean model variants and multiscale simulations for computational biology
 
+* PhysiBench open resource: https://drive.cloud.polito.it/index.php/s/pefzfJpnZZiRMWY
+
+* PhysiBench preprint: Masera, M., Smeriglio, R., Bardini, R., Savino, A., & Di Carlo, S. (2026). A benchmark suite of intracellular Boolean model variants and multiscale simulations for computational biology. [arXiv:2606.18215v1 \[cs.DB\] 16 Jun 2026](https://arxiv.org/abs/2606.18215)
+
+
+
 The development of computational methodologies for analyzing biological dynamics is constrained by the limited availability and complexity of time-resolved datasets. Acquiring longitudinal data is costly, and its downstream use is often complicated by missing observations or irregular sampling. While large-scale simulation benchmark datasets exist for physical systems, they do not capture the emergent, stochastic, and hybrid multiscale nature of biological biology. 
 
 **PhysiBench (A benchmark suite of intracellular Boolean model variants and multiscale simulations for computational biology)** addresses this gap by providing a curated dataset of simulation-ready intracellular models embedded in a uniform multiscale framework. Designed to accelerate data-driven method development, surrogate modeling, and comparative benchmarking, this resource allows researchers to generate, compare, and analyze multiscale biological simulations under consistent conditions.
